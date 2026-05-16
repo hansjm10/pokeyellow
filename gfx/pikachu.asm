@@ -1,128 +1,128 @@
 SECTION "Pikachu Graphics 1", ROMX
 
-Pic_e4000::
-INCBIN "gfx/pikachu/unknown_e4000.pic"
-GFX_e40cc::
-INCBIN "gfx/pikachu/unknown_e40cc.2bpp"
-Pic_e411c::
-INCBIN "gfx/pikachu/unknown_e411c.pic"
-GFX_e41d2::
-INCBIN "gfx/pikachu/unknown_e41d2.2bpp"
-Pic_e4272::
-INCBIN "gfx/pikachu/unknown_e4272.pic"
-GFX_e4323::
-INCBIN "gfx/pikachu/unknown_e4323.2bpp"
-Pic_e4383::
-INCBIN "gfx/pikachu/unknown_e4383.pic"
-GFX_e444b::
-INCBIN "gfx/pikachu/unknown_e444b.2bpp"
-Pic_e458b::
-INCBIN "gfx/pikachu/unknown_e458b.pic"
-GFX_e463b::
-INCBIN "gfx/pikachu/unknown_e463b.2bpp"
-Pic_e467b::
-INCBIN "gfx/pikachu/unknown_e467b.pic"
-GFX_e472e::
-INCBIN "gfx/pikachu/unknown_e472e.2bpp"
-Pic_e476e::
-INCBIN "gfx/pikachu/unknown_e476e.pic"
-GFX_e4841::
-INCBIN "gfx/pikachu/unknown_e4841.2bpp"
-Pic_e49d1::
-INCBIN "gfx/pikachu/unknown_e49d1.pic"
-GFX_e4a99::
-INCBIN "gfx/pikachu/unknown_e4a99.2bpp"
-Pic_e4b39::
-INCBIN "gfx/pikachu/unknown_e4b39.pic"
-GFX_e4bde::
-INCBIN "gfx/pikachu/unknown_e4bde.2bpp"
-Pic_e4c3e::
-INCBIN "gfx/pikachu/unknown_e4c3e.pic"
-GFX_e4ce0::
-INCBIN "gfx/pikachu/unknown_e4ce0.2bpp"
-GFX_e4e70::
-INCBIN "gfx/pikachu/unknown_e4e70.2bpp"
-Pic_e5000::
-INCBIN "gfx/pikachu/unknown_e5000.pic"
-GFX_e50af::
-INCBIN "gfx/pikachu/unknown_e50af.2bpp"
-Pic_e523f::
-INCBIN "gfx/pikachu/unknown_e523f.pic"
-GFX_e52fe::
-INCBIN "gfx/pikachu/unknown_e52fe.2bpp"
-Pic_e548e::
-INCBIN "gfx/pikachu/unknown_e548e.pic"
-GFX_e5541::
-INCBIN "gfx/pikachu/unknown_e5541.2bpp"
-Pic_e56d1::
-INCBIN "gfx/pikachu/unknown_e56d1.pic"
-GFX_e5794::
-INCBIN "gfx/pikachu/unknown_e5794.2bpp"
-Pic_e5924::
-INCBIN "gfx/pikachu/unknown_e5924.pic"
-GFX_e59ed::
-INCBIN "gfx/pikachu/unknown_e59ed.2bpp"
-Pic_e5b7d::
-INCBIN "gfx/pikachu/unknown_e5b7d.pic"
-GFX_e5c4d::
-INCBIN "gfx/pikachu/unknown_e5c4d.2bpp"
-Pic_e5ddd::
-INCBIN "gfx/pikachu/unknown_e5ddd.pic"
-GFX_e5e90::
-INCBIN "gfx/pikachu/unknown_e5e90.2bpp"
-GFX_e6020::
-INCBIN "gfx/pikachu/unknown_e6020.2bpp"
-GFX_e61b0::
-INCBIN "gfx/pikachu/unknown_e61b0.2bpp"
-Pic_e6340::
-INCBIN "gfx/pikachu/unknown_e6340.pic"
-GFX_e63f7::
-INCBIN "gfx/pikachu/unknown_e63f7.2bpp"
-Pic_e6587::
-INCBIN "gfx/pikachu/unknown_e6587.pic"
-GFX_e6646::
-INCBIN "gfx/pikachu/unknown_e6646.2bpp"
-Pic_e67d6::
-INCBIN "gfx/pikachu/unknown_e67d6.pic"
-GFX_e682f::
-INCBIN "gfx/pikachu/unknown_e682f.2bpp"
-GFX_e69bf::
-INCBIN "gfx/pikachu/unknown_e69bf.2bpp"
-GFX_e6b4f::
-INCBIN "gfx/pikachu/unknown_e6b4f.2bpp"
-GFX_e6cdf::
-INCBIN "gfx/pikachu/unknown_e6cdf.2bpp"
-GFX_e6e6f::
-INCBIN "gfx/pikachu/unknown_e6e6f.2bpp"
-GFX_e6fff::
-INCBIN "gfx/pikachu/unknown_e6fff.2bpp"
-GFX_e718f::
-INCBIN "gfx/pikachu/unknown_e718f.2bpp"
-GFX_e731f::
-INCBIN "gfx/pikachu/unknown_e731f.2bpp"
-GFX_e74af::
-INCBIN "gfx/pikachu/unknown_e74af.2bpp"
-GFX_e763f::
-INCBIN "gfx/pikachu/unknown_e763f.2bpp"
-Pic_e77cf::
-INCBIN "gfx/pikachu/unknown_e77cf.pic"
-GFX_e7863::
-INCBIN "gfx/pikachu/unknown_e7863.2bpp"
-GFX_e79f3::
-INCBIN "gfx/pikachu/unknown_e79f3.2bpp"
-GFX_e7b83::
-INCBIN "gfx/pikachu/unknown_e7b83.2bpp"
-GFX_e7d13::
-INCBIN "gfx/pikachu/unknown_e7d13.2bpp"
+PikaPicNeutral::
+INCBIN "gfx/pikachu/neutral.pic"
+PikaPicNeutralMouthGFX::
+INCBIN "gfx/pikachu/neutral_mouth.2bpp"
+PikaPicHappy::
+INCBIN "gfx/pikachu/happy.pic"
+PikaPicHappyFaceGFX::
+INCBIN "gfx/pikachu/happy_face.2bpp"
+PikaPicUnamused::
+INCBIN "gfx/pikachu/unamused.pic"
+PikaPicUnamusedEarGFX::
+INCBIN "gfx/pikachu/unamused_ear.2bpp"
+PikaPicJoyful::
+INCBIN "gfx/pikachu/joyful.pic"
+PikaPicJoyfulJumpGFX::
+INCBIN "gfx/pikachu/joyful_jump.2bpp"
+PikaPicConcerned::
+INCBIN "gfx/pikachu/concerned.pic"
+PikaPicConcernedMarkGFX::
+INCBIN "gfx/pikachu/concerned_mark.2bpp"
+PikaPicTurnedAway::
+INCBIN "gfx/pikachu/turned_away.pic"
+PikaPicTurnedAwayTailGFX::
+INCBIN "gfx/pikachu/turned_away_tail.2bpp"
+PikaPicExcited::
+INCBIN "gfx/pikachu/excited.pic"
+PikaPicExcitedJumpGFX::
+INCBIN "gfx/pikachu/excited_jump.2bpp"
+PikaPicCheerful::
+INCBIN "gfx/pikachu/cheerful.pic"
+PikaPicCheerfulFaceGFX::
+INCBIN "gfx/pikachu/cheerful_face.2bpp"
+PikaPicBackView::
+INCBIN "gfx/pikachu/back_view.pic"
+PikaPicBackViewTailGFX::
+INCBIN "gfx/pikachu/back_view_tail.2bpp"
+PikaPicInLove::
+INCBIN "gfx/pikachu/in_love.pic"
+PikaPicInLoveSmileGFX::
+INCBIN "gfx/pikachu/in_love_smile.2bpp"
+PikaPicInLoveGrinGFX::
+INCBIN "gfx/pikachu/in_love_grin.2bpp"
+PikaPicSleeping::
+INCBIN "gfx/pikachu/sleeping.pic"
+PikaPicSleepingBubbleGFX::
+INCBIN "gfx/pikachu/sleeping_bubble.2bpp"
+PikaPicSad::
+INCBIN "gfx/pikachu/sad.pic"
+PikaPicSadOpenMouthGFX::
+INCBIN "gfx/pikachu/sad_open_mouth.2bpp"
+PikaPicRefusing::
+INCBIN "gfx/pikachu/refusing.pic"
+PikaPicRefusingBubbleGFX::
+INCBIN "gfx/pikachu/refusing_bubble.2bpp"
+PikaPicAngry::
+INCBIN "gfx/pikachu/angry.pic"
+PikaPicAngryBlinkGFX::
+INCBIN "gfx/pikachu/angry_blink.2bpp"
+PikaPicSurprised::
+INCBIN "gfx/pikachu/surprised.pic"
+PikaPicSurprisedSideGFX::
+INCBIN "gfx/pikachu/surprised_side.2bpp"
+PikaPicSideways::
+INCBIN "gfx/pikachu/sideways.pic"
+PikaPicSidewaysShockGFX::
+INCBIN "gfx/pikachu/sideways_shock.2bpp"
+PikaPicStartled::
+INCBIN "gfx/pikachu/startled.pic"
+PikaPicStartledSmileGFX::
+INCBIN "gfx/pikachu/startled_smile.2bpp"
+PikaPicCaughtMonGFX::
+INCBIN "gfx/pikachu/caught_mon.2bpp"
+PikaPicCaughtMonHeartGFX::
+INCBIN "gfx/pikachu/caught_mon_heart.2bpp"
+PikaPicAffectionate::
+INCBIN "gfx/pikachu/affectionate.pic"
+PikaPicAffectionateBlinkGFX::
+INCBIN "gfx/pikachu/affectionate_blink.2bpp"
+PikaPicDelighted::
+INCBIN "gfx/pikachu/delighted.pic"
+PikaPicDelightedSmileGFX::
+INCBIN "gfx/pikachu/delighted_smile.2bpp"
+PikaPicFishing::
+INCBIN "gfx/pikachu/fishing.pic"
+PikaPicFishingHeart1GFX::
+INCBIN "gfx/pikachu/fishing_heart_1.2bpp"
+PikaPicFishingHeart2GFX::
+INCBIN "gfx/pikachu/fishing_heart_2.2bpp"
+PikaPicFishingHeart3GFX::
+INCBIN "gfx/pikachu/fishing_heart_3.2bpp"
+PikaPicFishingHeart4GFX::
+INCBIN "gfx/pikachu/fishing_heart_4.2bpp"
+PikaPicScaredCoverGFX::
+INCBIN "gfx/pikachu/scared_cover.2bpp"
+PikaPicScaredCoverOpenGFX::
+INCBIN "gfx/pikachu/scared_cover_open.2bpp"
+PikaPicCuriousPeekGFX::
+INCBIN "gfx/pikachu/curious_peek.2bpp"
+PikaPicCuriousPeekBlinkGFX::
+INCBIN "gfx/pikachu/curious_peek_blink.2bpp"
+PikaPicExclamationGFX::
+INCBIN "gfx/pikachu/exclamation.2bpp"
+PikaPicExclamationFlatGFX::
+INCBIN "gfx/pikachu/exclamation_flat.2bpp"
+PikaPicThunderbolt::
+INCBIN "gfx/pikachu/thunderbolt.pic"
+PikaPicThunderboltQuestion1GFX::
+INCBIN "gfx/pikachu/thunderbolt_question_1.2bpp"
+PikaPicThunderboltQuestion2GFX::
+INCBIN "gfx/pikachu/thunderbolt_question_2.2bpp"
+PikaPicSleepingSideGFX::
+INCBIN "gfx/pikachu/sleeping_side.2bpp"
+PikaPicSleepingWakeGFX::
+INCBIN "gfx/pikachu/sleeping_wake.2bpp"
 
 
 SECTION "Pikachu Graphics 2", ROMX
 
-Pic_f0abf::
-INCBIN "gfx/pikachu/unknown_f0abf.pic"
-GFX_f0b64::
-INCBIN "gfx/pikachu/unknown_f0b64.2bpp"
-Pic_f0cf4::
-INCBIN "gfx/pikachu/unknown_f0cf4.pic"
-GFX_f0d82::
-INCBIN "gfx/pikachu/unknown_f0d82.2bpp"
+PikaPicBillReaction::
+INCBIN "gfx/pikachu/bill_reaction.pic"
+PikaPicBillReactionShockGFX::
+INCBIN "gfx/pikachu/bill_reaction_shock.2bpp"
+PikaPicStatusCondition::
+INCBIN "gfx/pikachu/status_condition.pic"
+PikaPicStatusConditionSadGFX::
+INCBIN "gfx/pikachu/status_condition_sad.2bpp"

@@ -458,9 +458,9 @@ YellowIntroScene10:
 	jr nz, .fill_row
 	ret
 
-YellowIntroFlyingSceneTilemap: INCBIN "gfx/intro/unknown_f9b6e.tilemap"
-YellowIntroFlyingCloudTilemap: INCBIN "gfx/intro/unknown_f9be6.tilemap"
-YellowIntroFlyingSmallCloudTilemap: INCBIN "gfx/intro/unknown_f9bf2.tilemap"
+YellowIntroFlyingSceneTilemap: INCBIN "gfx/intro/flying_scene.tilemap"
+YellowIntroFlyingCloudTilemap: INCBIN "gfx/intro/flying_cloud.tilemap"
+YellowIntroFlyingSmallCloudTilemap: INCBIN "gfx/intro/flying_small_cloud.tilemap"
 
 YellowIntroScene11:
 	call YellowIntro_CheckFrameTimerDecrement
@@ -559,7 +559,7 @@ YellowIntroScene13:
 	ret
 
 YellowIntroScene14:
-	ld de, YellowIntroPalSequence_f9dd6
+	ld de, YellowIntroFlashPalSequence
 	call YellowIntro_LoadDMGPalAndIncrementCounter
 	jr c, .expired
 	ldh [rBGP], a
@@ -633,7 +633,7 @@ YellowIntroScene15:
 	call UpdateCGBPal_OBP0
 	call YellowIntro_NextScene
 YellowIntroScene16:
-	ld de, YellowIntroPalSequence_f9e0a
+	ld de, YellowIntroFadeOutPalSequence
 	call YellowIntro_LoadDMGPalAndIncrementCounter
 	jr c, .expired
 	ldh [rOBP0], a
@@ -646,7 +646,7 @@ YellowIntroScene16:
 	call YellowIntro_NextScene
 	ret
 
-YellowIntroPalSequence_f9dd6:
+YellowIntroFlashPalSequence:
 	db $e4, $c0, $c0, $e4
 	db $e4, $c0, $c0, $e4
 	db $e4, $c0, $c0, $e4
@@ -661,7 +661,7 @@ YellowIntroPalSequence_f9dd6:
 	db $e4, $c0, $c0, $e4
 	db $e4, $c0, $c0, $ff
 
-YellowIntroPalSequence_f9e0a:
+YellowIntroFadeOutPalSequence:
 	db $e4, $90, $90, $40
 	db $40, $00, $00, $ff
 
