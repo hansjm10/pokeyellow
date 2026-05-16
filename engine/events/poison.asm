@@ -3,7 +3,7 @@ ApplyOutOfBattlePoisonDamage:
 	ASSERT BIT_SCRIPTED_MOVEMENT_STATE == 7
 	add a ; overflows scripted movement state bit into carry flag
 	jp c, .noBlackOut ; no black out if joypad states are being simulated
-	ld a, [wd492]
+	ld a, [wPikachuInteractionFlags]
 	bit 7, a
 	jp nz, .noBlackOut
 	ld a, [wStatusFlags4]
@@ -148,5 +148,5 @@ UpdatePikachuMoodAfterWalkingStep:
 	ret nz
 .neutral
 	xor a
-	ld [wd49b], a
+	ld [wPikachuEmotionOverride], a
 	ret

@@ -30,10 +30,10 @@ Museum2FBrunetteGirlText:
 
 Museum2FHikerText:
 	text_asm
-	ld a, [wd471]
+	ld a, [wPikachuStatusFlags]
 	bit 7, a
 	jr nz, .check_pikachu_happiness
-	ld hl, Museum2FText_5c20e
+	ld hl, Museum2FHikerNoPikachuText
 	call PrintText
 	jr .done
 
@@ -41,25 +41,25 @@ Museum2FHikerText:
 	ld a, [wPikachuHappiness]
 	cp 101
 	jr c, .low_happiness
-	ld hl, Museum2FText_5c218
+	ld hl, Museum2FHikerHighHappinessPikachuText
 	call PrintText
 	jr .done
 
 .low_happiness
-	ld hl, Museum2FText_5c213
+	ld hl, Museum2FHikerLowHappinessPikachuText
 	call PrintText
 .done
 	jp TextScriptEnd
 
-Museum2FText_5c20e:
+Museum2FHikerNoPikachuText:
 	text_far _Museum2FHikerText
 	text_end
 
-Museum2FText_5c213:
+Museum2FHikerLowHappinessPikachuText:
 	text_far _Museum2FPikachuText1
 	text_end
 
-Museum2FText_5c218:
+Museum2FHikerHighHappinessPikachuText:
 	text_far _Museum2FPikachuText2
 	text_end
 

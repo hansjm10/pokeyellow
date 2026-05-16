@@ -75,12 +75,12 @@ IF DEF(_DEBUG)
 	ret nz
 ENDC
 	CheckEvent EVENT_BEAT_ROCKET_HIDEOUT_4_JESSIE_JAMES
-	call z, RocketHideoutB4FScript_455a5
+	call z, RocketHideoutB4FCheckJessieJamesEncounter
 	CheckEvent EVENT_BEAT_ROCKET_HIDEOUT_4_TRAINER_2
 	call z, CheckFightingMapTrainers
 	ret
 
-RocketHideoutB4FScript_455a5:
+RocketHideoutB4FCheckJessieJamesEncounter:
 	ld a, [wYCoord]
 	cp $e
 	ret nz

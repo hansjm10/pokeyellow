@@ -11,30 +11,30 @@ PokemonFanClub_ScriptPointers:
 	dw_const PokemonFanClubScript1, SCRIPT_POKEMONFANCLUB_SCRIPT1
 
 PokemonFanClubScript0:
-	ld hl, wd492
+	ld hl, wPikachuInteractionFlags
 	bit 7, [hl]
-	call z, PokemonFanClubScript_59a44
-	ld hl, wd492
+	call z, PokemonFanClubStartPikachuSeelScene
+	ld hl, wPikachuInteractionFlags
 	set 7, [hl]
 	ret
 
 PokemonFanClubScript1:
-	ld hl, wd492
+	ld hl, wPikachuInteractionFlags
 	bit 7, [hl]
-	call z, PokemonFanClubScript_59a39
-	ld hl, wd492
+	call z, PokemonFanClubTryRandomPikachuSeelScene
+	ld hl, wPikachuInteractionFlags
 	set 7, [hl]
 	ret
 
-PokemonFanClubScript_59a39:
+PokemonFanClubTryRandomPikachuSeelScene:
 	call Random
 	ldh a, [hRandomAdd]
 	cp 25
-	call c, PokemonFanClubScript_59a44
+	call c, PokemonFanClubStartPikachuSeelScene
 	ret
 
-PokemonFanClubScript_59a44:
-	ld a, [wd471]
+PokemonFanClubStartPikachuSeelScene:
+	ld a, [wPikachuStatusFlags]
 	bit 7, a
 	ret z
 	callfar CheckPikachuStatusCondition
@@ -176,13 +176,13 @@ PokemonFanClubChairmanText:
 	text_asm
 	CheckEventHL EVENT_LEFT_FANCLUB_AFTER_BIKE_VOUCHER
 	jr z, .check_bike_voucher
-	ld hl, Text_59c1f
+	ld hl, FanClubChairAskPrintMonPhotoText
 	call PrintText
 	call YesNoChoice
 	ld a, [wCurrentMenuItem]
 	and a
 	jr z, .select_mon_to_print
-	ld hl, Text_59c24
+	ld hl, FanClubChairDeclinedPrintText
 	jr .gbpals_print_text
 
 .check_bike_voucher
@@ -232,7 +232,7 @@ PokemonFanClubChairmanText:
 	jp nc, .print
 	call GBPalWhiteOutWithDelay3
 	call RestoreScreenTilesAndReloadTilePatterns
-	ld hl, Text_59c24
+	ld hl, FanClubChairDeclinedPrintText
 	jr .gbpals_print_text
 
 .print
@@ -249,11 +249,11 @@ PokemonFanClubChairmanText:
 	call LoadScreenTilesFromBuffer2
 	call Delay3
 	call GBPalNormal
-	ld hl, Text_59c2e
+	ld hl, FanClubChairPrintCanceledText
 	ldh a, [hOaksAideResult]
 	and a
 	jr nz, .gbpals_print_text
-	ld hl, Text_59c29
+	ld hl, FanClubChairPrintDoneText
 	jr .gbpals_print_text
 
 .IntroText:
@@ -282,19 +282,19 @@ PokemonFanClubChairmanText:
 	text_far _PokemonFanClubBagFullText
 	text_end
 
-Text_59c1f:
+FanClubChairAskPrintMonPhotoText:
 	text_far FanClubChairPrintText1
 	text_end
 
-Text_59c24:
+FanClubChairDeclinedPrintText:
 	text_far FanClubChairPrintText2
 	text_end
 
-Text_59c29:
+FanClubChairPrintDoneText:
 	text_far FanClubChairPrintText3
 	text_end
 
-Text_59c2e:
+FanClubChairPrintCanceledText:
 	text_far FanClubChairPrintText4
 	text_end
 

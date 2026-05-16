@@ -1,6 +1,6 @@
 VermilionCity_Script:
 	call EnableAutoTextBoxDrawing
-	ld hl, wd492
+	ld hl, wPikachuInteractionFlags
 	res 7, [hl]
 	ld hl, wCurrentMapScriptFlags
 	bit BIT_CUR_MAP_LOADED_2, [hl]
@@ -14,10 +14,10 @@ VermilionCity_Script:
 	ld hl, VermilionCity_ScriptPointers
 	ld a, [wVermilionCityCurScript]
 	call CallFunctionInTable
-	call .vermilionCityScript_19869
+	call .setLeftFanClubAfterBikeVoucher
 	ret
 
-.vermilionCityScript_19869
+.setLeftFanClubAfterBikeVoucher
 	CheckEventHL EVENT_LEFT_FANCLUB_AFTER_BIKE_VOUCHER
 	ret nz
 	CheckEventReuseHL EVENT_GOT_BIKE_VOUCHER

@@ -73,7 +73,7 @@ wAudioSavedROMBank:: db
 wFrequencyModifier:: db
 wTempoModifier:: db
 
-wc0f3:: dw
+wUnusedPikachuPCMWord:: dw
 
 	ds 11
 
@@ -220,28 +220,28 @@ wAnimatedObjectsDataEnd::
 ; Surfing minigame
 wSurfingMinigameData:: db
 wSurfingMinigameRoutineNumber:: db
-wc5d2:: db
+wSurfingMinigamePikachuState:: db
 wSurfingMinigameWaveFunctionNumber:: dw
-wc5d5:: db
+wSurfingMinigameWaveRandomByte:: db
 wSurfingMinigamePikachuHP:: dw ; little-endian BCD
-wc5d8:: db ; unused?
+wUnusedSurfingMinigameByte:: db ; unused?
 ; number of consecutive tricks
 wSurfingMinigameRadnessMeter:: db
 wSurfingMinigameRadnessScore:: dw ; little-endian BCD
 wSurfingMinigameTotalScore:: dw ; little-endian BCD
-wc5de:: db
-wc5df:: db
-wc5e0:: db
-wc5e1:: db
-wc5e2:: db
+wSurfingMinigamePikachuFrameOffset:: db
+wSurfingMinigamePikachuFrameDirection:: db
+wSurfingMinigamePikachuFrameTimer:: db
+wSurfingMinigamePikachuCrashTimer:: db
+wUnusedSurfingMinigameStartFlag:: db
 wSurfingMinigamePikachuSpeed:: dw ; little-endian
-wc5e5:: ds 3 ; big-endian
+wSurfingMinigamePikachuDistance:: ds 3 ; big-endian fixed-point
 wSurfingMinigameWaveHeightBuffer:: dw
 wSurfingMinigamePikachuObjectHeight:: db
-wc5eb:: db
-wc5ec:: db
-wc5ed:: db
-wc5ee:: db
+wSurfingMinigameWaveSplashTimer:: db
+wSurfingMinigamePikachuJumpVelocityHigh:: db
+wSurfingMinigamePikachuJumpDescending:: db
+wSurfingMinigamePikachuJumpVelocityLow:: db
 wSurfingMinigameBGMapReadBuffer:: ds 1 tiles
 	ds 24
 wSurfingMinigameSCX:: db
@@ -250,16 +250,16 @@ wSurfingMinigameSCXHi:: db
 wSurfingMinigameWaveHeight:: ds SCREEN_WIDTH
 wSurfingMinigameXOffset:: db
 wSurfingMinigameTrickFlags:: db
-wc630:: db
-wc631:: db
+wSurfingMinigameGameOver:: db
+wSurfingMinigameGameOverTimer:: db
 wSurfingMinigameRoutineDelay:: db
 wSurfingMinigameIntroAnimationFinished:: db
 
 ; Yellow intro
 wYellowIntroCurrentScene::
-wc634:: db
+wSurfingMinigameMusicTempoActive:: db
 wYellowIntroSceneTimer::
-wc635:: db
+wSurfingMinigameCloudScrollSubpixel:: db
 wYellowIntroAnimatedObjectStructPointer:: db
 wSurfingMinigameDataEnd::
 ENDU
@@ -281,10 +281,9 @@ wPrinterRowIndex:: db
 
 ; Printer data header
 wPrinterDataHeader::
-wc6ea:: db
-wc6eb:: db
-wc6ec:: db
-wc6ed:: db
+wPrinterPacketCommand:: db
+wPrinterPacketCompressionFlag:: db
+wPrinterPacketDataLength:: dw
 wPrinterChecksum:: dw
 
 UNION
@@ -295,8 +294,8 @@ wPrinterSerialReceived:: db
 ; if this and the previous byte are both $ff: error 2 (connection error)
 wPrinterStatusReceived:: db
 
-wc6f2:: db
-wc6f3:: db
+wPrinterPrintCommandPalette:: db
+wPrinterPrintCommandExposure:: db
 	ds 12
 wLYOverrides:: ds $100
 wLYOverridesEnd::
@@ -318,7 +317,7 @@ wPrinterSendByteOffset:: dw
 wPrinterDataSize:: dw
 wPrinterTileBuffer:: ds SCREEN_AREA
 wPrinterStatusIndicator:: dw
-wcae2:: db
+wPrinterPrintCommandMargins:: db
 wPrinterSettingsTempCopy:: db
 	ds 16
 wPrinterQueueLength:: db
@@ -329,12 +328,12 @@ wPrinterPokedexEntryTextPointer:: dw
 wPrinterPokedexMonIsOwned:: db
 	ds 226
 UNION
-wcbdc:: ds 1 tiles
+wPrinterOAMTileBuffer:: ds 1 tiles
 NEXTU
 	ds 14
-wcbea:: dw
+wPrinterOAMTileLastRow:: dw
 ENDU
-wcbec:: ds 1 tiles
+wPrinterOAMTilePaletteBuffer:: ds 1 tiles
 ENDU
 
 
@@ -2014,11 +2013,11 @@ wDestinationWarpID:: db
 ; bit 7: hide Pikachu and stop recording follow commands during map transitions
 wPikachuOverworldStateFlags:: db
 wPikachuSpawnState:: db
-wd431:: db
-wd432:: db
-wd433:: db
+wPikachuHopYOffset:: db
+wPikachuHopXOffset:: db
+wPikachuCollisionDirection:: db
 wPikachuCollisionCounter:: db
-wd435:: db
+wTalkingToPikachu:: db
 wPikachuFollowCommandBufferSize:: db
 wPikachuFollowCommandBuffer:: ds 16
 
@@ -2037,7 +2036,7 @@ wCurPikaMovementParam1:: db
 wCurPikaMovementFunc1:: db
 wCurPikaMovementParam2:: db
 wCurPikaMovementFunc2:: db
-wd451:: db
+wCurPikaMovementUnused:: db
 wCurPikaMovementSpriteImageIdx:: db
 wPikaSpriteX:: db
 wPikaSpriteY:: db
@@ -2072,14 +2071,21 @@ ENDU
 
 wPikachuHappiness:: db
 wPikachuMood:: db
-wd471:: db
-wd472:: db
+; bit 5: Pikachu placement coordinates were calculated
+; bit 6: a Pikachu with Surf is in party
+; bit 7: starter Pikachu is alive in party
+wPikachuStatusFlags:: db
+; 1: force normal surfing player sprite; 2: force Surfing Pikachu player sprite
+wSurfingPlayerSpriteMode:: db
 	ds 1
-wd474:: db
+; bit 7: wrong-answer trainer battle is pending
+wCinnabarGymQuizFlags:: db
 	ds 4
-wd479:: db
+; bit 0: play time is maxed
+wPlayTimeFlags:: db
 	ds 24
-wd492:: db
+; map-local Pikachu/printing interaction flags
+wPikachuInteractionFlags:: db
 	ds 1
 wSurfingMinigameHiScore:: dw ; little-endian BCD
 	ds 1
@@ -2088,7 +2094,7 @@ wPrinterSettings:: db
 wStadiumRulesCup:: db
 wPrinterConnectionOpen:: db
 wPrinterOpcode:: db
-wd49b:: db
+wPikachuEmotionOverride:: db
 
 	ds 19
 
@@ -2521,7 +2527,7 @@ wCGBPal:: ds PAL_SIZE
 wLastBGP:: db
 wLastOBP0:: db
 wLastOBP1:: db
-wdef4:: db
+wOAMAttributesTemp:: db
 wBGPPalsBuffer:: ds NUM_ACTIVE_PALS * PAL_SIZE
 
 

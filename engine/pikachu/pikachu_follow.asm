@@ -140,7 +140,7 @@ CalculatePikachuPlacementCoords::
 	inc hl
 	ld [hl], $fe
 	push hl
-	ld hl, wd471
+	ld hl, wPikachuStatusFlags
 	set 5, [hl]
 	pop hl
 	ret
@@ -614,15 +614,15 @@ StartPikachuFollowActionHop:
 	add hl, bc
 	ld [hl], $6
 	xor a
-	ld [wd431], a
-	ld [wd432], a
+	ld [wPikachuHopYOffset], a
+	ld [wPikachuHopXOffset], a
 	ld hl, wSpritePikachuStateData2WalkAnimationCounter - wSpritePikachuStateData1
 	add hl, bc
 	ld [hl], $11
 UpdatePikachuFollowActionHop:
-	ld a, [wd431]
+	ld a, [wPikachuHopYOffset]
 	ld e, a
-	ld a, [wd432]
+	ld a, [wPikachuHopXOffset]
 	ld d, a
 	call CheckPlayerIsWalking
 	jr c, CancelPikachuFollowActionHop
@@ -648,11 +648,11 @@ UpdatePikachuFollowActionHop:
 	adc 0
 	ld h, a
 	ld a, [hli]
-	ld [wd431], a
+	ld [wPikachuHopYOffset], a
 	add e
 	ld e, a
 	ld a, [hl]
-	ld [wd432], a
+	ld [wPikachuHopXOffset], a
 	add d
 	ld d, a
 	ld hl, wSpritePikachuStateData1YPixels - wSpritePikachuStateData1
@@ -1279,7 +1279,7 @@ CanAppendPikachuFollowCommand:
 	ld a, [wPikachuOverworldStateFlags]
 	bit 7, a
 	jr nz, .no
-	ld a, [wd471]
+	ld a, [wPikachuStatusFlags]
 	bit 7, a
 	jr z, .no
 	ld a, [wWalkBikeSurfState]

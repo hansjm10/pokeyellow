@@ -104,14 +104,14 @@ IF DEF(_DEBUG)
 	ret nz
 ENDC
 	CheckEvent EVENT_BEAT_SILPH_CO_11F_JESSIE_JAMES
-	call z, SilphCo11FScript_6229c
+	call z, SilphCo11FCheckJessieJamesEncounter
 	CheckEvent EVENT_782
 	ret nz
 	CheckEvent EVENT_BEAT_SILPH_CO_GIOVANNI
-	call z, SilphCo11FScript_621c5
+	call z, SilphCo11FGiovanniApproachScript
 	ret
 
-SilphCo11FScript_621c5:
+SilphCo11FGiovanniApproachScript:
 	ld hl, .PlayerCoordsArray
 	call ArePlayerCoordsInArray
 	jp nc, CheckFightingMapTrainers
@@ -144,7 +144,7 @@ SilphCo11FScript_621c5:
 	db NPC_MOVEMENT_DOWN
 	db -1 ; end
 
-SilphCo11FScript_621ff:
+SilphCo11FSetPlayerAndGiovanniFacing:
 	ld [wPlayerMovingDirection], a
 	ld a, b
 	ld [wSprite03StateData1FacingDirection], a
@@ -166,7 +166,7 @@ SilphCo11FGiovanniAfterBattleScript:
 	ld a, PLAYER_DIR_UP
 	ld b, SPRITE_FACING_DOWN
 .continue
-	call SilphCo11FScript_621ff
+	call SilphCo11FSetPlayerAndGiovanniFacing
 	ld a, PAD_CTRL_PAD
 	ld [wJoyIgnore], a
 	ld a, TEXT_SILPHCO11F_GIOVANNI_YOU_RUINED_OUR_PLANS
@@ -199,7 +199,7 @@ SilphCo11FGiovanniStartBattleScript:
 	ld a, PLAYER_DIR_UP
 	ld b, SPRITE_FACING_DOWN
 .continue
-	call SilphCo11FScript_621ff
+	call SilphCo11FSetPlayerAndGiovanniFacing
 	call Delay3
 	xor a
 	ld [wJoyIgnore], a
@@ -216,7 +216,7 @@ SilphCo11FGiovanniStartBattleScript:
 	ld a, SCRIPT_SILPHCO11F_GIOVANNI_AFTER_BATTLE
 	jp SilphCo11FSetCurScript
 
-SilphCo11FScript_6229c:
+SilphCo11FCheckJessieJamesEncounter:
 	ld a, [wYCoord]
 	cp $3
 	ret nz
@@ -386,8 +386,8 @@ SilphCo11FScript11:
 	ld hl, wStatusFlags3
 	set BIT_TALKED_TO_TRAINER, [hl]
 	set BIT_PRINT_END_BATTLE_TEXT, [hl]
-	ld hl, SilphCo11FText_624c2
-	ld de, SilphCo11FText_624c2
+	ld hl, SilphCo11FJessieJamesEndBattleText
+	ld de, SilphCo11FJessieJamesEndBattleText
 	call SaveEndBattleTextPointers
 	ld a, OPP_ROCKET
 	ld [wCurOpponent], a
@@ -508,7 +508,7 @@ SilphCo11FText9:
 	text_far _SilphCoJessieJamesText2
 	text_end
 
-SilphCo11FText_624c2:
+SilphCo11FJessieJamesEndBattleText:
 	text_far _SilphCoJessieJamesText3
 	text_end
 

@@ -93,7 +93,7 @@ OverworldLoopLessDelay::
 	and a
 	jp z, OverworldLoop ; jump if a hidden event or bookshelf was found, but not if a card key door was found
 	xor a
-	ld [wd435], a ; new yellow address
+	ld [wTalkingToPikachu], a
 	call IsSpriteOrSignInFrontOfPlayer
 	call TryTalkingToPikachu
 	ldh a, [hTextID]
@@ -1167,10 +1167,10 @@ IsSpriteInFrontOfPlayer2::
 	ldh [hSpriteIndex], a
 	ldh a, [hSpriteIndex] ; possible useless read because a already has the value of the read address
 	cp PIKACHU_SPRITE_INDEX
-	jr nz, .dontwritetowd436
+	jr nz, .notPikachu
 	ld a, $FF
-	ld [wd435], a
-.dontwritetowd436
+	ld [wTalkingToPikachu], a
+.notPikachu
 	scf
 	ret
 
@@ -1738,13 +1738,13 @@ RunMapScript::
 LoadWalkingPlayerSpriteGraphics::
 ; new sprite copy stuff
 	xor a
-	ld [wd472], a
+	ld [wSurfingPlayerSpriteMode], a
 	ld b, BANK(RedSprite)
 	ld de, RedSprite
 	jr LoadPlayerSpriteGraphicsCommon
 
 LoadSurfingPlayerSpriteGraphics2::
-	ld a, [wd472]
+	ld a, [wSurfingPlayerSpriteMode]
 	and a
 	jr z, .check_surfing_pikachu_in_party
 	dec a
@@ -1752,7 +1752,7 @@ LoadSurfingPlayerSpriteGraphics2::
 	dec a
 	jr z, .load_surfing_pikachu_sprite
 .check_surfing_pikachu_in_party
-	ld a, [wd471]
+	ld a, [wPikachuStatusFlags]
 	bit 6, a
 	jr z, LoadSurfingPlayerSpriteGraphics
 .load_surfing_pikachu_sprite

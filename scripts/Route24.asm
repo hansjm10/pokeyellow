@@ -286,7 +286,7 @@ Route24CooltrainerM4Text:
 	text_asm
 	CheckEvent EVENT_54F
 	jr nz, .already_got_charmander
-	ld hl, Route24Text_515de
+	ld hl, Route24DamianOfferCharmanderText
 	call PrintText
 	call YesNoChoice
 	ld a, [wCurrentMenuItem]
@@ -306,34 +306,34 @@ Route24CooltrainerM4Text:
 	call z, WaitForTextScrollButtonPress
 	ld a, $1
 	ld [wDoNotWaitForButtonPressAfterDisplayingText], a
-	ld hl, Route24Text_515e3
+	ld hl, Route24DamianTakeCareText
 	call PrintText
 	SetEvent EVENT_54F
 	jp TextScriptEnd
 
 .declined_charmander
-	ld hl, Route24Text_515e9
+	ld hl, Route24DamianReleaseText
 	jr .print_text
 
 .already_got_charmander
-	ld hl, Route24Text_515ee
+	ld hl, Route24DamianCharmanderDoingWellText
 .print_text
 	call PrintText
 	jp TextScriptEnd
 
-Route24Text_515de:
+Route24DamianOfferCharmanderText:
 	text_far _Route24DamianText1
 	text_end
 
-Route24Text_515e3:
+Route24DamianTakeCareText:
 	text_far _Route24DamianText2
 	text_waitbutton
 	text_end
 
-Route24Text_515e9:
+Route24DamianReleaseText:
 	text_far _Route24DamianText3
 	text_end
 
-Route24Text_515ee:
+Route24DamianCharmanderDoingWellText:
 	text_far _Route24DamianText4
 	text_end

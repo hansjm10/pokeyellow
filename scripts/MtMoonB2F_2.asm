@@ -1,5 +1,5 @@
 MtMoonB2FScript_ApplyPikachuMovementData:
-	ld a, [wd471]
+	ld a, [wPikachuStatusFlags]
 	bit 7, a
 	ret z
 	ld a, [wWalkBikeSurfState]

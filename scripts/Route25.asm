@@ -9,7 +9,7 @@ Route25_Script:
 	ret
 
 Route25ToggleBillsScript:
-	ld hl, wd492
+	ld hl, wPikachuInteractionFlags
 	res 2, [hl]
 	res 3, [hl]
 	res 4, [hl]

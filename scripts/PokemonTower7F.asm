@@ -33,10 +33,10 @@ IF DEF(_DEBUG)
 	ret nz
 ENDC
 	CheckEvent EVENT_BEAT_POKEMONTOWER_7_JESSIE_JAMES
-	call z, PokemonTower7FScript_60d2a
+	call z, PokemonTower7FCheckJessieJamesEncounter
 	ret
 
-PokemonTower7FScript_60d2a:
+PokemonTower7FCheckJessieJamesEncounter:
 	ld a, [wYCoord]
 	cp $c
 	ret nz

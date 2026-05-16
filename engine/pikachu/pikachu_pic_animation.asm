@@ -205,9 +205,9 @@ ExecutePikaPicAnimScript:
 	xor a
 	ldh [hAutoBGTransferEnabled], a
 	call RunPikaPicAnimSetupScript
-	call DummyFunction_fdad5
+	call PikaPicAnimUnusedHook
 	call AnimateCurrentPikaPicAnimFrame
-	call DummyFunction_fdad5
+	call PikaPicAnimUnusedHook
 	ld a, $1
 	ldh [hAutoBGTransferEnabled], a
 	call PikaPicAnimTimerAndJoypad
@@ -242,7 +242,7 @@ CheckPikaPicAnimTimer:
 	ld a, $1
 	ret
 
-DummyFunction_fdad5:
+PikaPicAnimUnusedHook:
 	ret
 
 AnimateCurrentPikaPicAnimFrame:

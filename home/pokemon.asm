@@ -292,7 +292,7 @@ HandlePartyMenuInput::
 	ret
 .cannot_choose_following_pikachu
 	pop af
-	ld hl, PartyMenuText_12cc
+	ld hl, PartyMenuCannotChooseFollowingPikachuText
 	call PrintText
 	xor a
 	ld [wMenuItemToSwap], a
@@ -318,7 +318,7 @@ HandlePartyMenuInput::
 	farcall SwitchPartyMon
 	jp HandlePartyMenuInput
 
-PartyMenuText_12cc::
+PartyMenuCannotChooseFollowingPikachuText::
 	text_far _SleepingPikachuText1
 	text_end
 

@@ -61,17 +61,17 @@ CinnabarGymDefaultScript:
 	jr nz, .not_super_nerd3
 	ld a, PLAYER_DIR_DOWN
 	ld [wPlayerMovingDirection], a
-	ld hl, PikachuMovementData_74f97
+	ld hl, CinnabarGymPikachuMovementFromSuperNerd3
 	ld b, SPRITE_FACING_DOWN
-	call CinnabarGymScript_74fa3
+	call CinnabarGymTryApplyPikachuMovement
 	ld de, MovementNpcToLeftAndUp
 	jr .MoveSprite
 .not_super_nerd3
 	ld a, PLAYER_DIR_RIGHT
 	ld [wPlayerMovingDirection], a
-	ld hl, PikachuMovementData_74f9e
+	ld hl, CinnabarGymPikachuMovementFromOtherTrainers
 	ld b, SPRITE_FACING_RIGHT
-	call CinnabarGymScript_74fa3
+	call CinnabarGymTryApplyPikachuMovement
 	ld de, MovementNpcToLeft
 .MoveSprite
 	call MoveSprite
@@ -85,7 +85,7 @@ MovementNpcToLeftAndUp:
 	db NPC_MOVEMENT_UP
 	db -1 ; end
 
-PikachuMovementData_74f97:
+CinnabarGymPikachuMovementFromSuperNerd3:
 	db $00
 	db $20
 	db $1e
@@ -96,15 +96,15 @@ MovementNpcToLeft:
 	db NPC_MOVEMENT_LEFT
 	db -1 ; end
 
-PikachuMovementData_74f9e:
+CinnabarGymPikachuMovementFromOtherTrainers:
 	db $00
 	db $1d
 	db $1f
 	db $38
 	db $3f
 
-CinnabarGymScript_74fa3:
-	ld a, [wd471]
+CinnabarGymTryApplyPikachuMovement:
+	ld a, [wPikachuStatusFlags]
 	bit 7, a
 	ret z
 	push hl

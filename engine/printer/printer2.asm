@@ -2,14 +2,14 @@ Printer_GetMonStats:
 	call GBPalWhiteOutWithDelay3
 	call ClearScreen
 	call LoadHpBarAndStatusTilePatterns
-	ld de, GFX_ea563
+	ld de, PrinterHPGFX
 	ld hl, vChars2 + $710
-	lb bc, BANK(GFX_ea563), (GFX_ea563End - GFX_ea563) / 8
+	lb bc, BANK(PrinterHPGFX), (PrinterHPGFXEnd - PrinterHPGFX) / 8
 	call CopyVideoDataDouble
 
-	ld de, GFX_ea56b
+	ld de, PrinterLvGFX
 	ld hl, vChars2 + $6e0
-	lb bc, BANK(GFX_ea56b), (GFX_ea56bEnd - GFX_ea56b) / 8
+	lb bc, BANK(PrinterLvGFX), (PrinterLvGFXEnd - PrinterLvGFX) / 8
 	call CopyVideoDataDouble
 
 	xor a
@@ -176,18 +176,18 @@ Printer_GetMonStats:
 .Blank:
 	db "--------------@"
 
-GFX_ea563:
+PrinterHPGFX:
 INCBIN "gfx/printer/hp.1bpp"
-GFX_ea563End:
+PrinterHPGFXEnd:
 
-GFX_ea56b:
+PrinterLvGFX:
 INCBIN "gfx/printer/lv.1bpp"
-GFX_ea56bEnd:
+PrinterLvGFXEnd:
 
 PrinterDebug_LoadGFX:
 	ld hl, vChars1 + $7e0
-	ld de, GFX_ea597
-	lb bc, BANK(GFX_ea597), (GFX_ea597End - GFX_ea597) / 16
+	ld de, PrinterDebugBitGFX
+	lb bc, BANK(PrinterDebugBitGFX), (PrinterDebugBitGFXEnd - PrinterDebugBitGFX) / 16
 	call CopyVideoData
 
 	ld hl, wShadowOAMSprite32
@@ -207,9 +207,9 @@ PrinterDebug_LoadGFX:
 	jr nz, .loop
 	ret
 
-GFX_ea597:
+PrinterDebugBitGFX:
 INCBIN "gfx/printer/01.2bpp"
-GFX_ea597End:
+PrinterDebugBitGFXEnd:
 
 PrinterDebug_ConvertStatusFlagsToTiles:
 	ld hl, wShadowOAMSprite32TileID
@@ -543,12 +543,12 @@ PrinterDebug_AddBytesToChecksum:
 PrinterDebug_LoadPrintCommandPayload:
 	ld a, $1
 	ld [wPrinterSendDataSource1], a
-	ld a, [wcae2]
+	ld a, [wPrinterPrintCommandMargins]
 	ld [wPrinterStatusReceived], a
 	ld a, $e4
-	ld [wc6f2], a
+	ld [wPrinterPrintCommandPalette], a
 	ld a, [wPrinterSettingsTempCopy]
-	ld [wc6f3], a
+	ld [wPrinterPrintCommandExposure], a
 	ret
 
 PrinterDebug_PrepOAMForPrinting:
@@ -606,7 +606,7 @@ PrinterDebug_PrepOAMForPrinting:
 	ret
 
 .UnnecessaryCall:
-	ld hl, wcbdc
+	ld hl, wPrinterOAMTileBuffer
 	ld bc, $20
 	xor a
 	call FillMemory
@@ -679,7 +679,7 @@ PrinterDebug_PrepOAMForPrinting:
 	and $f
 	or $80
 	ld d, a
-	ld hl, wcbdc
+	ld hl, wPrinterOAMTileBuffer
 	lb bc, BANK(.GetVRAMAddress), $1
 	call CopyVideoData
 	pop hl
@@ -730,7 +730,7 @@ PrinterDebug_PrepOAMForPrinting:
 	ret
 
 .XFlip:
-	ld hl, wcbdc
+	ld hl, wPrinterOAMTileBuffer
 	ld c, 16
 .byte_loop
 	ld d, [hl]
@@ -747,8 +747,8 @@ PrinterDebug_PrepOAMForPrinting:
 	ret
 
 .YFlip:
-	ld hl, wcbdc
-	ld de, wcbea
+	ld hl, wPrinterOAMTileBuffer
+	ld de, wPrinterOAMTileLastRow
 	ld c, $4
 .swap_loop
 	ld b, [hl]
@@ -771,8 +771,8 @@ PrinterDebug_PrepOAMForPrinting:
 
 .ApplyObjectPalettes:
 	push hl
-	ld hl, wcbdc
-	ld de, wcbec
+	ld hl, wPrinterOAMTileBuffer
+	ld de, wPrinterOAMTilePaletteBuffer
 	ld a, 8
 .loop1
 	push af
@@ -919,7 +919,7 @@ PrinterDebug_PrepOAMForPrinting:
 	add hl, bc
 	ld e, l
 	ld d, h
-	ld hl, wcbec
+	ld hl, wPrinterOAMTilePaletteBuffer
 	ld c, $8
 .coord_copy_loop
 	call .GetBitMask

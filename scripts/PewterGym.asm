@@ -189,7 +189,7 @@ PewterGymGuideText:
 	ld a, [wCurrentMenuItem]
 	and a
 	jr nz, .PewterGymGuideBeginAdviceText
-	ld a, [wd471]
+	ld a, [wPikachuStatusFlags]
 	bit 7, a
 	jp nz, .pikachu_advice
 	ld hl, PewterGymGuideBeginAdviceText
@@ -208,7 +208,7 @@ PewterGymGuideText:
 .done
 	jp TextScriptEnd
 .pikachu_advice
-	ld hl, PewterGymText_5c41c
+	ld hl, PewterGymGuidePikachuAdviceText
 	call PrintText
 	jp TextScriptEnd
 
@@ -232,6 +232,6 @@ PewterGymGuidePostBattleText:
 	text_far _PewterGymGuidePostBattleText
 	text_end
 
-PewterGymText_5c41c:
+PewterGymGuidePikachuAdviceText:
 	text_far _PewterGymGuyText
 	text_end

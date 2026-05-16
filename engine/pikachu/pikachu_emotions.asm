@@ -1,5 +1,5 @@
 IsPlayerTalkingToPikachu::
-	ld a, [wd435]
+	ld a, [wTalkingToPikachu]
 	and a
 	ret z
 	ldh a, [hSpriteIndex]
@@ -8,7 +8,7 @@ IsPlayerTalkingToPikachu::
 	call InitializePikachuTextID
 	xor a
 	ldh [hSpriteIndex], a
-	ld [wd435], a
+	ld [wTalkingToPikachu], a
 	ret
 
 InitializePikachuTextID::
@@ -206,7 +206,7 @@ StarterPikachuEmotionCommand_turnawayfromplayer:
 	ld [wSpritePikachuStateData1FacingDirection], a
 	ret
 
-DeletedFunction_fcffb:
+TryDebugCyclePikachuExpression:
 ; Inexplicably empty.
 REPT 5
 	nop
@@ -249,7 +249,7 @@ TalkToPikachu::
 	call MapSpecificPikachuExpression
 	jr c, load_expression
 	call GetPikaPicAnimationScriptIndex
-	call DeletedFunction_fcffb
+	call TryDebugCyclePikachuExpression
 load_expression:
 	ld [wExpressionNumber], a
 	ld hl, PikachuEmotionTable
@@ -304,7 +304,7 @@ MapSpecificPikachuExpression:
 	ld a, [wCurMap]
 	cp POKEMON_FAN_CLUB
 	jr nz, .notFanClub
-	ld hl, wd492
+	ld hl, wPikachuInteractionFlags
 	bit 7, [hl]
 	ldpikaemotion a, PikachuEmotion29
 	jr z, .play_emotion
@@ -343,7 +343,7 @@ MapSpecificPikachuExpression:
 	ldpikaemotion a, PikachuEmotion22
 	jr c, .play_emotion
 .notInLavenderTower
-	ld a, [wd49b]
+	ld a, [wPikachuEmotionOverride]
 	and a
 	jr z, .mood_based_emotion
 	dec a

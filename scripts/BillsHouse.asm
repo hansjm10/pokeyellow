@@ -20,7 +20,7 @@ BillsHouse_ScriptPointers:
 	dw_const BillsHouseScript9, SCRIPT_BILLSHOUSE_SCRIPT9
 
 BillsHouseSetInitialScript:
-	ld hl, wd492
+	ld hl, wPikachuInteractionFlags
 	bit 7, [hl]
 	set 7, [hl]
 	ret nz
@@ -39,7 +39,7 @@ BillsHouseSetInitialScript:
 	ret
 
 BillsHouseScript0:
-	ld a, [wd471]
+	ld a, [wPikachuStatusFlags]
 	bit 7, a
 	jr z, .done
 	callfar CheckPikachuStatusCondition
@@ -158,7 +158,7 @@ BillsHouseScript5:
 	predef ShowObject
 	ld c, 8
 	call DelayFrames
-	ld hl, wd471
+	ld hl, wPikachuStatusFlags
 	bit 7, [hl]
 	jr z, .move_bill
 	call CheckPikachuFollowingPlayer
@@ -215,7 +215,7 @@ BillsHouseScript7:
 	ld [wSpritePlayerStateData1FacingDirection], a
 	ld a, PAD_SELECT | PAD_START | PAD_CTRL_PAD
 	ld [wJoyIgnore], a
-	ld de, RLE_1e219
+	ld de, BillsHousePlayerStepRightMovement
 	ld hl, wSimulatedJoypadStatesEnd
 	call DecodeRLEList
 	dec a
@@ -225,7 +225,7 @@ BillsHouseScript7:
 	ld [wBillsHouseCurScript], a
 	ret
 
-RLE_1e219:
+BillsHousePlayerStepRightMovement:
 	db PAD_RIGHT, $3
 	db $FF
 

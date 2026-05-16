@@ -277,7 +277,7 @@ DetectCollisionBetweenSprites:
 	and $f0 ; collision with pikachu?
 	jr nz, .store_collision_direction
 	xor a
-	ld [wd433], a
+	ld [wPikachuCollisionDirection], a
 	ldh a, [hCollidingSpriteOffset]
 	cp $f
 	jr nz, .store_collision_direction
@@ -352,7 +352,7 @@ StorePikachuCollisionDirection:
 .store_direction
 	ld a, c
 	and b
-	ld [wd433], a
+	ld [wPikachuCollisionDirection], a
 	ld a, c
 	inc l
 	inc l

@@ -13,7 +13,7 @@ SummerBeachHouse_TextPointers:
 
 SummerBeachHouseSurfinDudeText:
 	text_asm
-	ld a, [wd471]
+	ld a, [wPikachuStatusFlags]
 	vc_patch Bypass_need_Pikachu_with_Surf_for_minigame
 IF DEF (_YELLOW_VC)
 	bit 7, a
@@ -26,7 +26,7 @@ ENDC
 	call PrintText
 	jr .done
 .next
-	ld hl, wd492
+	ld hl, wPikachuInteractionFlags
 	bit 0, [hl]
 	set 0, [hl]
 	jr nz, .next2
@@ -43,7 +43,7 @@ ENDC
 	ld a, 1
 	ld [wDoNotWaitForButtonPressAfterDisplayingText], a
 	farcall SurfingPikachuMinigame
-	ld hl, wd492
+	ld hl, wPikachuInteractionFlags
 	set 1, [hl]
 	jr .done
 .declined
@@ -81,7 +81,7 @@ SummerBeachHousePikachuText:
 SummerBeachHousePoster1Text:
 	text_asm
 	ld hl, .SummerBeachHousePoster1Text2
-	ld a, [wd471]
+	ld a, [wPikachuStatusFlags]
 	bit 6, a
 	jr z, .next
 	ld hl, .SummerBeachHousePoster1Text1
@@ -99,7 +99,7 @@ SummerBeachHousePoster1Text:
 SummerBeachHousePoster2Text:
 	text_asm
 	ld hl, .SummerBeachHousePoster2Text2
-	ld a, [wd471]
+	ld a, [wPikachuStatusFlags]
 	bit 6, a
 	jr z, .next
 	ld hl, .SummerBeachHousePoster2Text1
@@ -117,7 +117,7 @@ SummerBeachHousePoster2Text:
 SummerBeachHousePoster3Text:
 	text_asm
 	ld hl, .SummerBeachHousePoster3Text2
-	ld a, [wd471]
+	ld a, [wPikachuStatusFlags]
 	bit 6, a
 	jr z, .next
 	ld hl, .SummerBeachHousePoster3Text1
@@ -136,7 +136,7 @@ SummerBeachHousePrinterText:
 	text_asm
 	ld a, 1
 	ld [wDoNotWaitForButtonPressAfterDisplayingText], a
-	ld a, [wd471]
+	ld a, [wPikachuStatusFlags]
 	vc_patch Bypass_need_Pikachu_with_Surf_for_high_score
 IF DEF(_YELLOW_VC)
 	bit 7, a
@@ -146,7 +146,7 @@ ENDC
 	vc_patch_end
 	jr z, .not_available
 
-	ld hl, wd492
+	ld hl, wPikachuInteractionFlags
 	bit 1, [hl]
 	jr z, .next2
 	ld a, 0
@@ -154,7 +154,7 @@ ENDC
 .next2
 	ld hl, .SummerBeachHousePrinterText2
 	call PrintText
-	ld a, [wd492]
+	ld a, [wPikachuInteractionFlags]
 	bit 1, a
 	jr z, .done
 

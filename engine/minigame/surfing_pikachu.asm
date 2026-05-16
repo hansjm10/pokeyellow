@@ -85,7 +85,7 @@ SurfingPikachuLoop:
 	ret
 
 SurfingPikachu_CheckPressedSelect:
-	ld hl, wd492
+	ld hl, wPikachuInteractionFlags
 	bit 1, [hl]
 	ret z
 	ldh a, [hJoyPressed]
@@ -96,14 +96,14 @@ UnusedSurfingMinigameToggleStartFlag:
 	ldh a, [hJoyPressed]
 	and PAD_START
 	ret z
-	ld hl, wc5e2
+	ld hl, wUnusedSurfingMinigameStartFlag
 	ld a, [hl]
 	xor $1
 	ld [hl], a
 	ret
 
 SurfingMinigame_UpdateMusicTempo:
-	ld a, [wc634]
+	ld a, [wSurfingMinigameMusicTempoActive]
 	and a
 	ret z
 
@@ -408,11 +408,11 @@ SurfingMinigameRoutine_SpawnPikachu:
 	ld hl, wSurfingMinigameRoutineNumber
 	inc [hl]
 	ld a, $1
-	ld [wc634], a
+	ld [wSurfingMinigameMusicTempoActive], a
 	ret
 
 SurfingMinigame_RunGame:
-	ld a, [wc5e5]
+	ld a, [wSurfingMinigamePikachuDistance]
 	cp $18
 	jr nc, .finished_course
 	ld hl, wSurfingMinigamePikachuHP
@@ -421,7 +421,7 @@ SurfingMinigame_RunGame:
 	and a
 	jr z, .dead
 	call Random
-	ld [wc5d5], a
+	ld [wSurfingMinigameWaveRandomByte], a
 	call SurfingMinigame_UpdateLYOverrides
 	call SurfingMinigame_SetPikachuHeight
 	call SurfingMinigame_ReadBGMapBuffer
@@ -435,18 +435,18 @@ SurfingMinigame_RunGame:
 	ld hl, wSurfingMinigameRoutineNumber
 	inc [hl]
 	xor a
-	ld [wc634], a
+	ld [wSurfingMinigameMusicTempoActive], a
 	ld a, 192
 	ld [wSurfingMinigameRoutineDelay], a
 	ret
 
 .dead
 	ld a, $1
-	ld [wc630], a
+	ld [wSurfingMinigameGameOver], a
 	ld a, $c
 	ld [wSurfingMinigameRoutineNumber], a
 	ld a, $80
-	ld [wc631], a
+	ld [wSurfingMinigameGameOverTimer], a
 	ld a, $b
 	lb de, $88, $58
 	call SpawnAnimatedObject
@@ -460,14 +460,14 @@ SurfingMinigame_RunGame:
 	add hl, bc
 	ld [hl], $30
 	xor a
-	ld [wc634], a
+	ld [wSurfingMinigameMusicTempoActive], a
 	ret
 
 SurfingMinigame_WaitBeforeResults:
 	call SurfingMinigame_RunDelayTimer
 	jr c, .done_delay
 	xor a
-	ld [wc5d5], a
+	ld [wSurfingMinigameWaveRandomByte], a
 	call SurfingMinigame_UpdateLYOverrides
 	call SurfingMinigame_SetPikachuHeight
 	call SurfingMinigame_ReadBGMapBuffer
@@ -483,7 +483,7 @@ SurfingMinigame_WaitBeforeResults:
 	ld a, $72
 	ld [wSurfingMinigameWaveFunctionNumber], a
 	ld a, $4
-	ld [wc5d2], a
+	ld [wSurfingMinigamePikachuState], a
 	xor a
 	ldh [hLCDCPointer], a
 	ld [wSurfingMinigameSCX], a
@@ -516,7 +516,7 @@ SurfingMinigame_ScrollToResultsScreen:
 	ld hl, wSurfingMinigameRoutineNumber
 	inc [hl]
 	ld a, $5
-	ld [wc5d2], a
+	ld [wSurfingMinigamePikachuState], a
 	ret
 
 SurfingMinigame_DrawResultsScreenAndWait:
@@ -587,7 +587,7 @@ SurfingMinigame_AddRadnessToTotalAndWait:
 	ret nc
 	call SurfingMinigame_PrintTextHiScore
 	ld a, $6
-	ld [wc5d2], a
+	ld [wSurfingMinigamePikachuState], a
 	ret
 
 SurfingMinigame_WaitLast:
@@ -612,7 +612,7 @@ SurfingMinigame_GameOver:
 	call SurfingMinigame_ReadBGMapBuffer
 	call SurfingMinigame_ScrollAndGenerateBGMap
 	call SurfingMinigame_ResetMusicTempo
-	ld hl, wc631
+	ld hl, wSurfingMinigameGameOverTimer
 	ld a, [hl]
 	and a
 	jr z, .wait_press_a
@@ -641,9 +641,9 @@ SurfingMinigame_RunDelayTimer:
 	ret
 
 SurfingMinigame_UpdatePikachuDistance:
-	ld a, [wc5e5 + 1]
+	ld a, [wSurfingMinigamePikachuDistance + 1]
 	ld h, a
-	ld a, [wc5e5 + 2]
+	ld a, [wSurfingMinigamePikachuDistance + 2]
 	ld l, a
 	ld a, [wSurfingMinigamePikachuSpeed]
 	ld e, a
@@ -651,11 +651,11 @@ SurfingMinigame_UpdatePikachuDistance:
 	ld d, a
 	add hl, de
 	ld a, h
-	ld [wc5e5 + 1], a
+	ld [wSurfingMinigamePikachuDistance + 1], a
 	ld a, l
-	ld [wc5e5 + 2], a
+	ld [wSurfingMinigamePikachuDistance + 2], a
 	ret nc
-	ld hl, wc5e5
+	ld hl, wSurfingMinigamePikachuDistance
 	inc [hl]
 	ld hl, wShadowOAMSprite04XCoord
 	dec [hl]
@@ -663,7 +663,7 @@ SurfingMinigame_UpdatePikachuDistance:
 	ret
 
 SurfingMinigameAnimatedObjectFn_Pikachu:
-	ld a, [wc5d2]
+	ld a, [wSurfingMinigamePikachuState]
 	ld e, a
 	ld d, $0
 	ld hl, SurfingMinigamePikachuStatePointers
@@ -684,7 +684,7 @@ SurfingMinigamePikachuStatePointers:
 	dw SurfingMinigamePikachuState_ResultsBounce
 
 SurfingMinigamePikachuState_Riding:
-	ld a, [wc630]
+	ld a, [wSurfingMinigameGameOver]
 	and a
 	jr nz, .game_over
 	call SurfingMinigame_SpawnWaveSplash
@@ -701,7 +701,7 @@ SurfingMinigamePikachuState_Riding:
 .splash
 	call SurfingMinigame_UpdatePikachuFrameForWave
 	ld a, $1 ; on a wave
-	ld [wc5d2], a
+	ld [wSurfingMinigamePikachuState], a
 	xor a
 	ld hl, ANIM_OBJ_FIELD_C
 	add hl, bc
@@ -725,7 +725,7 @@ SurfingMinigamePikachuState_Riding:
 	ld [wSurfingMinigamePikachuSpeed], a
 	ld [wSurfingMinigamePikachuSpeed + 1], a
 	ld a, $4
-	ld [wc5d2], a
+	ld [wSurfingMinigamePikachuState], a
 	call SurfingMinigame_UpdatePikachuFrameForWave
 	ret
 
@@ -740,14 +740,14 @@ SurfingMinigame_ScoreCurrentWave:
 	add hl, bc
 	ld [hl], $0
 	ld a, $2
-	ld [wc5d2], a
+	ld [wSurfingMinigamePikachuState], a
 	ret
 
 .splash
 	ld a, $3
-	ld [wc5d2], a
+	ld [wSurfingMinigamePikachuState], a
 	ld a, $60
-	ld [wc5e1], a
+	ld [wSurfingMinigamePikachuCrashTimer], a
 	ld a, $10
 	call SetCurrentAnimatedObjectCallbackAndResetFrameStateRegisters
 	xor a
@@ -783,11 +783,11 @@ SurfingMinigamePikachuState_LandingBounce:
 	add hl, bc
 	ld [hl], $0
 	ld a, $0
-	ld [wc5d2], a
+	ld [wSurfingMinigamePikachuState], a
 	ret
 
 SurfingMinigamePikachuState_Crash:
-	ld hl, wc5e1
+	ld hl, wSurfingMinigamePikachuCrashTimer
 	ld a, [hl]
 	and a
 	jr z, .done
@@ -800,7 +800,7 @@ SurfingMinigamePikachuState_Crash:
 
 .done
 	ld a, $0
-	ld [wc5d2], a
+	ld [wSurfingMinigamePikachuState], a
 	ld a, $4
 	call SetCurrentAnimatedObjectCallbackAndResetFrameStateRegisters
 	ret
@@ -1100,7 +1100,7 @@ SurfingMinigame_CheckWaveLaunch:
 	call SufingMinigame_GetSpeedDividedBy32
 	cp $a
 	jr c, .no_launch
-	ld [wc5ec], a
+	ld [wSurfingMinigamePikachuJumpVelocityHigh], a
 	call SurfingMinigame_ResetPikachuJumpArc
 	scf
 	ret
@@ -1138,7 +1138,7 @@ SurfingMinigame_UpdatePikachuFrameForWave:
 	ld a, $2
 .apply_wave_frame
 	ld e, a
-	ld a, [wc5de]
+	ld a, [wSurfingMinigamePikachuFrameOffset]
 	dec a
 	add e
 	ld hl, ANIM_OBJ_FRAME_SET
@@ -1147,37 +1147,37 @@ SurfingMinigame_UpdatePikachuFrameForWave:
 	ret
 
 SurfingMinigame_UpdateNeutralSurfFrame:
-	ld hl, wc5e0
+	ld hl, wSurfingMinigamePikachuFrameTimer
 	ld a, [hl]
 	inc [hl]
 	and $7
 	ret nz
-	ld a, [wc5df]
+	ld a, [wSurfingMinigamePikachuFrameDirection]
 	and a
 	jr z, .increasing
-	ld a, [wc5de]
+	ld a, [wSurfingMinigamePikachuFrameOffset]
 	and a
 	jr z, .switch_to_increasing
 	dec a
-	ld [wc5de], a
+	ld [wSurfingMinigamePikachuFrameOffset], a
 	ret
 
 .switch_to_increasing
 	xor a
-	ld [wc5df], a
+	ld [wSurfingMinigamePikachuFrameDirection], a
 	ret
 
 .increasing
-	ld a, [wc5de]
+	ld a, [wSurfingMinigamePikachuFrameOffset]
 	cp $2
 	jr z, .switch_to_decreasing
 	inc a
-	ld [wc5de], a
+	ld [wSurfingMinigamePikachuFrameOffset], a
 	ret
 
 .switch_to_decreasing
 	ld a, $1
-	ld [wc5df], a
+	ld [wSurfingMinigamePikachuFrameDirection], a
 	ret
 
 SufingMinigame_GetSpeedDividedBy32:
@@ -1192,7 +1192,7 @@ SufingMinigame_GetSpeedDividedBy32:
 	ret
 
 SurfingMinigame_SpawnWaveSplash:
-	ld hl, wc5eb
+	ld hl, wSurfingMinigameWaveSplashTimer
 	ld a, [hl]
 	inc [hl]
 	and $3
@@ -1302,7 +1302,7 @@ SurfingMinigameAnimatedObjectFn_IntroAnimationPikachu:
 	ret
 
 SurfingMinigame_MoveClouds:
-	ld a, [wc635]
+	ld a, [wSurfingMinigameCloudScrollSubpixel]
 	ld e, a
 	ld d, $0
 	ld a, [wSurfingMinigamePikachuSpeed]
@@ -1311,7 +1311,7 @@ SurfingMinigame_MoveClouds:
 	ld h, a
 	add hl, de
 	ld a, l
-	ld [wc635], a
+	ld [wSurfingMinigameCloudScrollSubpixel], a
 	ld d, h
 	ld hl, wShadowOAMSprite05XCoord
 	ld e, $9
@@ -2115,7 +2115,7 @@ SurfingMinigameWaveFunctionPointers:
 	dw SurfingMinigameWaveFunction_ResetType74 ; 7b
 
 SurfingMinigameWaveFunction_NoWave:
-	ld a, [wc5e5]
+	ld a, [wSurfingMinigamePikachuDistance]
 	cp $16
 	jr c, .check_param
 	jr z, .big_kahuna
@@ -2125,7 +2125,7 @@ SurfingMinigameWaveFunction_NoWave:
 	jr .got_next_fn
 
 .check_param
-	ld a, [wc5d5]
+	ld a, [wSurfingMinigameWaveRandomByte]
 	and a
 	jr z, .got_wave
 	dec a
@@ -2543,27 +2543,27 @@ SurfingPikachu_ClearTileMap:
 
 SurfingMinigame_ResetPikachuJumpArc:
 	xor a
-	ld [wc5ed], a
-	ld [wc5ee], a
+	ld [wSurfingMinigamePikachuJumpDescending], a
+	ld [wSurfingMinigamePikachuJumpVelocityLow], a
 	ret
 
 SurfingMinigame_UpdatePikachuHeight:
-	ld a, [wc5ed]
+	ld a, [wSurfingMinigamePikachuJumpDescending]
 	and a
 	jr nz, .positive
-	ld a, [wc5ec]
+	ld a, [wSurfingMinigamePikachuJumpVelocityHigh]
 	ld d, a
-	ld a, [wc5ee]
+	ld a, [wSurfingMinigamePikachuJumpVelocityLow]
 	or d
 	jr z, .done
-	ld a, [wc5ee]
+	ld a, [wSurfingMinigamePikachuJumpVelocityLow]
 	ld e, a
 	ld hl, -$80
 	add hl, de
 	ld a, l
-	ld [wc5ee], a
+	ld [wSurfingMinigamePikachuJumpVelocityLow], a
 	ld a, h
-	ld [wc5ec], a
+	ld [wSurfingMinigamePikachuJumpVelocityHigh], a
 
 	; -(4 * a ** 2)
 	ld e, a
@@ -2605,7 +2605,7 @@ SurfingMinigame_UpdatePikachuHeight:
 
 .done
 	ld a, $1
-	ld [wc5ed], a
+	ld [wSurfingMinigamePikachuJumpDescending], a
 	and a
 	ret
 
@@ -2620,16 +2620,16 @@ SurfingMinigame_UpdatePikachuHeight:
 	cp e
 	jr nc, .reset
 .okay
-	ld a, [wc5ec]
+	ld a, [wSurfingMinigamePikachuJumpVelocityHigh]
 	ld d, a
-	ld a, [wc5ee]
+	ld a, [wSurfingMinigamePikachuJumpVelocityLow]
 	ld e, a
 	ld hl, $80
 	add hl, de
 	ld a, l
-	ld [wc5ee], a
+	ld [wSurfingMinigamePikachuJumpVelocityLow], a
 	ld a, h
-	ld [wc5ec], a
+	ld [wSurfingMinigamePikachuJumpVelocityHigh], a
 
 	; 4 * a ** 2
 	ld e, a

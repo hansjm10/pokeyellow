@@ -15,12 +15,12 @@ CeruleanMelanieHouseMelanieText:
 	ld [wDoNotWaitForButtonPressAfterDisplayingText], a
 	CheckEvent EVENT_GOT_BULBASAUR_IN_CERULEAN
 	jr nz, .already_got_bulbasaur
-	ld hl, CeruleanHouse1Text_1cfc8
+	ld hl, MelanieIntroText
 	call PrintText
 	ld a, [wPikachuHappiness]
 	cp 147
 	jr c, .done
-	ld hl, CeruleanHouse1Text_1cfce
+	ld hl, MelanieOfferBulbasaurText
 	call PrintText
 	call YesNoChoice
 	ld a, [wCurrentMenuItem]
@@ -42,7 +42,7 @@ CeruleanMelanieHouseMelanieText:
 	call z, WaitForTextScrollButtonPress
 	ld a, $1
 	ld [wDoNotWaitForButtonPressAfterDisplayingText], a
-	ld hl, CeruleanHouse1Text_1cfd3
+	ld hl, MelanieGaveBulbasaurText
 	call PrintText
 	ld a, TOGGLE_CERULEAN_BULBASAUR
 	ld [wToggleableObjectIndex], a
@@ -52,35 +52,35 @@ CeruleanMelanieHouseMelanieText:
 	jp TextScriptEnd
 
 .declined_bulbasaur
-	ld hl, CeruleanHouse1Text_1cfdf
+	ld hl, MelanieDeclinedBulbasaurText
 	call PrintText
 	jp TextScriptEnd
 
 .already_got_bulbasaur
-	ld hl, CeruleanHouse1Text_1cfd9
+	ld hl, MelanieBulbasaurDoingWellText
 	call PrintText
 	jp TextScriptEnd
 
-CeruleanHouse1Text_1cfc8:
+MelanieIntroText:
 	text_far MelanieText1
 	text_waitbutton
 	text_end
 
-CeruleanHouse1Text_1cfce:
+MelanieOfferBulbasaurText:
 	text_far MelanieText2
 	text_end
 
-CeruleanHouse1Text_1cfd3:
+MelanieGaveBulbasaurText:
 	text_far MelanieText3
 	text_waitbutton
 	text_end
 
-CeruleanHouse1Text_1cfd9:
+MelanieBulbasaurDoingWellText:
 	text_far MelanieText4
 	text_waitbutton
 	text_end
 
-CeruleanHouse1Text_1cfdf:
+MelanieDeclinedBulbasaurText:
 	text_far MelanieText5
 	text_waitbutton
 	text_end

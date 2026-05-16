@@ -4,7 +4,7 @@ CinnabarGymPrintQuizTextScript:
 
 ResetCinnabarGymWrongAnswerFlag:
 	push hl
-	ld hl, wd474
+	ld hl, wCinnabarGymQuizFlags
 	bit 7, [hl]
 	res 7, [hl]
 	pop hl
@@ -12,7 +12,7 @@ ResetCinnabarGymWrongAnswerFlag:
 
 CheckCinnabarGymWrongAnswerPending:
 	push hl
-	ld hl, wd474
+	ld hl, wCinnabarGymQuizFlags
 	bit 7, [hl]
 	pop hl
 	ret

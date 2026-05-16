@@ -1,6 +1,6 @@
 PewterCity_Script:
 	call EnableAutoTextBoxDrawing
-	ld hl, wd492
+	ld hl, wPikachuInteractionFlags
 	res 7, [hl]
 	ld hl, PewterCity_ScriptPointers
 	ld a, [wPewterCityCurScript]

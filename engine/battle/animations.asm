@@ -16,7 +16,7 @@ DrawFrameBlock:
 	inc a
 	ld [wFBTileCounter], a
 	ld a, $2
-	ld [wdef4], a
+	ld [wOAMAttributesTemp], a
 	ld a, [wSubAnimTransform]
 	dec a
 	jr z, .flipHorizontalAndVertical   ; SUBANIMTYPE_HVFLIP
@@ -50,9 +50,9 @@ DrawFrameBlock:
 	ld [de], a ; store X
 	cp 88
 	jr c, .store_tile_no_transform
-	ld a, [wdef4]
+	ld a, [wOAMAttributesTemp]
 	inc a
-	ld [wdef4], a
+	ld [wOAMAttributesTemp], a
 .store_tile_no_transform
 	inc hl
 	inc de
@@ -62,7 +62,7 @@ DrawFrameBlock:
 	inc de
 	ld a, [hli]
 	ld b, a
-	ld a, [wdef4]
+	ld a, [wOAMAttributesTemp]
 	or b
 	ld [de], a ; store flags
 	inc de
@@ -84,9 +84,9 @@ DrawFrameBlock:
 	ld [de], a ; store X
 	cp 88
 	jr c, .store_tile_hvflip
-	ld a, [wdef4]
+	ld a, [wOAMAttributesTemp]
 	inc a
-	ld [wdef4], a
+	ld [wOAMAttributesTemp], a
 .store_tile_hvflip
 	inc hl
 	inc de
@@ -107,7 +107,7 @@ DrawFrameBlock:
 	jr z, .storeFlags1
 	ld b, 0
 .storeFlags1
-	ld a, [wdef4]
+	ld a, [wOAMAttributesTemp]
 	or b
 	ld [de], a
 	inc de
@@ -127,9 +127,9 @@ DrawFrameBlock:
 	ld [de], a ; store X
 	cp 88
 	jr c, .store_tile_hflip
-	ld a, [wdef4]
+	ld a, [wOAMAttributesTemp]
 	inc a
-	ld [wdef4], a
+	ld [wOAMAttributesTemp], a
 .store_tile_hflip
 	inc hl
 	inc de
@@ -147,7 +147,7 @@ DrawFrameBlock:
 	res B_OAM_XFLIP, a
 .storeFlags2
 	ld b, a
-	ld a, [wdef4]
+	ld a, [wOAMAttributesTemp]
 	or b
 	ld [de], a
 	inc de
@@ -1186,14 +1186,14 @@ _AnimationWaterDroplets:
 	ld hl, wShadowOAM
 .loop
 	ld a, $1
-	ld [wdef4], a
+	ld [wOAMAttributesTemp], a
 	ld a, [wBaseCoordY]
 	ld [hli], a ; Y
 	cp 40
 	jr c, .got_y_attribute
-	ld a, [wdef4]
+	ld a, [wOAMAttributesTemp]
 	inc a
-	ld [wdef4], a
+	ld [wOAMAttributesTemp], a
 .got_y_attribute
 	ld a, [wBaseCoordX]
 	add 27
@@ -1201,14 +1201,14 @@ _AnimationWaterDroplets:
 	ld [hli], a ; X
 	cp 88
 	jr c, .got_x_attribute
-	ld a, [wdef4]
+	ld a, [wOAMAttributesTemp]
 	add $2
 	and $3
-	ld [wdef4], a
+	ld [wOAMAttributesTemp], a
 .got_x_attribute
 	ld a, [wDropletTile]
 	ld [hli], a ; tile
-	ld a, [wdef4]
+	ld a, [wOAMAttributesTemp]
 	ld [hli], a ; attribute
 	ld a, [wBaseCoordX]
 	cp 144
@@ -1353,28 +1353,28 @@ BattleAnimWriteOAMEntry:
 ; tile = d
 ; attributes = variable (depending on coords)
 	ld a, $1
-	ld [wdef4], a
+	ld [wOAMAttributesTemp], a
 	ld a, e
 	add 8
 	ld e, a
 	ld [hli], a
 	cp 40
 	jr c, .got_y_attribute
-	ld a, [wdef4]
+	ld a, [wOAMAttributesTemp]
 	inc a
-	ld [wdef4], a
+	ld [wOAMAttributesTemp], a
 .got_y_attribute
 	ld a, [wBaseCoordX]
 	ld [hli], a
 	cp 88
 	jr c, .got_x_attribute
-	ld a, [wdef4]
+	ld a, [wOAMAttributesTemp]
 	add $2
-	ld [wdef4], a
+	ld [wOAMAttributesTemp], a
 .got_x_attribute
 	ld a, d
 	ld [hli], a
-	ld a, [wdef4]
+	ld a, [wOAMAttributesTemp]
 	ld [hli], a
 	ret
 
@@ -1580,7 +1580,7 @@ AnimationSpiralBallsInward:
 	cp $ff
 	jr z, .done
 	ld a, $2
-	ld [wdef4], a
+	ld [wOAMAttributesTemp], a
 	ld a, [wSpiralBallsBaseY]
 	add [hl]
 	ld [de], a ; Y
@@ -1592,7 +1592,7 @@ AnimationSpiralBallsInward:
 	cp 88
 	jr c, .got_attribute
 	ld a, $3
-	ld [wdef4], a
+	ld [wOAMAttributesTemp], a
 .got_attribute
 	inc hl
 	inc de
@@ -1600,7 +1600,7 @@ AnimationSpiralBallsInward:
 	ld a, [de]
 	and $f0
 	ld b, a
-	ld a, [wdef4]
+	ld a, [wOAMAttributesTemp]
 	or b
 	ld [de], a
 	inc de
@@ -2534,7 +2534,7 @@ FallingObjects_UpdateOAMEntry:
 	ld hl, wShadowOAM
 	add hl, de
 	ld a, $1
-	ld [wdef4], a
+	ld [wOAMAttributesTemp], a
 	ld a, [hl]
 	inc a
 	inc a
@@ -2545,9 +2545,9 @@ FallingObjects_UpdateOAMEntry:
 	ld [hli], a ; Y
 	cp 40
 	jr c, .got_y_attribute
-	ld a, [wdef4]
+	ld a, [wOAMAttributesTemp]
 	inc a
-	ld [wdef4], a
+	ld [wOAMAttributesTemp], a
 .got_y_attribute
 	ld a, [wFallingObjectMovementByte]
 	ld b, a
@@ -2567,10 +2567,10 @@ FallingObjects_UpdateOAMEntry:
 	ld [hli], a ; X
 	cp 88
 	jr c, .got_right_x_attribute
-	ld a, [wdef4]
+	ld a, [wOAMAttributesTemp]
 	add $2
 	and $3
-	ld [wdef4], a
+	ld [wOAMAttributesTemp], a
 .got_right_x_attribute
 	inc hl
 	xor a ; no horizontal flip
@@ -2583,16 +2583,16 @@ FallingObjects_UpdateOAMEntry:
 	ld [hli], a ; X
 	cp 88
 	jr c, .got_left_x_attribute
-	ld a, [wdef4]
+	ld a, [wOAMAttributesTemp]
 	add $2
 	and $3
-	ld [wdef4], a
+	ld [wOAMAttributesTemp], a
 .got_left_x_attribute
 	inc hl
 	ld a, OAM_XFLIP
 .next2
 	ld b, a
-	ld a, [wdef4]
+	ld a, [wOAMAttributesTemp]
 	or b
 	ld [hl], a ; attribute
 	ret
