@@ -10,6 +10,9 @@ It builds the following ROMs:
 
 To set up the repository, see [**INSTALL.md**](INSTALL.md).
 
+For development workflow, editor setup, and contribution guidelines, see
+[**CONTRIBUTING.md**](CONTRIBUTING.md).
+
 
 ## See also
 
