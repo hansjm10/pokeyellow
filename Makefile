@@ -59,6 +59,8 @@ RGBGFXFLAGS  ?= -Weverything
 	clean \
 	tidy \
 	compare \
+	docs \
+	check-docs \
 	tools \
 	unnamed
 
@@ -103,6 +105,12 @@ unnamed:
 	$(MAKE) DEBUG=1 pokeyellow.gbc
 	$(PYTHON) tools/unnamed.py -r . -l $(UNNAMED_LIST) pokeyellow.sym
 
+docs:
+	$(PYTHON) tools/generate_navigation_docs.py
+
+check-docs:
+	$(PYTHON) tools/generate_navigation_docs.py --check
+
 
 RGBASMFLAGS += -Q8 -P includes.asm
 # Create a sym/map for debug purposes if `make` run with `DEBUG=1`
@@ -121,7 +129,7 @@ rgbdscheck.o: rgbdscheck.asm
 
 # Build tools when building the rom.
 # This has to happen before the rules are processed, since that's when scan_includes is run.
-ifeq (,$(filter clean tidy tools,$(MAKECMDGOALS)))
+ifeq (,$(filter clean tidy tools docs check-docs,$(MAKECMDGOALS)))
 
 $(info $(shell $(MAKE) -C tools))
 

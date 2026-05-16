@@ -27,6 +27,8 @@ Common wrapper commands:
 .\build.ps1 yellow_debug   # build pokeyellow_debug.gbc only
 .\build.ps1 yellow_vc      # build pokeyellow.patch
 .\build.ps1 unnamed        # list remaining auto-named symbols
+.\build.ps1 docs           # regenerate navigation docs
+.\build.ps1 check-docs     # verify generated navigation docs are current
 .\build.ps1 clean          # remove generated build outputs
 .\build.ps1 shell          # open a shell in the Docker build environment
 ```
@@ -71,7 +73,7 @@ repository.
 | [audio/](audio/) | Music, sound effects, cries, and audio engine data. |
 | [constants/](constants/) | Numeric IDs, hardware constants, and shared symbolic values. |
 | [data/](data/) | Structured game data: Pokemon, moves, maps, trainers, items, text pointers, and tables. |
-| [docs/](docs/) | Project notes and documented bugs or glitches. |
+| [docs/](docs/) | Project notes, generated navigation indexes, and documented bugs or glitches. |
 | [engine/](engine/) | Banked game logic grouped by feature area. |
 | [gfx/](gfx/) | Source graphics, tilemaps, blocksets, and generated graphics includes. |
 | [home/](home/) | Home-bank routines and helpers that are broadly reachable. |
@@ -107,6 +109,27 @@ files are build outputs.
 
 For RAM names or layout changes, start in [ram/](ram/) and search for all reads
 and writes before renaming or resizing anything.
+
+## Navigation Docs
+
+The generated navigation docs in [docs/](docs/) are meant to make common edit
+paths easier to follow. Regenerate them after changing source tables for
+Pokemon, moves, trainers, or RAM layouts:
+
+```sh
+make docs
+make check-docs
+```
+
+On Windows with Docker:
+
+```powershell
+.\build.ps1 docs
+.\build.ps1 check-docs
+```
+
+[docs/map_index.md](docs/map_index.md) is maintained separately. Update it when
+map source tables change.
 
 ## Matching Builds
 

@@ -132,6 +132,42 @@
       "problemMatcher": []
     },
     {
+      "label": "pokeyellow: generate docs",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "${workspaceFolder}/build.ps1",
+        "docs"
+      ],
+      "presentation": {
+        "clear": true,
+        "reveal": "always"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "pokeyellow: check docs",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "${workspaceFolder}/build.ps1",
+        "check-docs"
+      ],
+      "presentation": {
+        "clear": true,
+        "reveal": "always"
+      },
+      "problemMatcher": []
+    },
+    {
       "label": "pokeyellow: docker shell",
       "type": "shell",
       "command": "powershell",

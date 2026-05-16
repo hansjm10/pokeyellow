@@ -20,6 +20,8 @@ The script builds the local Docker image the first time it runs, then forwards a
 .\build.ps1 clean
 .\build.ps1 yellow
 .\build.ps1 unnamed
+.\build.ps1 docs
+.\build.ps1 check-docs
 ```
 
 
