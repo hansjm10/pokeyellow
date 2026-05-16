@@ -1812,9 +1812,9 @@ SendOutMon:
 	callfar StarterPikachuBattleEntranceAnimation
 	callfar IsPlayerPikachuAsleepInParty
 	ldpikacry e, PikachuCry37
-	jr c, .asm_3cd81
+	jr c, .play_pikachu_cry
 	ldpikacry e, PikachuCry11
-.asm_3cd81
+.play_pikachu_cry
 	callfar PlayPikachuSoundClip
 	jr .done
 .playRegularCry
@@ -2720,11 +2720,11 @@ SelectMenuItem:
 	jp nz, SwapMovesInMenu
 IF DEF(_DEBUG)
 	bit B_PAD_START, a
-	jp nz, Func_3d4f5
+	jp nz, TestBattlePlaySelectedMoveAnimation
 	bit B_PAD_RIGHT, a
-	jp nz, Func_3d529
+	jp nz, TestBattleSelectNextMove
 	bit B_PAD_LEFT, a
-	jp nz, Func_3d523
+	jp nz, TestBattleSelectPreviousMove
 ENDC
 	bit B_PAD_B, a
 	push af
@@ -2821,18 +2821,18 @@ SelectMenuItem_CursorDown:
 	ld [wCurrentMenuItem], a
 	jp SelectMenuItem
 
-Func_3d4f5:
+TestBattlePlaySelectedMoveAnimation:
 IF DEF(_DEBUG)
 	ASSERT B_PAD_START == BIT_TRAINER_BATTLE
 ENDC
 	bit BIT_TRAINER_BATTLE, a
 	ld a, $0
-	jr nz, .asm_3d4fd
+	jr nz, .player_turn
 	ld a, $1
-.asm_3d4fd
+.player_turn
 	ldh [hWhoseTurn], a
 	call LoadScreenTilesFromBuffer1
-	call Func_3d536
+	call TestBattlePrintSelectedMove
 	ld a, [wTestBattlePlayerSelectedMove]
 	and a
 	jp z, MoveSelectionMenu
@@ -2840,22 +2840,22 @@ ENDC
 	xor a
 	ld [wAnimationType], a
 	predef MoveAnimation
-	callfar Func_78e98
+	callfar RestoreScreenAfterBattleAnimation
 	jp MoveSelectionMenu
 
-Func_3d523:
+TestBattleSelectPreviousMove:
 	ld a, [wTestBattlePlayerSelectedMove]
 	dec a
-	jr asm_3d52d
-Func_3d529:
+	jr TestBattleSetSelectedMove
+TestBattleSelectNextMove:
 	ld a, [wTestBattlePlayerSelectedMove]
 	inc a
-asm_3d52d:
+TestBattleSetSelectedMove:
 	ld [wTestBattlePlayerSelectedMove], a
-	call Func_3d536
+	call TestBattlePrintSelectedMove
 	jp MoveSelectionMenu
 
-Func_3d536:
+TestBattlePrintSelectedMove:
 	hlcoord 10, 16
 	lb bc, 2, 10
 	call ClearScreenArea
@@ -2927,7 +2927,7 @@ SwapMovesInMenu:
 IF DEF(_DEBUG)
 	ld a, [wStatusFlags7]
 	bit BIT_TEST_BATTLE, a
-	jp nz, Func_3d4f5
+	jp nz, TestBattlePlaySelectedMoveAnimation
 ENDC
 	ld a, [wPlayerBattleStatus3]
 	bit TRANSFORMED, a
@@ -5058,7 +5058,7 @@ AttackSubstitute:
 	ldh a, [hWhoseTurn]
 	xor $01
 	ldh [hWhoseTurn], a
-	callfar Func_79929 ; animate the substitute breaking
+	callfar AnimateSubstituteBreak
 ; flip the turn back to the way it was
 	ldh a, [hWhoseTurn]
 	xor $01
@@ -6745,7 +6745,7 @@ BattleRandom:
 	ld a, [hl]
 	pop bc
 	pop hl
-	vc_hook Unknown_BattleRandom_ret_c
+	vc_hook BattleRandom_ret_c
 	vc_patch BattleRandom_ret
 IF DEF(_YELLOW_VC)
 	ret
@@ -6821,5 +6821,5 @@ PlayMoveAnimation:
 	ld [wAnimationID], a
 	call Delay3
 	predef MoveAnimation
-	callfar Func_78e98
+	callfar RestoreScreenAfterBattleAnimation
 	ret

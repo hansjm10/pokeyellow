@@ -30,9 +30,9 @@ PalletTownDefaultScript:
 	ResetEvent EVENT_PLAYER_AT_RIGHT_EXIT_TO_PALLET_TOWN
 	ld a, [wXCoord]
 	cp 10
-	jr z, .asm_18e40
+	jr z, .left_exit
 	SetEventReuseHL EVENT_PLAYER_AT_RIGHT_EXIT_TO_PALLET_TOWN
-.asm_18e40
+.left_exit
 	xor a
 	ldh [hJoyHeld], a
 	ld a, PAD_BUTTONS | PAD_CTRL_PAD
@@ -124,9 +124,9 @@ PalletTownOakGreetsPlayerScript:
 	ld [wSprite01StateData1MovementStatus], a
 	CheckEvent EVENT_PLAYER_AT_RIGHT_EXIT_TO_PALLET_TOWN
 	ld a, SPRITE_FACING_RIGHT
-	jr z, .asm_18f01
+	jr z, .set_oak_facing
 	ld a, SPRITE_FACING_LEFT
-.asm_18f01
+.set_oak_facing
 	ld [wSprite01StateData1FacingDirection], a
 
 	; trigger the next script

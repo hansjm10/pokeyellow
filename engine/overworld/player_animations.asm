@@ -38,7 +38,7 @@ EnterMapAnim::
 .restoreDefaultMusic
 	call PlayDefaultMusic
 .done
-	call Func_151d
+	call ShowPikachuAfterMapTransition
 	jp RestoreFacingDirectionAndYScreenPos
 .dungeonWarpAnimation
 	ld c, 50
@@ -94,7 +94,7 @@ PlayerSpinWhileMovingDown:
 
 
 _LeaveMapAnim::
-	call Func_1510
+	call HidePikachuForMapTransition
 	call InitFacingDirectionList
 	call IsPlayerStandingOnWarpPadOrHole
 	ld a, b

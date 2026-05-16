@@ -82,7 +82,7 @@ TestBattle: ; unreferenced except in _DEBUG
 	set BIT_TEST_BATTLE, [hl]
 
 	ld hl, wNumBagItems
-	ld de, Data_feded
+	ld de, TestBattleBagItems
 .loop
 	ld a, [de]
 	cp -1
@@ -104,13 +104,13 @@ TestBattle: ; unreferenced except in _DEBUG
 	lb bc, 1, 18
 	call TextBoxBorder
 	hlcoord 6, 1
-	ld de, Text_fed18
+	ld de, DebugFightTestTitleText
 	call PlaceString
 	hlcoord 4, 4
-	ld de, Text_fed21
+	ld de, DebugFightTestHeaderText
 	call PlaceString
 	hlcoord 1, 6
-	ld de, Text_fed30
+	ld de, DebugFightTestPartyRowsText
 	call PlaceString
 	xor a
 	ld [wWhichPokemon], a
@@ -121,13 +121,13 @@ TestBattle: ; unreferenced except in _DEBUG
 	ld b, a
 	ld c, a
 	ld hl, wEnemyPartySpecies
-	call Func_fe809
+	call DebugTestBattle_ClearSevenBytes
 	ld hl, wPartyCount
-	call Func_fe809
+	call DebugTestBattle_ClearSevenBytes
 	ld de, wPartySpecies
 	hlcoord 4, 6
 	; fallthrough
-Func_fe7ca:
+DebugTestBattle_SelectPartySpeciesColumn:
 	push hl
 	push bc
 	dec hl
@@ -142,7 +142,7 @@ Func_fe7ca:
 	pop bc
 	pop hl
 	; fallthrough
-Func_fe7db:
+DebugTestBattle_PartySpeciesInputLoop:
 	push bc
 	push de
 	call JoypadLowSensitivity
@@ -150,22 +150,22 @@ Func_fe7db:
 	pop bc
 	ldh a, [hJoy5]
 	bit B_PAD_A, a
-	jp nz, Func_fe812
+	jp nz, DebugTestBattle_IncrementPartySpecies
 	bit B_PAD_B, a
-	jp nz, Func_fe850
+	jp nz, DebugTestBattle_DecrementPartySpecies
 	bit B_PAD_SELECT, a
 	jp nz, DebugMenu
 	bit B_PAD_START, a
-	jp nz, Func_fe97f
+	jp nz, DebugTestBattle_ValidateAndStartBattle
 	bit B_PAD_RIGHT, a
-	jp nz, Func_fe8a1
+	jp nz, DebugTestBattle_SelectPartyLevelColumn
 	bit B_PAD_UP, a
-	jp nz, Func_fe85d
+	jp nz, DebugTestBattle_MovePartySpeciesCursorUp
 	bit B_PAD_DOWN, a
-	jp nz, Func_fe880
-	jr Func_fe7db
+	jp nz, DebugTestBattle_MovePartySpeciesCursorDown
+	jr DebugTestBattle_PartySpeciesInputLoop
 
-Func_fe809:
+DebugTestBattle_ClearSevenBytes:
 	xor a
 	ld [hli], a
 	ld [hli], a
@@ -176,15 +176,15 @@ Func_fe809:
 	ld [hl], a
 	ret
 
-Func_fe812:
+DebugTestBattle_IncrementPartySpecies:
 	inc b
 	ld a, b
 	cp NUM_POKEMON_INDEXES + 1
-	jr c, Func_fe81a
+	jr c, DebugTestBattle_PrintPartySpecies
 	xor a
 	ld b, a
 	; fallthrough
-Func_fe81a:
+DebugTestBattle_PrintPartySpecies:
 	ld [de], a
 	ld [wTempByteValue], a
 	push bc
@@ -194,41 +194,41 @@ Func_fe81a:
 	call PrintNumber
 	inc hl
 	push hl
-	ld de, Text_fed9c
+	ld de, DebugFightTestBlankNumberText
 	call PlaceString
 	ld bc, hSavedMapTextPtr
 	add hl, bc
-	ld de, Text_fed9c
+	ld de, DebugFightTestBlankNumberText
 	call PlaceString
 	pop hl
 	ld a, [wNamedObjectIndex]
 	and a
-	jr nz, .asm_fe845
-	ld de, Text_feda2
-	jr .asm_fe848
-.asm_fe845
+	jr nz, .got_mon_name
+	ld de, DebugFightTestBlankNameText
+	jr .place_name
+.got_mon_name
 	call GetMonName
-.asm_fe848
+.place_name
 	call PlaceString
 	pop de
 	pop hl
 	pop bc
-	jr Func_fe7db
+	jr DebugTestBattle_PartySpeciesInputLoop
 
-Func_fe850:
+DebugTestBattle_DecrementPartySpecies:
 	dec b
 	ld a, b
 	cp OPP_ID_OFFSET + 1
-	jp c, Func_fe81a
+	jp c, DebugTestBattle_PrintPartySpecies
 	ld a, NUM_POKEMON_INDEXES
 	ld b, a
-	jp Func_fe81a
+	jp DebugTestBattle_PrintPartySpecies
 
-Func_fe85d:
+DebugTestBattle_MovePartySpeciesCursorUp:
 	ld a, [wWhichPokemon]
 	dec a
 	cp -1
-	jp z, Func_fe7db
+	jp z, DebugTestBattle_PartySpeciesInputLoop
 	ld [wWhichPokemon], a
 	dec de
 	dec hl
@@ -242,15 +242,15 @@ Func_fe85d:
 	ld [hl], a
 	inc hl
 	push hl
-	call Func_fe964
+	call DebugTestBattle_LoadSelectedPartySpeciesAndLevel
 	pop hl
-	jp Func_fe7db
+	jp DebugTestBattle_PartySpeciesInputLoop
 
-Func_fe880:
+DebugTestBattle_MovePartySpeciesCursorDown:
 	ld a, [wWhichPokemon]
 	inc a
 	cp 6
-	jp nc, Func_fe7db
+	jp nc, DebugTestBattle_PartySpeciesInputLoop
 	ld [wWhichPokemon], a
 	inc de
 	dec hl
@@ -262,11 +262,11 @@ Func_fe880:
 	ld [hl], a
 	inc hl
 	push hl
-	call Func_fe964
+	call DebugTestBattle_LoadSelectedPartySpeciesAndLevel
 	pop hl
-	jp Func_fe7db
+	jp DebugTestBattle_PartySpeciesInputLoop
 
-Func_fe8a1:
+DebugTestBattle_SelectPartyLevelColumn:
 	push hl
 	push bc
 	dec hl
@@ -279,7 +279,7 @@ Func_fe8a1:
 	pop bc
 	pop hl
 	; fallthrough
-Func_fe8b0:
+DebugTestBattle_PartyLevelInputLoop:
 	push bc
 	push de
 	call JoypadLowSensitivity
@@ -287,36 +287,36 @@ Func_fe8b0:
 	pop bc
 	ldh a, [hJoy5]
 	bit B_PAD_A, a
-	jp nz, Func_fe8d9
+	jp nz, DebugTestBattle_IncrementPartyLevel
 	bit B_PAD_B, a
-	jp nz, Func_fe902
+	jp nz, DebugTestBattle_DecrementPartyLevel
 	bit B_PAD_START, a
-	jp nz, Func_fe97f
+	jp nz, DebugTestBattle_ValidateAndStartBattle
 	bit B_PAD_LEFT, a
-	jp nz, Func_fe7ca
+	jp nz, DebugTestBattle_SelectPartySpeciesColumn
 	bit B_PAD_UP, a
-	jp nz, Func_fe912
+	jp nz, DebugTestBattle_MovePartyLevelCursorUp
 	bit B_PAD_DOWN, a
-	jp nz, Func_fe93b
-	jr Func_fe8b0
+	jp nz, DebugTestBattle_MovePartyLevelCursorDown
+	jr DebugTestBattle_PartyLevelInputLoop
 
-Func_fe8d9:
+DebugTestBattle_IncrementPartyLevel:
 	inc c
 	ld a, c
 	cp MAX_LEVEL + 1
-	jr c, Func_fe8e2
+	jr c, DebugTestBattle_PrintPartyLevel
 	ld a, 1
 	ld c, a
 	; fallthrough
-Func_fe8e2:
+DebugTestBattle_PrintPartyLevel:
 	ld a, [wWhichPokemon]
 	push de
 	ld de, wEnemyPartySpecies
 	add e
 	ld e, a
-	jr nc, .asm_fe8ee
+	jr nc, .got_level_pointer
 	inc d
-.asm_fe8ee
+.got_level_pointer
 	ld a, c
 	ld [de], a
 	push bc
@@ -328,25 +328,25 @@ Func_fe8e2:
 	pop hl
 	pop bc
 	pop de
-	jp Func_fe8b0
+	jp DebugTestBattle_PartyLevelInputLoop
 
-Func_fe902:
+DebugTestBattle_DecrementPartyLevel:
 	dec c
 	ld a, c
 	cp MAX_LEVEL + 1
-	jr nc, .asm_fe90c
+	jr nc, .wrap_to_max_level
 	and a
-	jp nz, Func_fe8e2
-.asm_fe90c
+	jp nz, DebugTestBattle_PrintPartyLevel
+.wrap_to_max_level
 	ld a, MAX_LEVEL
 	ld c, a
-	jp Func_fe8e2
+	jp DebugTestBattle_PrintPartyLevel
 
-Func_fe912:
+DebugTestBattle_MovePartyLevelCursorUp:
 	ld a, [wWhichPokemon]
 	dec a
 	cp -1
-	jp z, Func_fe8b0
+	jp z, DebugTestBattle_PartyLevelInputLoop
 	ld [wWhichPokemon], a
 	dec de
 	push hl
@@ -362,15 +362,15 @@ Func_fe912:
 	add hl, bc
 	ld a, '▶'
 	ld [hl], a
-	call Func_fe964
+	call DebugTestBattle_LoadSelectedPartySpeciesAndLevel
 	pop hl
-	jp Func_fe8b0
+	jp DebugTestBattle_PartyLevelInputLoop
 
-Func_fe93b:
+DebugTestBattle_MovePartyLevelCursorDown:
 	ld a, [wWhichPokemon]
 	inc a
 	cp 6
-	jp nc, Func_fe8b0
+	jp nc, DebugTestBattle_PartyLevelInputLoop
 	ld [wWhichPokemon], a
 	inc de
 	push hl
@@ -386,32 +386,32 @@ Func_fe93b:
 	add hl, bc
 	ld a, '▶'
 	ld [hl], a
-	call Func_fe964
+	call DebugTestBattle_LoadSelectedPartySpeciesAndLevel
 	pop hl
-	jp Func_fe8b0
+	jp DebugTestBattle_PartyLevelInputLoop
 
-Func_fe964:
+DebugTestBattle_LoadSelectedPartySpeciesAndLevel:
 	ld hl, wPartySpecies
 	ld a, [wWhichPokemon]
 	add l
 	ld l, a
-	jr nc, .asm_fe96f
+	jr nc, .got_species_pointer
 	inc h
-.asm_fe96f
+.got_species_pointer
 	ld a, [hl]
 	ld b, a
 	ld hl, wEnemyPartySpecies
 	ld a, [wWhichPokemon]
 	add l
 	ld l, a
-	jr nc, .asm_fe97c
+	jr nc, .got_level_pointer
 	inc h
-.asm_fe97c
+.got_level_pointer
 	ld a, [hl]
 	ld c, a
 	ret
 
-Func_fe97f:
+DebugTestBattle_ValidateAndStartBattle:
 	ld hl, wPartyCount
 	ld de, wEnemyPartyCount
 	xor a
@@ -422,7 +422,7 @@ Func_fe97f:
 	ld c, 6
 	xor a
 	ld [wIsInBattle], a
-.asm_fe990
+.add_party_loop
 	ld a, b
 	ld [wCurPartySpecies], a
 	ld a, [hl]
@@ -430,31 +430,31 @@ Func_fe97f:
 	inc de
 	ld a, [de]
 	and a
-	jr z, .asm_fe9ab
+	jr z, .next_party_mon
 	ld [wCurEnemyLevel], a
 	xor a
 	ld [wMonDataLocation], a
 	ld a, [wCurPartySpecies]
 	and a
-	jr z, .asm_fe9ab
+	jr z, .next_party_mon
 	call AddPartyMon
-.asm_fe9ab
+.next_party_mon
 	inc hl
 	dec c
-	jr nz, .asm_fe990
+	jr nz, .add_party_loop
 	ld b, 7
 	ld hl, wPartySpecies
 	ld de, wEnemyPartyCount
-.asm_fe9b7
+.validate_party_loop
 	inc de
 	dec b
 	jp z, TestBattle
 	ld a, [hli]
 	and a
-	jr z, .asm_fe9b7
+	jr z, .validate_party_loop
 	ld a, [de]
 	and a
-	jr z, .asm_fe9b7
+	jr z, .validate_party_loop
 	hlcoord 0, 3
 	lb bc, 15, 20
 	call ClearScreenArea
@@ -468,24 +468,24 @@ Func_fe97f:
 	call DelayFrames
 	ld a, 1
 	ld [wIsInBattle], a
-	ld de, Text_feda8
+	ld de, DebugFightTestWildMonText
 	ld a, [wGrassMons + 1]
 	cp MAX_LEVEL + 1
-	jr c, .asm_fe9fb
+	jr c, .got_battle_type_text
 	ld a, 2
 	ld [wIsInBattle], a
-	ld de, Text_fedb2
-.asm_fe9fb
+	ld de, DebugFightTestTrainerText
+.got_battle_type_text
 	hlcoord 1, 4
 	call PlaceString
 	hlcoord 1, 6
-	ld de, Text_fedbc
+	ld de, DebugFightTestOpponentHeaderText
 	call PlaceString
 	ld a, [wEnemyMon]
 	ld b, a
 	ld a, [wIsInBattle]
 	dec a
-	jr z, .asm_fea40
+	jr z, .wild_battle
 	ld a, [wTrainerClass]
 	ld [wTempByteValue], a
 	ld b, a
@@ -495,18 +495,18 @@ Func_fe97f:
 	lb bc, LEADING_ZEROES | 1, 3
 	call PrintNumber
 	hlcoord 5, 8
-	ld de, Text_fede2
+	ld de, DebugFightTestBlankNameFieldText
 	call PlaceString
 	call GetTrainerName
 	hlcoord 5, 8
 	ld de, wTrainerName
 	call PlaceString
 	pop bc
-	jr .asm_fea65
-.asm_fea40
+	jr .print_level
+.wild_battle
 	ld a, b
 	and a
-	jr z, .asm_fea65
+	jr z, .print_level
 	ld de, wTempByteValue
 	ld [de], a
 	hlcoord 1, 8
@@ -514,13 +514,13 @@ Func_fe97f:
 	lb bc, LEADING_ZEROES | 1, 3
 	call PrintNumber
 	hlcoord 5, 8
-	ld de, Text_fede2
+	ld de, DebugFightTestBlankNameFieldText
 	call PlaceString
 	call GetMonName
 	hlcoord 5, 8
 	call PlaceString
 	pop bc
-.asm_fea65
+.print_level
 	ld a, [wEnemyMonLevel]
 	ld c, a
 	ld de, wTempByteValue
@@ -531,100 +531,100 @@ Func_fe97f:
 	call PrintNumber
 	pop bc
 	; fallthrough
-Func_fea78:
+DebugTestBattle_SelectBattleType:
 	ld a, ' '
 	ldcoord_a 0, 8
 	ldcoord_a 15, 8
 	ld a, '▶'
 	ldcoord_a 0, 4
 	; fallthrough
-Func_fea85:
+DebugTestBattle_BattleTypeInputLoop:
 	push bc
 	call JoypadLowSensitivity
 	pop bc
 	ldh a, [hJoy5]
 	bit B_PAD_A, a
-	jp nz, Func_fea9d
+	jp nz, DebugTestBattle_ToggleBattleType
 	bit B_PAD_START, a
-	jp nz, Func_fec10
+	jp nz, DebugTestBattle_StartSelectedBattle
 	bit B_PAD_DOWN, a
-	jp nz, Func_feae4
-	jr Func_fea85
+	jp nz, DebugTestBattle_SelectOpponentID
+	jr DebugTestBattle_BattleTypeInputLoop
 
-Func_fea9d:
+DebugTestBattle_ToggleBattleType:
 	hlcoord 1, 8
-	ld de, Text_fedcf
+	ld de, DebugFightTestOpponentBlankRowText
 	call PlaceString
 	hlcoord 5, 7
-	ld de, Text_fede2
+	ld de, DebugFightTestBlankNameFieldText
 	call PlaceString
 	xor a
 	ld b, a
 	ld c, a
 	ld a, [wIsInBattle]
 	dec a
-	jr nz, .asm_feace
+	jr nz, .set_wild_battle
 	ld a, 2
 	ld [wIsInBattle], a
 	ld a, ' '
 	ldcoord_a 4, 3
 	hlcoord 1, 4
-	ld de, Text_fedb2
+	ld de, DebugFightTestTrainerText
 	call PlaceString
-	jp Func_fea85
-.asm_feace
+	jp DebugTestBattle_BattleTypeInputLoop
+.set_wild_battle
 	ld a, 1
 	ld [wIsInBattle], a
 	ld a, ' '
 	ldcoord_a 1, 3
 	hlcoord 1, 4
-	ld de, Text_feda8
+	ld de, DebugFightTestWildMonText
 	call PlaceString
-	jp Func_fea85
+	jp DebugTestBattle_BattleTypeInputLoop
 
-Func_feae4:
+DebugTestBattle_SelectOpponentID:
 	ld a, '▶'
 	ldcoord_a 0, 8
 	ld a, ' '
 	ldcoord_a 15, 8
 	ldcoord_a 0, 4
 	; fallthrough
-Func_feaf1:
+DebugTestBattle_OpponentIDInputLoop:
 	push bc
 	call JoypadLowSensitivity
 	pop bc
 	ldh a, [hJoy5]
 	bit B_PAD_A, a
-	jp nz, Func_feb13
+	jp nz, DebugTestBattle_IncrementOpponentID
 	bit B_PAD_B, a
-	jp nz, Func_feb82
+	jp nz, DebugTestBattle_DecrementOpponentID
 	bit B_PAD_START, a
-	jp nz, Func_fec10
+	jp nz, DebugTestBattle_StartSelectedBattle
 	bit B_PAD_RIGHT, a
-	jp nz, Func_febba
+	jp nz, DebugTestBattle_SelectOpponentLevel
 	bit B_PAD_UP, a
-	jp nz, Func_fea78
-	jr Func_feaf1
+	jp nz, DebugTestBattle_SelectBattleType
+	jr DebugTestBattle_OpponentIDInputLoop
 
-Func_feb13:
+DebugTestBattle_IncrementOpponentID:
 	push bc
 	hlcoord 5, 7
-	ld de, Text_fede2
+	ld de, DebugFightTestBlankNameFieldText
 	call PlaceString
 	hlcoord 5, 8
-	ld de, Text_fede2
+	ld de, DebugFightTestBlankNameFieldText
 	call PlaceString
 	pop bc
 	ld a, [wIsInBattle]
 	dec a
-	jr z, Func_feb35.asm_feb5c
+	jr z, DebugTestBattle_PrintOpponentTrainerID.print_species
 	inc b
 	ld a, b
 	cp 48
-	jr c, Func_feb35
+	jr c, DebugTestBattle_PrintOpponentTrainerID
 	ld b, 1
 	; fallthrough
-Func_feb35:
+DebugTestBattle_PrintOpponentTrainerID:
 	ld a, b
 	ld [wTempByteValue], a
 	ld de, wTempByteValue
@@ -639,15 +639,15 @@ Func_feb35:
 	ld de, wTrainerName
 	call PlaceString
 	pop bc
-	jp Func_feaf1
-.asm_feb5c
+	jp DebugTestBattle_OpponentIDInputLoop
+.print_species
 	inc b
 	ld a, b
 	cp NUM_POKEMON_INDEXES + 1
-	jr c, Func_feb64
+	jr c, DebugTestBattle_PrintOpponentSpeciesID
 	ld b, 1
 	; fallthrough
-Func_feb64:
+DebugTestBattle_PrintOpponentSpeciesID:
 	ld a, b
 	ld [wTempByteValue], a
 	ld de, wTempByteValue
@@ -659,70 +659,70 @@ Func_feb64:
 	hlcoord 5, 8
 	call PlaceString
 	pop bc
-	jp Func_feaf1
+	jp DebugTestBattle_OpponentIDInputLoop
 
-Func_feb82:
+DebugTestBattle_DecrementOpponentID:
 	push bc
 	hlcoord 5, 7
-	ld de, Text_fede2
+	ld de, DebugFightTestBlankNameFieldText
 	call PlaceString
 	hlcoord 5, 8
-	ld de, Text_fede2
+	ld de, DebugFightTestBlankNameFieldText
 	call PlaceString
 	pop bc
 	ld a, [wIsInBattle]
 	dec a
-	jr z, .asm_febab
+	jr z, .decrement_species
 	dec b
 	ld a, b
 	cp 48
-	jr nc, .asm_feba6
+	jr nc, .wrap_to_max_trainer
 	and a
-	jp nz, Func_feb35
-.asm_feba6
+	jp nz, DebugTestBattle_PrintOpponentTrainerID
+.wrap_to_max_trainer
 	ld b, 47
-	jp Func_feb35
-.asm_febab
+	jp DebugTestBattle_PrintOpponentTrainerID
+.decrement_species
 	dec b
 	ld a, b
 	cp NUM_POKEMON_INDEXES + 1
-	jr nc, .asm_febb5
+	jr nc, .wrap_to_max_species
 	and a
-	jp nz, Func_feb64
-.asm_febb5
+	jp nz, DebugTestBattle_PrintOpponentSpeciesID
+.wrap_to_max_species
 	ld b, NUM_POKEMON_INDEXES
-	jp Func_feb64
+	jp DebugTestBattle_PrintOpponentSpeciesID
 
-Func_febba:
+DebugTestBattle_SelectOpponentLevel:
 	ld a, ' '
 	ldcoord_a 0, 8
 	ld a, '▶'
 	ldcoord_a 15, 8
 	; fallthrough
-Func_febc4:
+DebugTestBattle_OpponentLevelInputLoop:
 	push bc
 	call JoypadLowSensitivity
 	pop bc
 	ldh a, [hJoy5]
 	bit B_PAD_A, a
-	jp nz, Func_febe6
+	jp nz, DebugTestBattle_IncrementOpponentLevel
 	bit B_PAD_B, a
-	jp nz, Func_fec01
+	jp nz, DebugTestBattle_DecrementOpponentLevel
 	bit B_PAD_START, a
-	jp nz, Func_fec10
+	jp nz, DebugTestBattle_StartSelectedBattle
 	bit B_PAD_LEFT, a
-	jp nz, Func_feae4
+	jp nz, DebugTestBattle_SelectOpponentID
 	bit B_PAD_UP, a
-	jp nz, Func_fea78
-	jr Func_febc4
+	jp nz, DebugTestBattle_SelectBattleType
+	jr DebugTestBattle_OpponentLevelInputLoop
 
-Func_febe6:
+DebugTestBattle_IncrementOpponentLevel:
 	inc c
 	ld a, c
 	cp MAX_LEVEL + 1
-	jr c, Func_febee
+	jr c, DebugTestBattle_PrintOpponentLevel
 	ld c, 1
-Func_febee:
+DebugTestBattle_PrintOpponentLevel:
 	hlcoord 16, 8
 	ld a, c
 	ld de, wCurEnemyLevel
@@ -731,35 +731,35 @@ Func_febee:
 	lb bc, LEADING_ZEROES | 1, 3
 	call PrintNumber
 	pop bc
-	jp Func_febc4
+	jp DebugTestBattle_OpponentLevelInputLoop
 
-Func_fec01:
+DebugTestBattle_DecrementOpponentLevel:
 	dec c
 	ld a, c
 	cp MAX_LEVEL + 1
-	jr nc, .asm_fec0b
+	jr nc, .wrap_to_max_level
 	and a
-	jp nz, Func_febee
-.asm_fec0b
+	jp nz, DebugTestBattle_PrintOpponentLevel
+.wrap_to_max_level
 	ld c, MAX_LEVEL
-	jp Func_febee
+	jp DebugTestBattle_PrintOpponentLevel
 
-Func_fec10:
+DebugTestBattle_StartSelectedBattle:
 	ld a, b
 	and a
-	jp z, Func_fea78
+	jp z, DebugTestBattle_SelectBattleType
 	ld a, c
 	and a
-	jp z, Func_fea78
+	jp z, DebugTestBattle_SelectBattleType
 	ld a, [wIsInBattle]
 	dec a
-	jr z, .asm_fec28
+	jr z, .got_opponent
 	ld a, b
 	add OPP_ID_OFFSET
 	ld b, a
 	ld a, c
 	ld [wTrainerNo], a
-.asm_fec28
+.got_opponent
 	ld a, c
 	ld [wCurEnemyLevel], a
 	ld a, b
@@ -789,13 +789,13 @@ Func_fec10:
 	lb bc, 1, 18
 	call TextBoxBorder
 	hlcoord 6, 1
-	ld de, Text_fed18
+	ld de, DebugFightTestTitleText
 	call PlaceString
 	hlcoord 4, 4
-	ld de, Text_fed21
+	ld de, DebugFightTestHeaderText
 	call PlaceString
 	hlcoord 1, 6
-	ld de, Text_fed30
+	ld de, DebugFightTestPartyRowsText
 	call PlaceString
 	ld de, wPartyCount
 	xor a
@@ -806,23 +806,23 @@ Func_fec10:
 	push de
 	push hl
 	; fallthrough
-Func_fec9b:
+DebugTestBattle_PrintInitializedPartyRow:
 	ld a, [wWhichPokemon]
 	ld de, wPartySpecies
 	add e
 	ld e, a
-	jr nc, .asm_feca6
+	jr nc, .got_species_pointer
 	inc d
-.asm_feca6
+.got_species_pointer
 	ld a, [de]
 	cp -1
-	jp z, Func_fed01
+	jp z, DebugTestBattle_ReturnToPartySelection
 	ld [wTempByteValue], a
 	push hl
 	lb bc, LEADING_ZEROES | 1, 3
 	call PrintNumber
 	inc hl
-	ld de, Text_fed9c
+	ld de, DebugFightTestBlankNumberText
 	call PlaceString
 	call GetMonName
 	call PlaceString
@@ -846,9 +846,9 @@ Func_fec9b:
 	ld de, wEnemyPartySpecies
 	add e
 	ld e, a
-	jr nc, .asm_fecee
+	jr nc, .got_level_pointer
 	inc d
-.asm_fecee
+.got_level_pointer
 	ld a, [wCurEnemyLevel]
 	ld [de], a
 	pop hl
@@ -857,9 +857,9 @@ Func_fec9b:
 	ld [wWhichPokemon], a
 	ld bc, SCREEN_WIDTH * 2
 	add hl, bc
-	jp Func_fec9b
+	jp DebugTestBattle_PrintInitializedPartyRow
 
-Func_fed01:
+DebugTestBattle_ReturnToPartySelection:
 	pop hl
 	pop de
 	ld a, [wPartyMon1]
@@ -868,18 +868,18 @@ Func_fed01:
 	ld c, a
 	xor a
 	ld [wWhichPokemon], a
-	jp Func_fe7ca
+	jp DebugTestBattle_SelectPartySpeciesColumn
 
-Text_fed12:
+DebugUnusedKenshirouName:
 	db   "けんしろう@" ; "KENSHIROU@"
 
-Text_fed18:
+DebugFightTestTitleText:
 	db   "テスト ファイト@" ; "FIGHT TEST@"
 
-Text_fed21:
+DebugFightTestHeaderText:
 	db   "№．  なまえ    レべル@" ; "№．  NAME  LEVEL@"
 
-Text_fed30:
+DebugFightTestPartyRowsText:
 	db   "１．▶０００ ーーーーー  ０００"
 	next "２． ０００ ーーーーー  ０００"
 	next "３． ０００ ーーーーー  ０００"
@@ -887,28 +887,28 @@ Text_fed30:
 	next "５． ０００ ーーーーー  ０００"
 	next "６． ０００ ーーーーー  ０００@"
 
-Text_fed9c:
+DebugFightTestBlankNumberText:
 	db   "     @"
 
-Text_feda2:
+DebugFightTestBlankNameText:
 	db   "ーーーーー@"
 
-Text_feda8:
+DebugFightTestWildMonText:
 	db   "ワイルドモンスター@" ; "WILD #MON@"
 
-Text_fedb2:
+DebugFightTestTrainerText:
 	db   "ディーラー    @" ; "TRAINER      @"
 
-Text_fedbc:
+DebugFightTestOpponentHeaderText:
 	db   "№．  なまえ        レべル" ; "№．  NAME     LABEL"
 	next ""
-Text_fedcf:
+DebugFightTestOpponentBlankRowText:
 	db   "０００ ーーーーーーーーーー ０００@"
 
-Text_fede2:
+DebugFightTestBlankNameFieldText:
 	db   "          @"
 
-Data_feded:
+TestBattleBagItems:
 	db GREAT_BALL, 99
 	db POKE_BALL, 99
 	db ANTIDOTE, 99
@@ -919,10 +919,10 @@ Data_feded:
 	db POTION, 99
 	db -1 ; end
 
-Func_fedfe:
+DebugCreateBoxMon:
 	ld a, [wBoxCount]
 	cp 30
-	jp nc, Func_ff1ad
+	jp nc, DebugCreateBoxMon_BoxFull
 	call ClearScreen
 	call UpdateSprites
 	ld a, [wLetterPrintingDelayFlags]
@@ -938,41 +938,41 @@ Func_fedfe:
 	ld [wCurPartySpecies], a
 	ld [wCurEnemyLevel], a
 	; fallthrough
-Func_fee23:
+DebugCreateBoxMon_SelectSpecies:
 	hlcoord 0, 3
 	ld [hl], ' '
 	hlcoord 0, 1
 	ld [hl], '▶'
-	call Func_fee60
-.asm_fee30
+	call DebugCreateBoxMon_PrintSpecies
+.input_loop
 	call DelayFrame
 	call JoypadLowSensitivity
 	ldh a, [hJoy5]
 	bit B_PAD_A, a
-	jp nz, Func_fee49
+	jp nz, DebugCreateBoxMon_IncrementSpecies
 	bit B_PAD_B, a
-	jp nz, Func_fee56
+	jp nz, DebugCreateBoxMon_DecrementSpecies
 	bit B_PAD_DOWN, a
-	jp nz, Func_fee96
-	jr .asm_fee30
+	jp nz, DebugCreateBoxMon_SelectLevel
+	jr .input_loop
 
-Func_fee49:
+DebugCreateBoxMon_IncrementSpecies:
 	ld hl, wCurPartySpecies
 	inc [hl]
 	ld a, [hl]
 	cp NUM_POKEMON + 1
-	jr c, Func_fee23
+	jr c, DebugCreateBoxMon_SelectSpecies
 	ld [hl], DEX_BULBASAUR
-	jr Func_fee23
+	jr DebugCreateBoxMon_SelectSpecies
 
-Func_fee56:
+DebugCreateBoxMon_DecrementSpecies:
 	ld hl, wCurPartySpecies
 	dec [hl]
-	jr nz, Func_fee23
+	jr nz, DebugCreateBoxMon_SelectSpecies
 	ld [hl], DEX_MEW
-	jr Func_fee23
+	jr DebugCreateBoxMon_SelectSpecies
 
-Func_fee60:
+DebugCreateBoxMon_PrintSpecies:
 	hlcoord 1, 0
 	lb bc, 2, 9
 	call ClearScreenArea
@@ -993,54 +993,54 @@ Func_fee60:
 	call GetMonHeader
 	ret
 
-Func_fee96:
+DebugCreateBoxMon_SelectLevel:
 	hlcoord 0, 1
 	ld [hl], ' '
 	hlcoord 0, 3
 	ld [hl], '▶'
 	hlcoord 0, 5
 	ld [hl], ' '
-	call Func_feee2
-	call Func_feeef
-.asm_feeab
+	call DebugCreateBoxMon_PrintLevel
+	call DebugCreateBoxMon_PrintDefaultMoves
+.input_loop
 	call DelayFrame
 	call JoypadLowSensitivity
 	ld hl, wCurEnemyLevel
 	ldh a, [hJoy5]
 	bit B_PAD_A, a
-	jp nz, Func_feed1
+	jp nz, DebugCreateBoxMon_IncrementLevel
 	bit B_PAD_B, a
-	jp nz, Func_feedb
+	jp nz, DebugCreateBoxMon_DecrementLevel
 	bit B_PAD_START, a
-	jp nz, Func_ff12c
+	jp nz, DebugCreateBoxMon_SendToBox
 	bit B_PAD_UP, a
-	jp nz, Func_fee23
+	jp nz, DebugCreateBoxMon_SelectSpecies
 	bit B_PAD_DOWN, a
-	jp nz, Func_fef60
-	jr .asm_feeab
+	jp nz, DebugCreateBoxMon_SelectMoves
+	jr .input_loop
 
-Func_feed1:
+DebugCreateBoxMon_IncrementLevel:
 	inc [hl]
 	ld a, [hl]
 	cp MAX_LEVEL + 1
-	jr c, Func_fee96
+	jr c, DebugCreateBoxMon_SelectLevel
 	ld [hl], 1
-	jr Func_fee96
+	jr DebugCreateBoxMon_SelectLevel
 
-Func_feedb:
+DebugCreateBoxMon_DecrementLevel:
 	dec [hl]
-	jr nz, Func_fee96
+	jr nz, DebugCreateBoxMon_SelectLevel
 	ld [hl], MAX_LEVEL
-	jr Func_fee96
+	jr DebugCreateBoxMon_SelectLevel
 
-Func_feee2:
+DebugCreateBoxMon_PrintLevel:
 	hlcoord 1, 3
 	ld de, wCurEnemyLevel
 	lb bc, LEADING_ZEROES | 1, 3
 	call PrintNumber
 	ret
 
-Func_feeef:
+DebugCreateBoxMon_PrintDefaultMoves:
 	hlcoord 1, 4
 	lb bc, 8, 11
 	call ClearScreenArea
@@ -1065,11 +1065,11 @@ Func_feeef:
 	hlcoord 1, 5
 	ld de, wMoves
 	ld b, NUM_MOVES
-.asm_fef36
+.print_moves_loop
 	ld a, [de]
 	inc de
 	and a
-	jr z, .asm_fef5b
+	jr z, .done
 	push de
 	push bc
 	push hl
@@ -1086,20 +1086,20 @@ Func_feeef:
 	pop bc
 	pop de
 	dec b
-	jr nz, .asm_fef36
-.asm_fef5b
+	jr nz, .print_moves_loop
+.done
 	pop af
 	ld [wCurPartySpecies], a
 	ret
 
-Func_fef60:
+DebugCreateBoxMon_SelectMoves:
 	ld de, wMoves
 	hlcoord 0, 5
 	ld b, 1
 	; fallthrough
-Func_fef68:
-	call Func_fefc5
-.asm_fef6b
+DebugCreateBoxMon_MoveInputLoop:
+	call DebugCreateBoxMon_PrintSelectedMove
+.input_loop
 	call DelayFrame
 	push de
 	push bc
@@ -1108,59 +1108,59 @@ Func_fef68:
 	pop de
 	ldh a, [hJoy5]
 	bit B_PAD_A, a
-	jp nz, Func_fef92
+	jp nz, DebugCreateBoxMon_IncrementMove
 	bit B_PAD_B, a
-	jp nz, Func_fef9e
+	jp nz, DebugCreateBoxMon_DecrementMove
 	bit B_PAD_START, a
-	jp nz, Func_ff12c
+	jp nz, DebugCreateBoxMon_SendToBox
 	bit B_PAD_UP, a
-	jp nz, Func_fefa8
+	jp nz, DebugCreateBoxMon_MoveCursorUp
 	bit B_PAD_DOWN, a
-	jp nz, Func_fefb5
-	jr .asm_fef6b
+	jp nz, DebugCreateBoxMon_MoveCursorDown
+	jr .input_loop
 
-Func_fef92:
+DebugCreateBoxMon_IncrementMove:
 	ld a, [de]
 	inc a
 	ld [de], a
 	cp NUM_ATTACKS
-	jr c, Func_fef68
+	jr c, DebugCreateBoxMon_MoveInputLoop
 	ld a, 1
 	ld [de], a
-	jr Func_fef68
+	jr DebugCreateBoxMon_MoveInputLoop
 
-Func_fef9e:
+DebugCreateBoxMon_DecrementMove:
 	ld a, [de]
 	dec a
 	ld [de], a
-	jr nz, Func_fef68
+	jr nz, DebugCreateBoxMon_MoveInputLoop
 	ld a, NUM_ATTACKS - 1
 	ld [de], a
-	jr Func_fef68
+	jr DebugCreateBoxMon_MoveInputLoop
 
-Func_fefa8:
+DebugCreateBoxMon_MoveCursorUp:
 	dec de
 	dec b
-	jp z, Func_fee96
+	jp z, DebugCreateBoxMon_SelectLevel
 	push bc
 	ld bc, hMovingBGTilesCounter1
 	add hl, bc
 	pop bc
-	jr Func_fef68
+	jr DebugCreateBoxMon_MoveInputLoop
 
-Func_fefb5:
+DebugCreateBoxMon_MoveCursorDown:
 	inc de
 	inc b
 	ld a, b
 	cp 5
-	jp z, Func_ff03b
+	jp z, DebugCreateBoxMon_SelectDVs
 	push bc
 	ld bc, SCREEN_WIDTH * 2
 	add hl, bc
 	pop bc
-	jr Func_fef68
+	jr DebugCreateBoxMon_MoveInputLoop
 
-Func_fefc5:
+DebugCreateBoxMon_PrintSelectedMove:
 	push hl
 	push de
 	push bc
@@ -1189,18 +1189,18 @@ Func_fefc5:
 	call PrintNumber
 	ld a, [wTempByteValue]
 	and a
-	jr z, .asm_ff002
-	call Func_ff006
+	jr z, .no_move
+	call DebugCreateBoxMon_MarkIllegalMove
 	inc hl
 	call GetMoveName
 	call PlaceString
-.asm_ff002
+.no_move
 	pop bc
 	pop de
 	pop hl
 	ret
 
-Func_ff006:
+DebugCreateBoxMon_MarkIllegalMove:
 	ld a, [wCurPartySpecies]
 	push af
 	ld a, [wPokedexNum]
@@ -1215,23 +1215,23 @@ Func_ff006:
 	pop af
 	ld [wPokedexNum], a
 	push hl
-	callfar Func_3b079
+	callfar CanCurrentSpeciesOrPreEvolutionLearnMove
 	pop hl
-	jr c, .asm_ff036
+	jr c, .done
 	ld [hl], '×'
-.asm_ff036
+.done
 	pop af
 	ld [wCurPartySpecies], a
 	ret
 
-Func_ff03b:
+DebugCreateBoxMon_SelectDVs:
 	ld de, wEnemyMonOT
 	hlcoord 0, 13
 	ld b, 1
 	; fallthrough
-Func_ff043:
-	call Func_ff09e
-.asm_ff046
+DebugCreateBoxMon_DVInputLoop:
+	call DebugCreateBoxMon_PrintSelectedDVByte
+.input_loop
 	call DelayFrame
 	push de
 	push bc
@@ -1240,58 +1240,58 @@ Func_ff043:
 	pop de
 	ldh a, [hJoy5]
 	bit B_PAD_A, a
-	jp nz, Func_ff06d
+	jp nz, DebugCreateBoxMon_IncrementDVByte
 	bit B_PAD_B, a
-	jp nz, Func_ff072
+	jp nz, DebugCreateBoxMon_DecrementDVByte
 	bit B_PAD_START, a
-	jp nz, Func_ff12c
+	jp nz, DebugCreateBoxMon_SendToBox
 	bit B_PAD_UP, a
-	jp nz, Func_ff077
+	jp nz, DebugCreateBoxMon_DVCursorUp
 	bit B_PAD_DOWN, a
-	jp nz, Func_ff08f
-	jr .asm_ff046
+	jp nz, DebugCreateBoxMon_DVCursorDown
+	jr .input_loop
 
-Func_ff06d:
+DebugCreateBoxMon_IncrementDVByte:
 	ld a, [de]
 	inc a
 	ld [de], a
-	jr Func_ff043
+	jr DebugCreateBoxMon_DVInputLoop
 
-Func_ff072:
+DebugCreateBoxMon_DecrementDVByte:
 	ld a, [de]
 	dec a
 	ld [de], a
-	jr Func_ff043
+	jr DebugCreateBoxMon_DVInputLoop
 
-Func_ff077:
+DebugCreateBoxMon_DVCursorUp:
 	dec de
 	dec b
-	jp z, Func_ff084
+	jp z, DebugCreateBoxMon_ReturnToMoveSelection
 	push bc
 	ld bc, hMovingBGTilesCounter1
 	add hl, bc
 	pop bc
-	jr Func_ff043
+	jr DebugCreateBoxMon_DVInputLoop
 
-Func_ff084:
+DebugCreateBoxMon_ReturnToMoveSelection:
 	ld de, wMoves + 3
 	hlcoord 0, 11
 	ld b, NUM_MOVES
-	jp Func_fef68
+	jp DebugCreateBoxMon_MoveInputLoop
 
-Func_ff08f:
+DebugCreateBoxMon_DVCursorDown:
 	ld a, b
 	cp 3
-	jr z, Func_ff043
+	jr z, DebugCreateBoxMon_DVInputLoop
 	inc b
 	inc de
 	push bc
 	ld bc, SCREEN_WIDTH * 2
 	add hl, bc
 	pop bc
-	jr Func_ff043
+	jr DebugCreateBoxMon_DVInputLoop
 
-Func_ff09e:
+DebugCreateBoxMon_PrintSelectedDVByte:
 	push hl
 	push de
 	push bc
@@ -1310,26 +1310,26 @@ Func_ff09e:
 	ld [de], a
 	lb bc, LEADING_ZEROES | 1, 3
 	call PrintNumber
-	call Func_ff0c4
+	call DebugCreateBoxMon_PrintStats
 	pop bc
 	pop de
 	pop hl
 	ret
 
-Func_ff0c4:
+DebugCreateBoxMon_PrintStats:
 	hlcoord 12, 0
 	lb bc, 18, 8
 	call ClearScreenArea
 	hlcoord 13, 1
-	ld de, Text_ff113
+	ld de, DebugCreateBoxMonStatsText
 	call PlaceString
 	ld b, 10
 	ld hl, wLoadedMonHPExp
 	ld a, [wEnemyMonOT + 2]
-.asm_ff0de
+.fill_stat_exp_loop
 	ld [hli], a
 	dec b
-	jr nz, .asm_ff0de
+	jr nz, .fill_stat_exp_loop
 	ld a, [wEnemyMonOT]
 	ld [hli], a
 	ld a, [wEnemyMonOT + 1]
@@ -1341,7 +1341,7 @@ Func_ff0c4:
 	hlcoord 17, 1
 	ld de, wLoadedMonStats
 	ld b, 5
-.asm_ff0fd
+.print_stats_loop
 	push bc
 	push de
 	push hl
@@ -1355,17 +1355,17 @@ Func_ff0c4:
 	inc de
 	pop bc
 	dec b
-	jr nz, .asm_ff0fd
+	jr nz, .print_stats_loop
 	ret
 
-Text_ff113:
+DebugCreateBoxMonStatsText:
 	db   "たいりき"  ; hp
 	next "こうげき"  ; attack
 	next "ぼうぎょ"  ; defense
 	next "すばやさ"  ; speed
 	next "とくしゅ@" ; special
 
-Func_ff12c:
+DebugCreateBoxMon_SendToBox:
 	ld a, [wCurEnemyLevel]
 	ld [wEnemyMonLevel], a
 	ld a, [wCurPartySpecies]
@@ -1413,37 +1413,37 @@ Func_ff12c:
 	ld b, 10
 	ld hl, wBoxMon1HPExp
 	ld a, [wEnemyMonOT + 2]
-.asm_ff19e
+.fill_stat_exp_loop
 	ld [hli], a
 	dec b
-	jr nz, .asm_ff19e
+	jr nz, .fill_stat_exp_loop
 	ld a, 1
 	ld [wDoNotWaitForButtonPressAfterDisplayingText], a
 	pop af
 	ld [wLetterPrintingDelayFlags], a
-	jr Func_ff1b3
-Func_ff1ad:
-	ld hl, Text_ff1b4
+	jr DebugCreateBoxMon_Return
+DebugCreateBoxMon_BoxFull:
+	ld hl, DebugCreateBoxMonBoxFullText
 	call PrintText
-Func_ff1b3:
+DebugCreateBoxMon_Return:
 	ret
 
-Text_ff1b4:
+DebugCreateBoxMonBoxFullText:
 	text_far _BoxFullDebugText
 	text_end
 
-Func_ff1b9:
+DebugFillBoxes:
 	ld a, 1
 	ldh [hJoy7], a
 	ld a, 2
 	ld [wCurEnemyLevel], a
-	ld hl, Text_ff290
+	ld hl, DebugFillBoxesConfirmText
 	call PrintText
 	call YesNoChoice
 	ld a, [wCurrentMenuItem]
 	and a
-	jp nz, Func_ff286
-	ld hl, Text_ff28f
+	jp nz, DebugFillBoxes_Return
+	ld hl, DebugFillBoxesEmptyText
 	call PrintText
 	callfar EmptyAllSRAMBoxes
 	ld hl, wBoxCount
@@ -1452,7 +1452,7 @@ Func_ff1b9:
 	dec a
 	ld [hl], a
 	; fallthrough
-Func_ff1e7:
+DebugFillBoxes_SelectLevel:
 	hlcoord 2, 13
 	ld [hl], 'ﾞ'
 	hlcoord 1, 14
@@ -1470,43 +1470,43 @@ Func_ff1e7:
 	call JoypadLowSensitivity
 	ldh a, [hJoy5]
 	bit B_PAD_A, a
-	jp nz, Func_ff21b
+	jp nz, DebugFillBoxes_IncrementLevel
 	bit B_PAD_B, a
-	jp nz, Func_ff227
+	jp nz, DebugFillBoxes_DecrementLevel
 	bit B_PAD_START, a
-	jp nz, Func_ff236
-	jr Func_ff1e7
+	jp nz, DebugFillBoxes_Start
+	jr DebugFillBoxes_SelectLevel
 
-Func_ff21b:
+DebugFillBoxes_IncrementLevel:
 	ld a, [wCurEnemyLevel]
 	inc a
 	cp MAX_LEVEL + 1
-	jr c, Func_ff231
+	jr c, DebugFillBoxes_SetLevel
 	ld a, 2
-	jr Func_ff231
-Func_ff227:
+	jr DebugFillBoxes_SetLevel
+DebugFillBoxes_DecrementLevel:
 	ld a, [wCurEnemyLevel]
 	dec a
 	cp 2
-	jr nc, Func_ff231
+	jr nc, DebugFillBoxes_SetLevel
 	ld a, MAX_LEVEL
-Func_ff231:
+DebugFillBoxes_SetLevel:
 	ld [wCurEnemyLevel], a
-	jr Func_ff1e7
+	jr DebugFillBoxes_SelectLevel
 
-Func_ff236:
+DebugFillBoxes_Start:
 	ld c, 0
 	ld d, 0
-.asm_ff23a
+.next_box
 	push bc
 	push de
-	call Func_ff295
+	call DebugFillBoxes_SwitchAndSaveBox
 	ld hl, wChangeMonPicEnemyTurnSpecies
 	inc [hl]
 	pop de
 	pop bc
 	ld b, 30
-.asm_ff247
+.fill_box_loop
 	inc c
 	push bc
 	push de
@@ -1526,44 +1526,44 @@ Func_ff236:
 	pop bc
 	ld a, c
 	cp NUM_POKEMON
-	jr z, Func_ff286
+	jr z, DebugFillBoxes_Return
 	dec b
-	jr nz, .asm_ff247
+	jr nz, .fill_box_loop
 	inc d
-	jr .asm_ff23a
+	jr .next_box
 	; fallthrough
-Func_ff286:
+DebugFillBoxes_Return:
 	ld a, 1
 	ld [wDoNotWaitForButtonPressAfterDisplayingText], a
 	xor a
 	ldh [hJoy7], a
 	ret
 
-Text_ff28f:
+DebugFillBoxesEmptyText:
 	text_end
 
-Text_ff290:
+DebugFillBoxesConfirmText:
 	text_far _BoxWillBeClearedText
 	text_end
 
-Func_ff295:
+DebugFillBoxes_SwitchAndSaveBox:
 	push de
 	ld a, SFX_SAVE
 	call PlaySoundWaitForCurrent
 	call WaitForSoundToFinish
-	call Func_ff2d1
+	call DebugFillBoxes_GetCurrentBoxPointer
 	ld e, l
 	ld d, h
 	ld hl, wBoxCount
-	call Func_ff2f3
+	call DebugFillBoxes_CopyAndClearBoxData
 	pop de
 	ld a, d
 	set BIT_HAS_CHANGED_BOXES, a
 	ld [wCurrentBoxNum], a
 	push de
-	call Func_ff2d1
+	call DebugFillBoxes_GetCurrentBoxPointer
 	ld de, wBoxCount
-	call Func_ff2f3
+	call DebugFillBoxes_CopyAndClearBoxData
 	ld a, [wLetterPrintingDelayFlags]
 	push af
 	ld a, 1 << BIT_FAST_TEXT_DELAY
@@ -1574,16 +1574,16 @@ Func_ff295:
 	pop de
 	ret
 
-Func_ff2d1:
-	ld hl, Data_ff2eb
+DebugFillBoxes_GetCurrentBoxPointer:
+	ld hl, DebugFillBoxesSRAMBoxPointers
 	ld a, [wCurrentBoxNum]
 	and %01111111
 	cp 4
 	ld b, 2
-	jr c, .asm_ff2e2
+	jr c, .got_bank
 	inc b
 	and 3
-.asm_ff2e2
+.got_bank
 	ld e, a
 	ld d, 0
 	add hl, de
@@ -1593,13 +1593,13 @@ Func_ff2d1:
 	ld l, a
 	ret
 
-Data_ff2eb:
+DebugFillBoxesSRAMBoxPointers:
 	dw sBox1
 	dw sBox2
 	dw sBox3
 	dw sBox4
 
-Func_ff2f3:
+DebugFillBoxes_CopyAndClearBoxData:
 	push hl
 	call DebugEnableSRAM
 	ld a, b
@@ -1613,7 +1613,7 @@ Func_ff2f3:
 	ld [hl], a
 	ld hl, sBox1
 	ld bc, sBox5 - sBox1 + 1
-	call Func_ff32a
+	call DebugFillBoxes_CalculateSRAMChecksum
 	ld [sBox5], a
 	call DebugDisableSRAM
 	ret
@@ -1631,16 +1631,16 @@ DebugDisableSRAM: ; duplicate of DisableSRAM
 	ld [rRAMG], a
 	ret
 
-Func_ff32a:
+DebugFillBoxes_CalculateSRAMChecksum:
 	ld d, 0
-.asm_ff32c
+.sum_loop
 	ld a, [hli]
 	add d
 	ld d, a
 	dec bc
 	ld a, b
 	or c
-	jr nz, .asm_ff32c
+	jr nz, .sum_loop
 	ld a, d
 	cpl
 	ret

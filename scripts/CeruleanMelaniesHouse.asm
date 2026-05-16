@@ -14,18 +14,18 @@ CeruleanMelanieHouseMelanieText:
 	ld a, $1
 	ld [wDoNotWaitForButtonPressAfterDisplayingText], a
 	CheckEvent EVENT_GOT_BULBASAUR_IN_CERULEAN
-	jr nz, .asm_1cfbf
+	jr nz, .already_got_bulbasaur
 	ld hl, CeruleanHouse1Text_1cfc8
 	call PrintText
 	ld a, [wPikachuHappiness]
 	cp 147
-	jr c, .asm_1cfb3
+	jr c, .done
 	ld hl, CeruleanHouse1Text_1cfce
 	call PrintText
 	call YesNoChoice
 	ld a, [wCurrentMenuItem]
 	and a
-	jr nz, .asm_1cfb6
+	jr nz, .declined_bulbasaur
 	ld a, $1
 	ld [wDoNotWaitForButtonPressAfterDisplayingText], a
 	ld a, BULBASAUR
@@ -36,7 +36,7 @@ CeruleanMelanieHouseMelanieText:
 	ld [wDoNotWaitForButtonPressAfterDisplayingText], a
 	lb bc, BULBASAUR, 10
 	call GivePokemon
-	jr nc, .asm_1cfb3
+	jr nc, .done
 	ld a, [wAddedToParty]
 	and a
 	call z, WaitForTextScrollButtonPress
@@ -48,15 +48,15 @@ CeruleanMelanieHouseMelanieText:
 	ld [wToggleableObjectIndex], a
 	predef HideObject
 	SetEvent EVENT_GOT_BULBASAUR_IN_CERULEAN
-.asm_1cfb3
+.done
 	jp TextScriptEnd
 
-.asm_1cfb6
+.declined_bulbasaur
 	ld hl, CeruleanHouse1Text_1cfdf
 	call PrintText
 	jp TextScriptEnd
 
-.asm_1cfbf
+.already_got_bulbasaur
 	ld hl, CeruleanHouse1Text_1cfd9
 	call PrintText
 	jp TextScriptEnd

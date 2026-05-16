@@ -1,5 +1,5 @@
 BillsHouse_Script:
-	call BillsHouseScript_1e09e
+	call BillsHouseSetInitialScript
 	call EnableAutoTextBoxDrawing
 	ld a, [wBillsHouseCurScript]
 	ld hl, BillsHouse_ScriptPointers
@@ -19,33 +19,33 @@ BillsHouse_ScriptPointers:
 	dw_const BillsHouseScript8, SCRIPT_BILLSHOUSE_SCRIPT8
 	dw_const BillsHouseScript9, SCRIPT_BILLSHOUSE_SCRIPT9
 
-BillsHouseScript_1e09e:
+BillsHouseSetInitialScript:
 	ld hl, wd492
 	bit 7, [hl]
 	set 7, [hl]
 	ret nz
 	CheckEventHL EVENT_MET_BILL_2
-	jr z, .asm_1e0af
-	jr .asm_1e0b3
+	jr z, .not_met_bill
+	jr .met_bill
 
-.asm_1e0af
+.not_met_bill
 	ld a, SCRIPT_BILLSHOUSE_SCRIPT0
-	jr .asm_1e0b5
+	jr .set_script
 
-.asm_1e0b3
+.met_bill
 	ld a, SCRIPT_BILLSHOUSE_SCRIPT9
-.asm_1e0b5
+.set_script
 	ld [wBillsHouseCurScript], a
 	ret
 
 BillsHouseScript0:
 	ld a, [wd471]
 	bit 7, a
-	jr z, .asm_1e0d2
+	jr z, .done
 	callfar CheckPikachuStatusCondition
-	jr c, .asm_1e0d2
-	callfar Func_f24d5
-.asm_1e0d2
+	jr c, .done
+	callfar BillsHousePikachuReactionToBill
+.done
 	xor a
 	ld [wJoyIgnore], a
 	ld a, SCRIPT_BILLSHOUSE_SCRIPT1
@@ -60,13 +60,13 @@ BillsHouseScript2:
 	ld [wJoyIgnore], a
 	ld a, [wSpritePlayerStateData1FacingDirection]
 	and a ; cp SPRITE_FACING_DOWN
-	ld de, MovementData_1e79c
+	ld de, BillPokemonMoveUp
 	jr nz, .notDown
 	call CheckPikachuFollowingPlayer
-	jr nz, .asm_1e0f8
-	callfar Func_f250b
-.asm_1e0f8
-	ld de, MovementData_1e7a0
+	jr nz, .move_bill
+	callfar BillsHouseMovePikachuForBillCutscene
+.move_bill
+	ld de, BillPokemonMoveAroundPlayer
 .notDown
 	ld a, BILLSHOUSE_BILL_POKEMON
 	ldh [hSpriteIndex], a
@@ -75,14 +75,14 @@ BillsHouseScript2:
 	ld [wBillsHouseCurScript], a
 	ret
 
-MovementData_1e79c:
+BillPokemonMoveUp:
 	db NPC_MOVEMENT_UP
 	db NPC_MOVEMENT_UP
 	db NPC_MOVEMENT_UP
 	db -1 ; end
 
 ; make Bill walk around the player
-MovementData_1e7a0:
+BillPokemonMoveAroundPlayer:
 	db NPC_MOVEMENT_RIGHT
 	db NPC_MOVEMENT_UP
 	db NPC_MOVEMENT_UP
@@ -98,16 +98,16 @@ BillsHouseScript3:
 	ld [wToggleableObjectIndex], a
 	predef HideObject
 	call CheckPikachuFollowingPlayer
-	jr z, .asm_1e13e
-	ld hl, PikachuMovementData_1e14d
+	jr z, .done
+	ld hl, BillsHousePikachuMoveUp
 	ld a, [wSpritePlayerStateData1FacingDirection]
 	and a ; cp SPRITE_FACING_DOWN
-	jr nz, .asm_1e133
-	ld hl, PikachuMovementData_1e152
-.asm_1e133
+	jr nz, .move_pikachu
+	ld hl, BillsHousePikachuMoveAroundPlayer
+.move_pikachu
 	call ApplyPikachuMovementData
 	callfar InitializePikachuTextID
-.asm_1e13e
+.done
 	xor a
 	ld [wJoyIgnore], a
 	SetEvent EVENT_BILL_SAID_USE_CELL_SEPARATOR
@@ -115,14 +115,14 @@ BillsHouseScript3:
 	ld [wBillsHouseCurScript], a
 	ret
 
-PikachuMovementData_1e14d:
+BillsHousePikachuMoveUp:
 	db $00
 	db $1e
 	db $1e
 	db $1e
 	db $3f
 
-PikachuMovementData_1e152:
+BillsHousePikachuMoveAroundPlayer:
 	db $00
 	db $1e
 	db $1f
@@ -160,15 +160,15 @@ BillsHouseScript5:
 	call DelayFrames
 	ld hl, wd471
 	bit 7, [hl]
-	jr z, .asm_1e1c6
+	jr z, .move_bill
 	call CheckPikachuFollowingPlayer
-	jr z, .asm_1e1c6
+	jr z, .move_bill
 	ld a, BILLSHOUSE_BILL1
 	ldh [hSpriteIndex], a
 	ld a, SPRITE_FACING_DOWN
 	ldh [hSpriteFacingDirection], a
 	call SetSpriteFacingDirectionAndDelay
-	ld hl, PikachuMovementData_1e1a9
+	ld hl, BillsHousePikachuExclamationMovement
 	call ApplyPikachuMovementData
 	ld a, $f
 	ld [wEmotionBubbleSpriteIndex], a
@@ -176,7 +176,7 @@ BillsHouseScript5:
 	ld [wWhichEmotionBubble], a
 	predef EmotionBubble
 	callfar InitializePikachuTextID
-.asm_1e1c6
+.move_bill
 	ld a, BILLSHOUSE_BILL1
 	ldh [hSpriteIndex], a
 	ld de, .BillExitMachineMovement
@@ -193,7 +193,7 @@ BillsHouseScript5:
 	db NPC_MOVEMENT_DOWN
 	db -1 ; end
 
-PikachuMovementData_1e1a9:
+BillsHousePikachuExclamationMovement:
 	db $00
 	db $37
 	db $3f

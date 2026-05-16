@@ -60,12 +60,12 @@ DaycareGentlemanText:
 	jr c, .depositedPikachuIntoDayCare
 	ld a, [wCurPartySpecies]
 	call PlayCry
-	jr .asm_562e3
+	jr .printComeSeeMeInAWhileText
 
 .depositedPikachuIntoDayCare
 	ldpikacry e, PikachuCry28
 	callfar PlayPikachuSoundClip
-.asm_562e3
+.printComeSeeMeInAWhileText
 	ld hl, .ComeSeeMeInAWhileText
 	jp .done
 
@@ -215,7 +215,7 @@ DaycareGentlemanText:
 	jr c, .withdrewPikachuFromDayCare
 	ld a, [wCurPartySpecies]
 	call PlayCry
-	jr .asm_56430
+	jr .printGotMonBackText
 
 .withdrewPikachuFromDayCare
 	ld a, $6
@@ -228,7 +228,7 @@ DaycareGentlemanText:
 
 	ldpikacry e, PikachuCry35
 	callfar PlayPikachuSoundClip
-.asm_56430
+.printGotMonBackText
 	ld hl, .GotMonBackText
 	jr .done
 

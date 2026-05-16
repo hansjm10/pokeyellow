@@ -33,12 +33,12 @@ SetPal_Battle:
 	ld hl, wBattleMonSpecies
 	ld a, [hl]
 	and a
-	jr z, .asm_71ef9
+	jr z, .got_player_mon
 	ld hl, wPartyMon1
 	ld a, [wPlayerMonNumber]
 	ld bc, wPartyMon2 - wPartyMon1
 	call AddNTimes
-.asm_71ef9
+.got_player_mon
 	call DeterminePaletteID
 	ld b, a
 	ld hl, wEnemyMonSpecies2
@@ -260,7 +260,7 @@ SetPal_PikachusBeach::
 
 SetPal_PikachusBeachTitle::
 	ld hl, PalPacket_PikachusBeachTitle
-	ld de, UnknownPacket_72751
+	ld de, BlkPacket_PikachusBeachTitle
 	ret
 
 SetPalFunctions:
@@ -315,14 +315,14 @@ DeterminePaletteIDOutOfBattle:
 YellowIntroPaletteAction::
 	ld a, e
 	and a
-	jr nz, .asm_720bd
+	jr nz, .pikachus_beach
 	ld hl, PalPacket_Generic
 	ldh a, [hOnCGB]
 	and a
 	jp z, SendSGBPacket
 	jp InitCGBPalettes
 
-.asm_720bd
+.pikachus_beach
 	ld hl, PalPacket_PikachusBeach
 	ldh a, [hOnCGB]
 	and a
@@ -657,7 +657,7 @@ CheckSGB:
 SendMltReq1Packet:
 	ld hl, MltReq1Packet
 	call SendSGBPacket
-	vc_hook Unknown_network_reset
+	vc_hook Wireless_net_reset
 	jp Wait7000
 
 CopyGfxToSuperNintendoVRAM:
@@ -1059,7 +1059,7 @@ palPacketPointers:
 	dw wTrainerCardBlkPacket
 	dw BlkPacket_GameFreakIntro
 	dw wPalPacket
-	dw UnknownPacket_72751
+	dw BlkPacket_PikachusBeachTitle
 palPacketPointersEnd:
 
 CopySGBBorderTiles:

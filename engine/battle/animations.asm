@@ -49,11 +49,11 @@ DrawFrameBlock:
 	add [hl] ; X offset
 	ld [de], a ; store X
 	cp 88
-	jr c, .asm_78056
+	jr c, .store_tile_no_transform
 	ld a, [wdef4]
 	inc a
 	ld [wdef4], a
-.asm_78056
+.store_tile_no_transform
 	inc hl
 	inc de
 	ld a, [hli]
@@ -83,11 +83,11 @@ DrawFrameBlock:
 	sub b ; flip X coordinate
 	ld [de], a ; store X
 	cp 88
-	jr c, .asm_78087
+	jr c, .store_tile_hvflip
 	ld a, [wdef4]
 	inc a
 	ld [wdef4], a
-.asm_78087
+.store_tile_hvflip
 	inc hl
 	inc de
 	ld a, [hli]
@@ -126,11 +126,11 @@ DrawFrameBlock:
 	sub b ; flip X coordinate
 	ld [de], a ; store X
 	cp 88
-	jr c, .asm_780c8
+	jr c, .store_tile_hflip
 	ld a, [wdef4]
 	inc a
 	ld [wdef4], a
-.asm_780c8
+.store_tile_hflip
 	inc hl
 	inc de
 	ld a, [hli]
@@ -596,7 +596,7 @@ SetAnimationPalette:
 	call UpdateCGBPal_OBP1
 	ret
 
-Func_78e98:
+RestoreScreenAfterBattleAnimation:
 	call SaveScreenTilesToBuffer2
 	xor a
 	ldh [hAutoBGTransferEnabled], a
@@ -1190,22 +1190,22 @@ _AnimationWaterDroplets:
 	ld a, [wBaseCoordY]
 	ld [hli], a ; Y
 	cp 40
-	jr c, .asm_792d7
+	jr c, .got_y_attribute
 	ld a, [wdef4]
 	inc a
 	ld [wdef4], a
-.asm_792d7
+.got_y_attribute
 	ld a, [wBaseCoordX]
 	add 27
 	ld [wBaseCoordX], a
 	ld [hli], a ; X
 	cp 88
-	jr c, .asm_792ee
+	jr c, .got_x_attribute
 	ld a, [wdef4]
 	add $2
 	and $3
 	ld [wdef4], a
-.asm_792ee
+.got_x_attribute
 	ld a, [wDropletTile]
 	ld [hli], a ; tile
 	ld a, [wdef4]
@@ -1359,19 +1359,19 @@ BattleAnimWriteOAMEntry:
 	ld e, a
 	ld [hli], a
 	cp 40
-	jr c, .asm_793d8
+	jr c, .got_y_attribute
 	ld a, [wdef4]
 	inc a
 	ld [wdef4], a
-.asm_793d8
+.got_y_attribute
 	ld a, [wBaseCoordX]
 	ld [hli], a
 	cp 88
-	jr c, .asm_793e8
+	jr c, .got_x_attribute
 	ld a, [wdef4]
 	add $2
 	ld [wdef4], a
-.asm_793e8
+.got_x_attribute
 	ld a, d
 	ld [hli], a
 	ld a, [wdef4]
@@ -1590,10 +1590,10 @@ AnimationSpiralBallsInward:
 	add [hl]
 	ld [de], a ; X
 	cp 88
-	jr c, .asm_79524
+	jr c, .got_attribute
 	ld a, $3
 	ld [wdef4], a
-.asm_79524
+.got_attribute
 	inc hl
 	inc de
 	inc de
@@ -2211,7 +2211,7 @@ AnimationHideEnemyMonPic:
 	ldh [hAutoBGTransferEnabled], a
 	jp Delay3
 
-Func_79929:
+AnimateSubstituteBreak:
 	ld hl, wPlayerMonMinimized
 	ldh a, [hWhoseTurn]
 	and a
@@ -2544,11 +2544,11 @@ FallingObjects_UpdateOAMEntry:
 .next
 	ld [hli], a ; Y
 	cp 40
-	jr c, .asm_79e51
+	jr c, .got_y_attribute
 	ld a, [wdef4]
 	inc a
 	ld [wdef4], a
-.asm_79e51
+.got_y_attribute
 	ld a, [wFallingObjectMovementByte]
 	ld b, a
 	ld de, FallingObjects_DeltaXs
@@ -2566,12 +2566,12 @@ FallingObjects_UpdateOAMEntry:
 	add [hl]
 	ld [hli], a ; X
 	cp 88
-	jr c, .asm_79e75
+	jr c, .got_right_x_attribute
 	ld a, [wdef4]
 	add $2
 	and $3
 	ld [wdef4], a
-.asm_79e75
+.got_right_x_attribute
 	inc hl
 	xor a ; no horizontal flip
 	jr .next2
@@ -2582,12 +2582,12 @@ FallingObjects_UpdateOAMEntry:
 	sub b
 	ld [hli], a ; X
 	cp 88
-	jr c, .asm_79e5c
+	jr c, .got_left_x_attribute
 	ld a, [wdef4]
 	add $2
 	and $3
 	ld [wdef4], a
-.asm_79e5c
+.got_left_x_attribute
 	inc hl
 	ld a, OAM_XFLIP
 .next2

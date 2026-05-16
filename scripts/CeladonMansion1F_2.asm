@@ -1,78 +1,78 @@
 CeladonMansion1FPrintGrannyText::
 	ld a, $1
 	ld [wDoNotWaitForButtonPressAfterDisplayingText], a
-	ld hl, CeladonMansion1Text_f1e96
+	ld hl, CeladonMansionGrannyPokemonCompanyText
 	call PrintText
 	callfar IsStarterPikachuAliveInOurParty
 	ret nc
-	ld hl, CeladonMansionText_f1e9c
+	ld hl, CeladonMansionGrannyPikachuIntroText
 	call PrintText
 	ld a, $0
 	ld [wDoNotWaitForButtonPressAfterDisplayingText], a
-	call Func_f1ea2
+	call GetCeladonMansionPikachuHappinessText
 	call PrintText
 	ret
 
-CeladonMansion1Text_f1e96:
+CeladonMansionGrannyPokemonCompanyText:
 	text_far _CeladonMansion1Text2
 	text_waitbutton
 	text_end
 
-CeladonMansionText_f1e9c:
+CeladonMansionGrannyPikachuIntroText:
 	text_far _CeladonMansion1Text6
 	text_promptbutton
 	text_end
 
-Func_f1ea2:
-	ld hl, PikachuHappinessThresholds_f1eb9
-.asm_f1ea5
+GetCeladonMansionPikachuHappinessText:
+	ld hl, CeladonMansionPikachuHappinessTextThresholds
+.loop
 	ld a, [hli]
 	inc hl
 	and a
-	jr z, .asm_f1eb5
+	jr z, .done
 	ld b, a
 	ld a, [wPikachuHappiness]
 	cp b
-	jr c, .asm_f1eb5
+	jr c, .done
 	inc hl
 	inc hl
-	jr .asm_f1ea5
+	jr .loop
 
-.asm_f1eb5
+.done
 	ld a, [hli]
 	ld h, [hl]
 	ld l, a
 	ret
 
-PikachuHappinessThresholds_f1eb9:
-	dw   51, CeladonMansion1Text_f1ed5
-	dw  101, CeladonMansion1Text_f1eda
-	dw  131, CeladonMansion1Text_f1edf
-	dw  161, CeladonMansion1Text_f1ee4
-	dw  201, CeladonMansion1Text_f1ee9
-	dw  255, CeladonMansion1Text_f1eee
-	dw -256, CeladonMansion1Text_f1eee
+CeladonMansionPikachuHappinessTextThresholds:
+	dw   51, CeladonMansionPikachuUntamedText
+	dw  101, CeladonMansionPikachuNeedsCareText
+	dw  131, CeladonMansionPikachuCuteText
+	dw  161, CeladonMansionPikachuTamedText
+	dw  201, CeladonMansionPikachuHappyText
+	dw  255, CeladonMansionPikachuFantasticDuoText
+	dw -256, CeladonMansionPikachuFantasticDuoText
 
-CeladonMansion1Text_f1ed5:
+CeladonMansionPikachuUntamedText:
 	text_far _CeladonMansion1Text7
 	text_end
 
-CeladonMansion1Text_f1eda:
+CeladonMansionPikachuNeedsCareText:
 	text_far _CeladonMansion1Text8
 	text_end
 
-CeladonMansion1Text_f1edf:
+CeladonMansionPikachuCuteText:
 	text_far _CeladonMansion1Text9
 	text_end
 
-CeladonMansion1Text_f1ee4:
+CeladonMansionPikachuTamedText:
 	text_far _CeladonMansion1Text10
 	text_end
 
-CeladonMansion1Text_f1ee9:
+CeladonMansionPikachuHappyText:
 	text_far _CeladonMansion1Text11
 	text_end
 
-CeladonMansion1Text_f1eee:
+CeladonMansionPikachuFantasticDuoText:
 	text_far _CeladonMansion1Text12
 	text_end

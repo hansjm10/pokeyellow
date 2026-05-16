@@ -441,7 +441,7 @@ wSerialExchangeNybbleReceiveData:: db
 ; this nybble is sent when using Serial_SyncAndExchangeNybble or Serial_ExchangeNybble
 wSerialExchangeNybbleSendData:: db
 	ds 4
-wUnknownSerialCounter:: dw
+wSerialConnectionTimeoutCounter:: dw
 ENDU
 
 ; $00 = player mons
@@ -1499,7 +1499,7 @@ UNION
 wPlayerBideAccumulatedDamage:: dw
 
 NEXTU
-wUnknownSerialCounter2:: dw
+wSerialExchangeWaitCounter:: dw
 
 NEXTU
 ; number of hits by player in attacks like Double Slap, etc.
@@ -2008,6 +2008,10 @@ wWarpEntries:: ds MAX_WARP_EVENTS * 4 ; Y, X, warp ID, map ID
 ; if $ff, the player's coordinates are not updated when entering the map
 wDestinationWarpID:: db
 
+; bit 1: Pikachu is not following the player
+; bit 3: Pikachu sprite drawing is disabled
+; bit 6: toggles ledge/fishing follow command recording
+; bit 7: hide Pikachu and stop recording follow commands during map transitions
 wPikachuOverworldStateFlags:: db
 wPikachuSpawnState:: db
 wd431:: db
@@ -2080,7 +2084,8 @@ wd492:: db
 wSurfingMinigameHiScore:: dw ; little-endian BCD
 	ds 1
 wPrinterSettings:: db
-wUnknownSerialFlag_d499:: db
+; nonzero while applying Stadium-style Colosseum cup rules
+wStadiumRulesCup:: db
 wPrinterConnectionOpen:: db
 wPrinterOpcode:: db
 wd49b:: db
@@ -2329,7 +2334,7 @@ wRivalStarter:: db
 
 IF DEF(_DEBUG)
 ; this byte gets set to NUM_POKEMON by DebugStart
-wUnknownDebugByte:: db
+wDebugPokedexEntryCount:: db
 ELSE
 	ds 1
 ENDC

@@ -1,134 +1,134 @@
 SurfingPikachuFrames:
-	dw Unkn_f943d ; 00
-	dw Unkn_f9440 ; 01
-	dw Unkn_f9445 ; 02
-	dw Unkn_f944a ; 03
-	dw Unkn_f944f ; 04
-	dw Unkn_f9454 ; 05
-	dw Unkn_f9459 ; 06
-	dw Unkn_f945e ; 07
-	dw Unkn_f9463 ; 08
-	dw Unkn_f9468 ; 09
-	dw Unkn_f946d ; 0a
-	dw Unkn_f9472 ; 0b
-	dw Unkn_f9477 ; 0c
-	dw Unkn_f947c ; 0d
-	dw Unkn_f9481 ; 0e
-	dw Unkn_f9486 ; 0f
-	dw Unkn_f948b ; 10
-	dw Unkn_f9494 ; 11
-	dw Unkn_f9499 ; 12
-	dw Unkn_f949e ; 13
-	dw Unkn_f94fb ; 14
-	dw Unkn_f94a1 ; 15
-	dw Unkn_f94b0 ; 16
-	dw Unkn_f94bf ; 17
-	dw Unkn_f94ce ; 18
-	dw Unkn_f94dd ; 19
-	dw Unkn_f94ec ; 1a
-	dw Unkn_f94fe ; 1b
+	dw SurfingPikachuFrame00 ; 00
+	dw SurfingPikachuFrame01 ; 01
+	dw SurfingPikachuFrame02 ; 02
+	dw SurfingPikachuFrame03 ; 03
+	dw SurfingPikachuFrame04 ; 04
+	dw SurfingPikachuFrame05 ; 05
+	dw SurfingPikachuFrame06 ; 06
+	dw SurfingPikachuFrame07 ; 07
+	dw SurfingPikachuFrame08 ; 08
+	dw SurfingPikachuFrame09 ; 09
+	dw SurfingPikachuFrame0A ; 0a
+	dw SurfingPikachuFrame0B ; 0b
+	dw SurfingPikachuFrame0C ; 0c
+	dw SurfingPikachuFrame0D ; 0d
+	dw SurfingPikachuFrame0E ; 0e
+	dw SurfingPikachuFrame0F ; 0f
+	dw SurfingPikachuFrame10 ; 10
+	dw SurfingPikachuFrame11 ; 11
+	dw SurfingPikachuFrame12 ; 12
+	dw SurfingPikachuFrame13 ; 13
+	dw SurfingPikachuFrame14 ; 14
+	dw SurfingPikachuFrame15 ; 15
+	dw SurfingPikachuFrame16 ; 16
+	dw SurfingPikachuFrame17 ; 17
+	dw SurfingPikachuFrame18 ; 18
+	dw SurfingPikachuFrame19 ; 19
+	dw SurfingPikachuFrame1A ; 1a
+	dw SurfingPikachuFrame1B ; 1b
 
-Unkn_f943d:
+SurfingPikachuFrame00:
 	frame $00, 32
 	endanim
 
-Unkn_f9440:
+SurfingPikachuFrame01:
 	frame $01, 8
 	frame $02, 8
 	dorestart
 
-Unkn_f9445:
+SurfingPikachuFrame02:
 	frame $03, 8
 	frame $04, 8
 	dorestart
 
-Unkn_f944a:
+SurfingPikachuFrame03:
 	frame $05, 8
 	frame $06, 8
 	dorestart
 
-Unkn_f944f:
+SurfingPikachuFrame04:
 	frame $07, 8
 	frame $08, 8
 	dorestart
 
-Unkn_f9454:
+SurfingPikachuFrame05:
 	frame $09, 8
 	frame $0a, 8
 	dorestart
 
-Unkn_f9459:
+SurfingPikachuFrame06:
 	frame $0b, 8
 	frame $0c, 8
 	dorestart
 
-Unkn_f945e:
+SurfingPikachuFrame07:
 	frame $0d, 8
 	frame $0e, 8
 	dorestart
 
-Unkn_f9463:
+SurfingPikachuFrame08:
 	frame $01, 8, OAM_XFLIP, OAM_YFLIP
 	frame $02, 8, OAM_XFLIP, OAM_YFLIP
 	dorestart
 
-Unkn_f9468:
+SurfingPikachuFrame09:
 	frame $03, 8, OAM_XFLIP, OAM_YFLIP
 	frame $04, 8, OAM_XFLIP, OAM_YFLIP
 	dorestart
 
-Unkn_f946d:
+SurfingPikachuFrame0A:
 	frame $05, 8, OAM_XFLIP, OAM_YFLIP
 	frame $06, 8, OAM_XFLIP, OAM_YFLIP
 	dorestart
 
-Unkn_f9472:
+SurfingPikachuFrame0B:
 	frame $07, 8, OAM_XFLIP, OAM_YFLIP
 	frame $08, 8, OAM_XFLIP, OAM_YFLIP
 	dorestart
 
-Unkn_f9477:
+SurfingPikachuFrame0C:
 	frame $09, 8, OAM_XFLIP, OAM_YFLIP
 	frame $0a, 8, OAM_XFLIP, OAM_YFLIP
 	dorestart
 
-Unkn_f947c:
+SurfingPikachuFrame0D:
 	frame $0b, 8, OAM_XFLIP, OAM_YFLIP
 	frame $0c, 8, OAM_XFLIP, OAM_YFLIP
 	dorestart
 
-Unkn_f9481:
+SurfingPikachuFrame0E:
 	frame $0d, 8, OAM_XFLIP, OAM_YFLIP
 	frame $0e, 8, OAM_XFLIP, OAM_YFLIP
 	dorestart
 
-Unkn_f9486:
+SurfingPikachuFrame0F:
 	frame $11, 7
 	frame $12, 7
 	dorestart
 
-Unkn_f948b:
+SurfingPikachuFrame10:
 	frame $13, 2
 	frame $14, 2
 	dorepeat 8
 	frame $15, 2
 	endanim
 
-Unkn_f9494:
+SurfingPikachuFrame11:
 	frame $16, 32
 	frame $16, 32
 	delanim
 
-Unkn_f9499:
+SurfingPikachuFrame12:
 	frame $17, 32
 	frame $17, 32
 	delanim
 
-Unkn_f949e:
+SurfingPikachuFrame13:
 	frame $18, 32
 	endanim
 
-Unkn_f94a1:
+SurfingPikachuFrame15:
 	frame $1a, 4
 	dorepeat 1
 	frame $1a, 3
@@ -138,7 +138,7 @@ Unkn_f94a1:
 	frame $1a, 1
 	delanim
 
-Unkn_f94b0:
+SurfingPikachuFrame16:
 	frame $1b, 4
 	dorepeat 1
 	frame $1b, 3
@@ -148,7 +148,7 @@ Unkn_f94b0:
 	frame $1b, 1
 	delanim
 
-Unkn_f94bf:
+SurfingPikachuFrame17:
 	frame $1c, 4
 	dorepeat 1
 	frame $1c, 3
@@ -158,7 +158,7 @@ Unkn_f94bf:
 	frame $1c, 1
 	delanim
 
-Unkn_f94ce:
+SurfingPikachuFrame18:
 	frame $1d, 4
 	dorepeat 1
 	frame $1d, 3
@@ -168,7 +168,7 @@ Unkn_f94ce:
 	frame $1d, 1
 	delanim
 
-Unkn_f94dd:
+SurfingPikachuFrame19:
 	frame $1e, 4
 	dorepeat 1
 	frame $1e, 3
@@ -178,7 +178,7 @@ Unkn_f94dd:
 	frame $1e, 1
 	delanim
 
-Unkn_f94ec:
+SurfingPikachuFrame1A:
 	frame $1f, 4
 	dorepeat 1
 	frame $1f, 3
@@ -188,11 +188,11 @@ Unkn_f94ec:
 	frame $1f, 1
 	delanim
 
-Unkn_f94fb:
+SurfingPikachuFrame14:
 	frame $19, 1
 	delanim
 
-Unkn_f94fe:
+SurfingPikachuFrame1B:
 	frame $20, 7
 	frame $21, 7
 	frame $22, 7

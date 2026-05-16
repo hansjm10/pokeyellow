@@ -61,14 +61,14 @@ SleepEffect:
 	and SLP_MASK
 	jr z, .setSleepCounter
 	ld b, a
-	ld a, [wUnknownSerialFlag_d499]
+	ld a, [wStadiumRulesCup]
 	and a
-	jr z, .asm_3f1ba ; XXX stadium stuff?
+	jr z, .load_sleep_counter ; XXX stadium stuff?
 	ld a, b
 	and $3
 	jr z, .setSleepCounter
 	ld b, a
-.asm_3f1ba
+.load_sleep_counter
 	ld a, b
 	ld [de], a
 	call PlayCurrentMoveAnimation2
@@ -222,15 +222,15 @@ FreezeBurnParalyzeEffect:
 	ret z  ; return if they match
 	ld a, [wPlayerMoveEffect]
 	cp FREEZE_SIDE_EFFECT2 ; more stadium stuff
-	jr nz, .asm_3f2c7
-	ld a, [wUnknownSerialFlag_d499]
+	jr nz, .check_extra_effectiveness
+	ld a, [wStadiumRulesCup]
 	and a
 	ld a, FREEZE_SIDE_EFFECT1
 	ld b, 30 percent + 1
 	jr z, .regular_effectiveness
 	ld b, 10 percent + 1
 	jr .regular_effectiveness
-.asm_3f2c7
+.check_extra_effectiveness
 	cp PARALYZE_SIDE_EFFECT1 + 1
 	ld b, 10 percent + 1
 	jr c, .regular_effectiveness
@@ -287,15 +287,15 @@ FreezeBurnParalyzeEffect:
 	ret z
 	ld a, [wEnemyMoveEffect]
 	cp FREEZE_SIDE_EFFECT2 ; more stadium stuff
-	jr nz, .asm_3f341
-	ld a, [wUnknownSerialFlag_d499]
+	jr nz, .check_extra_effectiveness2
+	ld a, [wStadiumRulesCup]
 	and a
 	ld a, FREEZE_SIDE_EFFECT1
 	ld b, 30 percent + 1
 	jr z, .regular_effectiveness2
 	ld b, 10 percent + 1
 	jr .regular_effectiveness2
-.asm_3f341
+.check_extra_effectiveness2
 	cp PARALYZE_SIDE_EFFECT1 + 1
 	ld b, 10 percent + 1
 	jr c, .regular_effectiveness2
@@ -1551,7 +1551,7 @@ PlayBattleAnimationGotID:
 	push de
 	push bc
 	predef MoveAnimation
-	callfar Func_78e98
+	callfar RestoreScreenAfterBattleAnimation
 	pop bc
 	pop de
 	pop hl

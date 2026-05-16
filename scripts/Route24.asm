@@ -285,13 +285,13 @@ Route24Youngster2AfterBattleText:
 Route24CooltrainerM4Text:
 	text_asm
 	CheckEvent EVENT_54F
-	jr nz, .asm_515d5
+	jr nz, .already_got_charmander
 	ld hl, Route24Text_515de
 	call PrintText
 	call YesNoChoice
 	ld a, [wCurrentMenuItem]
 	and a
-	jr nz, .asm_515d0
+	jr nz, .declined_charmander
 	ld a, CHARMANDER
 	ld [wNamedObjectIndex], a
 	ld [wCurPartySpecies], a
@@ -311,13 +311,13 @@ Route24CooltrainerM4Text:
 	SetEvent EVENT_54F
 	jp TextScriptEnd
 
-.asm_515d0
+.declined_charmander
 	ld hl, Route24Text_515e9
-	jr .asm_515d8
+	jr .print_text
 
-.asm_515d5
+.already_got_charmander
 	ld hl, Route24Text_515ee
-.asm_515d8
+.print_text
 	call PrintText
 	jp TextScriptEnd
 

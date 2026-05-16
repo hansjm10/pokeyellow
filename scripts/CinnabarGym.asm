@@ -130,7 +130,7 @@ CinnabarGymGetOpponentTextScript:
 	jp DisplayTextID
 
 CinnabarGymOpenGateScript:
-	call CinnabarGymScript_753e9
+	call ResetCinnabarGymWrongAnswerFlag
 	ld a, [wIsInBattle]
 	cp $ff
 	jp z, CinnabarGymResetScripts
@@ -148,17 +148,17 @@ CinnabarGymOpenGateScript:
 	jr z, .no_sound
 	ld c, 30
 	call DelayFrames
-	call CinnabarGymScript_75023
-	call CinnabarGymScript_75041
+	call SetCinnabarGymTrainerDefeatedFlag
+	call UnlockCinnabarGymGate
 	call WaitForSoundToFinish
 	ld a, SFX_GO_INSIDE
 	call PlaySound
 	call WaitForSoundToFinish
-	jr .asm_75013
+	jr .finish
 .no_sound
-	call CinnabarGymScript_75023
-	call CinnabarGymScript_75041
-.asm_75013
+	call SetCinnabarGymTrainerDefeatedFlag
+	call UnlockCinnabarGymGate
+.finish
 	xor a
 	ld [wJoyIgnore], a
 	ld [wOpponentAfterWrongAnswer], a
@@ -167,7 +167,7 @@ CinnabarGymOpenGateScript:
 	ld [wCurMapScript], a
 	ret
 
-CinnabarGymScript_75023:
+SetCinnabarGymTrainerDefeatedFlag:
 	ld a, [wTrainerHeaderFlagBit]
 	ldh [hGymGateIndex], a
 	ld c, a
@@ -176,7 +176,7 @@ CinnabarGymScript_75023:
 	call CinnabarGymFlagAction
 	ret
 
-CinnabarGymScript_75032:
+CheckCinnabarGymTrainerDefeatedFlag:
 	ld a, [wTrainerHeaderFlagBit]
 	ldh [hGymGateIndex], a
 	ld c, a
@@ -185,7 +185,7 @@ CinnabarGymScript_75032:
 	call CinnabarGymFlagAction
 	ret
 
-CinnabarGymScript_75041:
+UnlockCinnabarGymGate:
 	ld a, [wTrainerHeaderFlagBit]
 	sub 2
 	ld c, a
@@ -196,7 +196,7 @@ CinnabarGymScript_75041:
 	ret
 
 CinnabarGymBlainePostBattleScript:
-	call CinnabarGymScript_753e9
+	call ResetCinnabarGymWrongAnswerFlag
 	ld a, [wIsInBattle]
 	cp $ff
 	jp z, CinnabarGymResetScripts
@@ -353,13 +353,13 @@ CinnabarGymSuperNerd2:
 	call CinnabarGymSetTrainerHeader
 	CheckEvent EVENT_BEAT_CINNABAR_GYM_TRAINER_1
 	jr nz, .defeated
-	call CinnabarGymScript_753f3
-	jr nz, .asm_75196
+	call CheckCinnabarGymWrongAnswerPending
+	jr nz, .battle
 	CheckEvent EVENT_CINNABAR_GYM_GATE1_UNLOCKED
-	jr nz, .asm_75196
+	jr nz, .battle
 	ld e, $00
-	jp CinnabarGymScript_753de
-.asm_75196
+	jp CinnabarGymPrintQuizTextScript
+.battle
 	ld hl, .BattleText
 	call PrintText
 	ld hl, .EndBattleText
@@ -388,13 +388,13 @@ CinnabarGymSuperNerd3:
 	call CinnabarGymSetTrainerHeader
 	CheckEvent EVENT_BEAT_CINNABAR_GYM_TRAINER_2
 	jr nz, .defeated
-	call CinnabarGymScript_753f3
-	jr nz, .asm_751dc
+	call CheckCinnabarGymWrongAnswerPending
+	jr nz, .battle
 	CheckEvent EVENT_CINNABAR_GYM_GATE2_UNLOCKED
-	jr nz, .asm_751dc
+	jr nz, .battle
 	ld e, $1
-	jp CinnabarGymScript_753de
-.asm_751dc
+	jp CinnabarGymPrintQuizTextScript
+.battle
 	ld hl, .BattleText
 	call PrintText
 	ld hl, .EndBattleText
@@ -423,13 +423,13 @@ CinnabarGymSuperNerd4:
 	call CinnabarGymSetTrainerHeader
 	CheckEvent EVENT_BEAT_CINNABAR_GYM_TRAINER_3
 	jr nz, .defeated
-	call CinnabarGymScript_753f3
-	jr nz, .asm_75222
+	call CheckCinnabarGymWrongAnswerPending
+	jr nz, .battle
 	CheckEvent EVENT_CINNABAR_GYM_GATE3_UNLOCKED
-	jr nz, .asm_75222
+	jr nz, .battle
 	ld e, $2
-	jp CinnabarGymScript_753de
-.asm_75222
+	jp CinnabarGymPrintQuizTextScript
+.battle
 	ld hl, .BattleText
 	call PrintText
 	ld hl, .EndBattleText
@@ -458,13 +458,13 @@ CinnabarGymSuperNerd5:
 	call CinnabarGymSetTrainerHeader
 	CheckEvent EVENT_BEAT_CINNABAR_GYM_TRAINER_4
 	jr nz, .defeated
-	call CinnabarGymScript_753f3
-	jr nz, .asm_75222
+	call CheckCinnabarGymWrongAnswerPending
+	jr nz, .battle
 	CheckEvent EVENT_CINNABAR_GYM_GATE4_UNLOCKED
-	jr nz, .asm_75222
+	jr nz, .battle
 	ld e, $3
-	jp CinnabarGymScript_753de
-.asm_75222
+	jp CinnabarGymPrintQuizTextScript
+.battle
 	ld hl, .BattleText
 	call PrintText
 	ld hl, .EndBattleText
@@ -493,13 +493,13 @@ CinnabarGymSuperNerd6:
 	call CinnabarGymSetTrainerHeader
 	CheckEvent EVENT_BEAT_CINNABAR_GYM_TRAINER_5
 	jr nz, .defeated
-	call CinnabarGymScript_753f3
-	jr nz, .asm_75222
+	call CheckCinnabarGymWrongAnswerPending
+	jr nz, .battle
 	CheckEvent EVENT_CINNABAR_GYM_GATE5_UNLOCKED
-	jr nz, .asm_75222
+	jr nz, .battle
 	ld e, $4
-	jp CinnabarGymScript_753de
-.asm_75222
+	jp CinnabarGymPrintQuizTextScript
+.battle
 	ld hl, .BattleText
 	call PrintText
 	ld hl, .EndBattleText
@@ -528,13 +528,13 @@ CinnabarGymSuperNerd7:
 	call CinnabarGymSetTrainerHeader
 	CheckEvent EVENT_BEAT_CINNABAR_GYM_TRAINER_6
 	jr nz, .defeated
-	call CinnabarGymScript_753f3
-	jr nz, .asm_75222
+	call CheckCinnabarGymWrongAnswerPending
+	jr nz, .battle
 	CheckEvent EVENT_CINNABAR_GYM_GATE6_UNLOCKED
-	jr nz, .asm_75222
+	jr nz, .battle
 	ld e, $5
-	jp CinnabarGymScript_753de
-.asm_75222
+	jp CinnabarGymPrintQuizTextScript
+.battle
 	ld hl, .BattleText
 	call PrintText
 	ld hl, .EndBattleText

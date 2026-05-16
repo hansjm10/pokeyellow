@@ -95,7 +95,7 @@ OverworldLoopLessDelay::
 	xor a
 	ld [wd435], a ; new yellow address
 	call IsSpriteOrSignInFrontOfPlayer
-	call Func_0ffe
+	call TryTalkingToPikachu
 	ldh a, [hTextID]
 	and a
 	jp z, OverworldLoop
@@ -228,7 +228,7 @@ OverworldLoopLessDelay::
 .noCollision
 	ld a, $08
 	ld [wWalkCounter], a
-	callfar Func_fcc08
+	callfar AppendPikachuFollowCommandForPlayerMovement
 	jr .moveAhead2
 
 .moveAhead
@@ -1746,16 +1746,16 @@ LoadWalkingPlayerSpriteGraphics::
 LoadSurfingPlayerSpriteGraphics2::
 	ld a, [wd472]
 	and a
-	jr z, .asm_0d75
+	jr z, .check_surfing_pikachu_in_party
 	dec a
 	jr z, LoadSurfingPlayerSpriteGraphics
 	dec a
-	jr z, .asm_0d7c
-.asm_0d75
+	jr z, .load_surfing_pikachu_sprite
+.check_surfing_pikachu_in_party
 	ld a, [wd471]
 	bit 6, a
 	jr z, LoadSurfingPlayerSpriteGraphics
-.asm_0d7c
+.load_surfing_pikachu_sprite
 	ld b, BANK(SurfingPikachuSprite)
 	ld de, SurfingPikachuSprite
 	jr LoadPlayerSpriteGraphicsCommon
@@ -1792,11 +1792,11 @@ LoadPlayerSpriteGraphicsCommon::
 ; function to load data from the map header
 LoadMapHeader::
 	farcall MarkTownVisitedAndLoadToggleableObjects
-	jr asm_0dbd
+	jr LoadMapHeaderCommon
 
-Func_0db5:: ; unreferenced
+LoadMapHeaderWithoutMarkingTownVisited:: ; unreferenced
 	farcall LoadToggleableObjectData
-asm_0dbd:
+LoadMapHeaderCommon:
 	ld a, [wCurMapTileset]
 	ld [wUnusedCurMapTilesetCopy], a
 	ld a, [wCurMap]
@@ -2128,7 +2128,7 @@ IsSpinning::
 	ret z ; no spinning
 	farjp LoadSpinnerArrowTiles ; spin while moving
 
-Func_0ffe::
+TryTalkingToPikachu::
 	jpfar IsPlayerTalkingToPikachu
 
 InitSprites::

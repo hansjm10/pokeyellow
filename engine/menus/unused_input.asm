@@ -75,14 +75,14 @@ HandleMenuInputPokemonSelectionDuplicate: ; unreferenced
 PlaceMenuCursorDuplicate:
 	ld a, [wTopMenuItemY]
 	and a
-	jr z, .asm_f5ac0
+	jr z, .got_top_row
 	hlcoord 0, 0
 	ld bc, SCREEN_WIDTH
 .loop
 	add hl, bc
 	dec a
 	jr nz, .loop
-.asm_f5ac0
+.got_top_row
 	ld a, [wTopMenuItemX]
 	ld b, $0
 	ld c, a
@@ -90,34 +90,34 @@ PlaceMenuCursorDuplicate:
 	push hl
 	ld a, [wLastMenuItem]
 	and a
-	jr z, .asm_f5ad5
+	jr z, .got_last_menu_item_row
 	ld bc, $28
 .loop2
 	add hl, bc
 	dec a
 	jr nz, .loop2
-.asm_f5ad5
+.got_last_menu_item_row
 	ld a, [hl]
 	cp '▶'
-	jr nz, .asm_f5ade
+	jr nz, .old_cursor_cleared
 	ld a, [wTileBehindCursor]
 	ld [hl], a
-.asm_f5ade
+.old_cursor_cleared
 	pop hl
 	ld a, [wCurrentMenuItem]
 	and a
-	jr z, .asm_f5aec
+	jr z, .got_current_menu_item_row
 	ld bc, $28
 .loop3
 	add hl, bc
 	dec a
 	jr nz, .loop3
-.asm_f5aec
+.got_current_menu_item_row
 	ld a, [hl]
 	cp '▶'
-	jr z, .asm_f5af4
+	jr z, .place_cursor
 	ld [wTileBehindCursor], a
-.asm_f5af4
+.place_cursor
 	ld a, '▶'
 	ld [hl], a
 	ld a, l

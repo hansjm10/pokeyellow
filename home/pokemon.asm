@@ -255,14 +255,14 @@ HandlePartyMenuInput::
 	ld [wPartyMenuAnimMonEnabled], a
 	ld a, [wCurrentMenuItem]
 	ld [wPartyAndBillsPCSavedMenuItem], a
-	jr nz, .asm_1258
+	jr nz, .handle_selection
 	ld a, [wCurrentMenuItem]
 	ld [wWhichPokemon], a
 	callfar IsThisPartyMonStarterPikachu
-	jr nc, .asm_1258
+	jr nc, .handle_selection
 	call CheckPikachuFollowingPlayer
-	jr nz, .asm_128f
-.asm_1258
+	jr nz, .cannot_choose_following_pikachu
+.handle_selection
 	pop af
 	call PlaceUnfilledArrowMenuCursor
 	ld b, a
@@ -290,7 +290,7 @@ HandlePartyMenuInput::
 	call BankswitchBack
 	and a
 	ret
-.asm_128f
+.cannot_choose_following_pikachu
 	pop af
 	ld hl, PartyMenuText_12cc
 	call PrintText

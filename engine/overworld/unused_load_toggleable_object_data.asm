@@ -1,4 +1,4 @@
-Func_f0a54: ; unreferenced
+UnusedToggleableObjectDataStub: ; unreferenced
 	ret
 
 LoadToggleableObjectData::

@@ -1,20 +1,20 @@
 VermilionCityPrintOfficerJennyText::
 	CheckEvent EVENT_GOT_SQUIRTLE_FROM_OFFICER_JENNY
-	jr nz, .asm_f1a69
+	jr nz, .already_got_squirtle
 	ld a, [wBeatGymFlags]
 	bit BIT_THUNDERBADGE, a
-	jr nz, .asm_f1a24
+	jr nz, .offer_squirtle
 	ld hl, OfficerJennyText1
 	call PrintText
 	ret
 
-.asm_f1a24
+.offer_squirtle
 	ld hl, OfficerJennyText2
 	call PrintText
 	call YesNoChoice
 	ld a, [wCurrentMenuItem]
 	and a
-	jr nz, .asm_f1a62
+	jr nz, .declined_squirtle
 	ld a, SQUIRTLE
 	ld [wNamedObjectIndex], a
 	ld [wCurPartySpecies], a
@@ -34,12 +34,12 @@ VermilionCityPrintOfficerJennyText::
 	SetEvent EVENT_GOT_SQUIRTLE_FROM_OFFICER_JENNY
 	ret
 
-.asm_f1a62
+.declined_squirtle
 	ld hl, OfficerJennyText4
 	call PrintText
 	ret
 
-.asm_f1a69
+.already_got_squirtle
 	ld hl, OfficerJennyText5
 	call PrintText
 	ret

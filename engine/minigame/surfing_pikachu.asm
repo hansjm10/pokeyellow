@@ -92,7 +92,7 @@ SurfingPikachu_CheckPressedSelect:
 	and PAD_SELECT
 	ret
 
-Func_f80b7:
+UnusedSurfingMinigameToggleStartFlag:
 	ldh a, [hJoyPressed]
 	and PAD_START
 	ret z
@@ -248,8 +248,8 @@ SurfingPikachuMinigame_LoadGFXAndLayout:
 	ld bc, $14
 	ld a, $74
 	call FillMemory
-	call Func_f81ff
-	call Func_f8256
+	call SurfingMinigame_InitStatusOAM
+	call SurfingMinigame_DrawHUDTilemap
 	ld a, $e3
 	ldh [rLCDC], a
 	call SurfingPikachuMinigame_SetBGPals
@@ -276,32 +276,32 @@ SurfingPikachuMinigame_SetBGPals:
 	call UpdateCGBPal_BGP
 	ret
 
-Func_f81ff:
+SurfingMinigame_InitStatusOAM:
 	ld hl, wSpriteDataEnd
-	ld de, Unkn_f8249
+	ld de, SurfingMinigameHPDigitOAMTiles
 	ld b, $97
 	ld c, $80
 	ld a, $4
-	call Func_f8233
-	ld de, Unkn_f8248
+	call SurfingMinigame_LoadStatusOAMGroup
+	ld de, SurfingMinigameHPSeparatorOAMTiles
 	ld b, $96
 	ld c, $50
 	ld a, $1
-	call Func_f8233
-	ld de, Unkn_f824d
+	call SurfingMinigame_LoadStatusOAMGroup
+	ld de, SurfingMinigameHPLabelOAMTiles
 	ld b, $14
 	ld c, $20
 	ld a, $5
-	call Func_f8233
-	ld de, Unkn_f8252
+	call SurfingMinigame_LoadStatusOAMGroup
+	ld de, SurfingMinigameHPLabelShadowOAMTiles
 	ld b, $20
 	ld c, $80
 	ld a, $4
-	call Func_f8233
+	call SurfingMinigame_LoadStatusOAMGroup
 	ret
 
-Func_f8233:
-.asm_f8233
+SurfingMinigame_LoadStatusOAMGroup:
+.loop
 	push af
 	ld [hl], b
 	inc hl
@@ -318,41 +318,41 @@ Func_f8233:
 	inc de
 	pop af
 	dec a
-	jr nz, .asm_f8233
+	jr nz, .loop
 	ret
 
-Unkn_f8248:
+SurfingMinigameHPSeparatorOAMTiles:
 	db $fe
 
-Unkn_f8249:
+SurfingMinigameHPDigitOAMTiles:
 	db $d0
 	db $d0
 	db $d0
 	db $d0
 
-Unkn_f824d:
+SurfingMinigameHPLabelOAMTiles:
 	db $ec
 	db $ed
 	db $ed
 	db $ee
 	db $ef
 
-Unkn_f8252:
+SurfingMinigameHPLabelShadowOAMTiles:
 	db $ec
 	db $ed
 	db $ee
 	db $ef
 
-Func_f8256:
+SurfingMinigame_DrawHUDTilemap:
 	ld de, $9c21
-	ld hl, Unkn_f8279
+	ld hl, SurfingMinigameHUDTilemap
 	ld c, $9
-.asm_f825e
+.loop
 	ld a, [hli]
 	ld [de], a
 	inc de
 	dec c
-	jr nz, .asm_f825e
+	jr nz, .loop
 	ld hl, $9c01
 	ld [hl], $15
 	ld hl, $9c02
@@ -363,7 +363,7 @@ Func_f8256:
 	ld [hl], $1c
 	ret
 
-Unkn_f8279:
+SurfingMinigameHUDTilemap:
 	db $17
 	db $18
 	db $19
@@ -389,8 +389,8 @@ RunSurfingMinigameRoutine:
 .Jumptable:
 	dw SurfingMinigameRoutine_SpawnPikachu ; 0
 	dw SurfingMinigame_RunGame ; 1
-	dw Func_f8324 ; 2
-	dw Func_f835c ; 3
+	dw SurfingMinigame_WaitBeforeResults ; 2
+	dw SurfingMinigame_ScrollToResultsScreen ; 3
 	dw SurfingMinigame_DrawResultsScreenAndWait ; 4
 	dw SurfingMinigame_WriteHPLeftAndWait ; 5
 	dw SurfingMinigame_WriteRadnessAndWait ; 6
@@ -414,7 +414,7 @@ SurfingMinigameRoutine_SpawnPikachu:
 SurfingMinigame_RunGame:
 	ld a, [wc5e5]
 	cp $18
-	jr nc, .asm_f82e8
+	jr nc, .finished_course
 	ld hl, wSurfingMinigamePikachuHP
 	ld a, [hli]
 	or [hl]
@@ -431,7 +431,7 @@ SurfingMinigame_RunGame:
 	call SurfingMinigame_DrawHP
 	ret
 
-.asm_f82e8
+.finished_course
 	ld hl, wSurfingMinigameRoutineNumber
 	inc [hl]
 	xor a
@@ -463,7 +463,7 @@ SurfingMinigame_RunGame:
 	ld [wc634], a
 	ret
 
-Func_f8324:
+SurfingMinigame_WaitBeforeResults:
 	call SurfingMinigame_RunDelayTimer
 	jr c, .done_delay
 	xor a
@@ -471,7 +471,7 @@ Func_f8324:
 	call SurfingMinigame_UpdateLYOverrides
 	call SurfingMinigame_SetPikachuHeight
 	call SurfingMinigame_ReadBGMapBuffer
-	call Func_f8c97
+	call SurfingMinigame_FastScrollAndGenerateBGMap
 	call SurfingMinigame_ResetMusicTempo
 	ret
 
@@ -491,10 +491,10 @@ Func_f8324:
 	ld [wSurfingMinigameSCXHi], a
 	ret
 
-Func_f835c:
+SurfingMinigame_ScrollToResultsScreen:
 	ldh a, [hSCX]
 	and a
-	jr z, .asm_f837b
+	jr z, .done
 	call SurfingMinigame_UpdateLYOverrides
 	call SurfingMinigame_SetPikachuHeight
 	call SurfingMinigame_ReadBGMapBuffer
@@ -509,7 +509,7 @@ Func_f835c:
 	call SurfingMinigame_GenerateBGMap
 	ret
 
-.asm_f837b
+.done
 	xor a
 	ld [wSurfingMinigamePikachuSpeed], a
 	ld [wSurfingMinigamePikachuSpeed + 1], a
@@ -666,7 +666,7 @@ SurfingMinigameAnimatedObjectFn_Pikachu:
 	ld a, [wc5d2]
 	ld e, a
 	ld d, $0
-	ld hl, Jumptable_f847f
+	ld hl, SurfingMinigamePikachuStatePointers
 	add hl, de
 	add hl, de
 	ld a, [hli]
@@ -674,32 +674,32 @@ SurfingMinigameAnimatedObjectFn_Pikachu:
 	ld l, a
 	jp hl
 
-Jumptable_f847f:
-	dw Func_f848d
+SurfingMinigamePikachuStatePointers:
+	dw SurfingMinigamePikachuState_Riding
 	dw SurfingMinigame_ScoreCurrentWave
-	dw Func_f8516
-	dw Func_f8545
-	dw Func_f8561
-	dw Func_f856d
-	dw Func_f8579
+	dw SurfingMinigamePikachuState_LandingBounce
+	dw SurfingMinigamePikachuState_Crash
+	dw SurfingMinigamePikachuState_GameOver
+	dw SurfingMinigamePikachuState_StartResultsPose
+	dw SurfingMinigamePikachuState_ResultsBounce
 
-Func_f848d:
+SurfingMinigamePikachuState_Riding:
 	ld a, [wc630]
 	and a
-	jr nz, .asm_f84d2
-	call Func_f87b5
+	jr nz, .game_over
+	call SurfingMinigame_SpawnWaveSplash
 	ld a, [wSurfingMinigamePikachuObjectHeight]
 	ld hl, ANIM_OBJ_Y_COORD
 	add hl, bc
 	ld [hl], a
-	call Func_f871e
+	call SurfingMinigame_CheckWaveLaunch
 	jr c, .splash
-	call Func_f8742
+	call SurfingMinigame_UpdatePikachuFrameForWave
 	call SurfingMinigame_SpeedUpPikachu
 	ret
 
 .splash
-	call Func_f8742
+	call SurfingMinigame_UpdatePikachuFrameForWave
 	ld a, $1 ; on a wave
 	ld [wc5d2], a
 	xor a
@@ -720,13 +720,13 @@ Func_f848d:
 	call PlaySound
 	ret
 
-.asm_f84d2
+.game_over
 	xor a
 	ld [wSurfingMinigamePikachuSpeed], a
 	ld [wSurfingMinigamePikachuSpeed + 1], a
 	ld a, $4
 	ld [wc5d2], a
-	call Func_f8742
+	call SurfingMinigame_UpdatePikachuFrameForWave
 	ret
 
 SurfingMinigame_ScoreCurrentWave:
@@ -756,12 +756,12 @@ SurfingMinigame_ScoreCurrentWave:
 	call PlaySound
 	ret
 
-Func_f8516:
+SurfingMinigamePikachuState_LandingBounce:
 	ld hl, ANIM_OBJ_FIELD_C
 	add hl, bc
 	ld a, [hl]
 	cp $20
-	jr nc, .asm_f8539
+	jr nc, .done
 	inc [hl]
 	inc [hl]
 	inc [hl]
@@ -771,14 +771,14 @@ Func_f8516:
 	ld hl, ANIM_OBJ_Y_OFFSET
 	add hl, bc
 	ld [hl], a
-	call Func_f87b5
+	call SurfingMinigame_SpawnWaveSplash
 	ld a, [wSurfingMinigamePikachuObjectHeight]
 	ld hl, ANIM_OBJ_Y_COORD
 	add hl, bc
 	ld [hl], a
 	ret
 
-.asm_f8539
+.done
 	ld hl, ANIM_OBJ_Y_OFFSET
 	add hl, bc
 	ld [hl], $0
@@ -786,11 +786,11 @@ Func_f8516:
 	ld [wc5d2], a
 	ret
 
-Func_f8545:
+SurfingMinigamePikachuState_Crash:
 	ld hl, wc5e1
 	ld a, [hl]
 	and a
-	jr z, .asm_f8556
+	jr z, .done
 	dec [hl]
 	ld a, [wSurfingMinigamePikachuObjectHeight]
 	ld hl, ANIM_OBJ_Y_COORD
@@ -798,22 +798,22 @@ Func_f8545:
 	ld [hl], a
 	ret
 
-.asm_f8556
+.done
 	ld a, $0
 	ld [wc5d2], a
 	ld a, $4
 	call SetCurrentAnimatedObjectCallbackAndResetFrameStateRegisters
 	ret
 
-Func_f8561:
+SurfingMinigamePikachuState_GameOver:
 	ld a, [wSurfingMinigamePikachuObjectHeight]
 	ld hl, ANIM_OBJ_Y_COORD
 	add hl, bc
 	ld [hl], a
-	call Func_f8742
+	call SurfingMinigame_UpdatePikachuFrameForWave
 	ret
 
-Func_f856d:
+SurfingMinigamePikachuState_StartResultsPose:
 	ld a, $f
 	call SetCurrentAnimatedObjectCallbackAndResetFrameStateRegisters
 	ld hl, ANIM_OBJ_FIELD_C
@@ -821,7 +821,7 @@ Func_f856d:
 	ld [hl], $0
 	ret
 
-Func_f8579:
+SurfingMinigamePikachuState_ResultsBounce:
 	ld hl, ANIM_OBJ_FIELD_C
 	add hl, bc
 	ld a, [hl]
@@ -829,7 +829,7 @@ Func_f8579:
 	inc [hl]
 	and $3f
 	cp $20
-	jr c, .asm_f8591
+	jr c, .clear_y_offset
 	ld d, $10
 	call SurfingPikachu_Sine
 	ld hl, ANIM_OBJ_Y_OFFSET
@@ -837,7 +837,7 @@ Func_f8579:
 	ld [hl], a
 	ret
 
-.asm_f8591
+.clear_y_offset
 	ld hl, ANIM_OBJ_Y_OFFSET
 	add hl, bc
 	ld [hl], $0
@@ -1087,29 +1087,29 @@ SufingMinigame_ReduceSpeedBy128:
 	ld [wSurfingMinigamePikachuSpeed], a
 	ret
 
-Func_f871e:
+SurfingMinigame_CheckWaveLaunch:
 	ldh a, [hSCX]
 	and $7
 	cp $3
-	jr c, .asm_f8740
+	jr c, .no_launch
 	cp $5
-	jr nc, .asm_f8740
+	jr nc, .no_launch
 	ld a, [wSurfingMinigameBGMapReadBuffer]
 	cp $14
-	jr nz, .asm_f8740
+	jr nz, .no_launch
 	call SufingMinigame_GetSpeedDividedBy32
 	cp $a
-	jr c, .asm_f8740
+	jr c, .no_launch
 	ld [wc5ec], a
-	call Func_f9284
+	call SurfingMinigame_ResetPikachuJumpArc
 	scf
 	ret
 
-.asm_f8740
+.no_launch
 	and a
 	ret
 
-Func_f8742:
+SurfingMinigame_UpdatePikachuFrameForWave:
 	ldh a, [hSCX]
 	and $7
 	cp $3
@@ -1118,25 +1118,25 @@ Func_f8742:
 	ret nc
 	ld a, [wSurfingMinigameBGMapReadBuffer]
 	cp $6
-	jr z, .asm_f8766
+	jr z, .uphill_tile
 	cp $14
-	jr z, .asm_f8766
+	jr z, .uphill_tile
 	cp $7
-	jr z, .asm_f876a
-	call Func_f8778
+	jr z, .downhill_tile
+	call SurfingMinigame_UpdateNeutralSurfFrame
 	ld a, $4
 	ld hl, ANIM_OBJ_FRAME_SET
 	add hl, bc
 	ld [hl], a
 	ret
 
-.asm_f8766
+.uphill_tile
 	ld a, $6
-	jr .asm_f876c
+	jr .apply_wave_frame
 
-.asm_f876a
+.downhill_tile
 	ld a, $2
-.asm_f876c
+.apply_wave_frame
 	ld e, a
 	ld a, [wc5de]
 	dec a
@@ -1146,7 +1146,7 @@ Func_f8742:
 	ld [hl], a
 	ret
 
-Func_f8778:
+SurfingMinigame_UpdateNeutralSurfFrame:
 	ld hl, wc5e0
 	ld a, [hl]
 	inc [hl]
@@ -1154,28 +1154,28 @@ Func_f8778:
 	ret nz
 	ld a, [wc5df]
 	and a
-	jr z, .asm_f8796
+	jr z, .increasing
 	ld a, [wc5de]
 	and a
-	jr z, .asm_f8791
+	jr z, .switch_to_increasing
 	dec a
 	ld [wc5de], a
 	ret
 
-.asm_f8791
+.switch_to_increasing
 	xor a
 	ld [wc5df], a
 	ret
 
-.asm_f8796
+.increasing
 	ld a, [wc5de]
 	cp $2
-	jr z, .asm_f87a2
+	jr z, .switch_to_decreasing
 	inc a
 	ld [wc5de], a
 	ret
 
-.asm_f87a2
+.switch_to_decreasing
 	ld a, $1
 	ld [wc5df], a
 	ret
@@ -1191,7 +1191,7 @@ SufingMinigame_GetSpeedDividedBy32:
 	ld a, h
 	ret
 
-Func_f87b5:
+SurfingMinigame_SpawnWaveSplash:
 	ld hl, wc5eb
 	ld a, [hl]
 	inc [hl]
@@ -1242,7 +1242,7 @@ Func_f87b5:
 	add [hl]
 	ret
 
-Func_f87fb:
+SurfingMinigameAnimatedObjectFn_MoveRightToX58:
 	ld hl, ANIM_OBJ_X_COORD
 	add hl, bc
 	ld a, [hl]
@@ -1252,7 +1252,7 @@ Func_f87fb:
 	ld [hl], a
 	ret
 
-Func_f8807: ; unreferenced
+UnusedSurfingMinigameAnimatedObjectFn_Mask: ; unreferenced
 	call MaskCurrentAnimatedObjectStruct
 	ret
 
@@ -1372,25 +1372,25 @@ SurfingMinigame_ReadBGMapBuffer:
 SurfingMinigame_SetPikachuHeight:
 	ldh a, [hSCX]
 	and $8
-	jr nz, .asm_f88b9
+	jr nz, .use_next_wave_height
 	ld hl, wSurfingMinigameWaveHeight + 7
-	jr .asm_f88bc
+	jr .got_wave_height
 
-.asm_f88b9
+.use_next_wave_height
 	ld hl, wSurfingMinigameWaveHeight + 8
-.asm_f88bc
+.got_wave_height
 	ld a, [wSurfingMinigameBGMapReadBuffer]
 	cp $6
-	jr z, .asm_f88d0
+	jr z, .uphill_tile
 	cp $14
-	jr z, .asm_f88d0
+	jr z, .uphill_tile
 	cp $7
-	jr z, .asm_f88db
+	jr z, .downhill_tile
 	ld a, [hl]
 	ld [wSurfingMinigamePikachuObjectHeight], a
 	ret
 
-.asm_f88d0
+.uphill_tile
 	ldh a, [hSCX]
 	and $7
 	ld e, a
@@ -1399,7 +1399,7 @@ SurfingMinigame_SetPikachuHeight:
 	ld [wSurfingMinigamePikachuObjectHeight], a
 	ret
 
-.asm_f88db
+.downhill_tile
 	ldh a, [hSCX]
 	and $7
 	add [hl]
@@ -1850,7 +1850,7 @@ SurfingMinigame_AddRadness:
 	ld [wSurfingMinigameRadnessScore + 1], a
 	ret
 
-Func_f8c97:
+SurfingMinigame_FastScrollAndGenerateBGMap:
 	ld a, $a0
 	ld [wSurfingMinigameXOffset], a
 	ldh a, [hSCX]
@@ -1944,7 +1944,7 @@ SurfingMinigame_GenerateBGMap:
 	push hl
 	ld l, a
 	ld h, $0
-	ld de, Unkn_f96e5
+	ld de, SurfingMinigameWaveMetatileTilemap
 	add hl, hl
 	add hl, hl
 	add hl, de
@@ -1970,7 +1970,7 @@ SurfingMinigame_GetWaveDataPointers:
 	ld a, [wSurfingMinigameWaveFunctionNumber]
 	ld e, a
 	ld d, $0
-	ld hl, Jumptable_f8d53
+	ld hl, SurfingMinigameWaveFunctionPointers
 	add hl, de
 	add hl, de
 	ld a, [hli]
@@ -1978,141 +1978,141 @@ SurfingMinigame_GetWaveDataPointers:
 	ld l, a
 	jp hl
 
-Jumptable_f8d53:
+SurfingMinigameWaveFunctionPointers:
 	dw SurfingMinigameWaveFunction_NoWave ; 00
 
-	dw Func_f8f28 ; 01
-	dw Func_f8f31 ; 02
-	dw Func_f8f3a ; 03
-	dw Func_f8f43 ; 04
-	dw Func_f8e7d ; 05
-	dw Func_f8f4c ; 06
-	dw Func_f8f55 ; 07
-	dw Func_f8f5e ; 08
-	dw Func_f8e7d ; 09
-	dw Func_f8e7d ; 0a
-	dw Func_f8e7d ; 0b
-	dw Func_f8e7d ; 0c
-	dw Func_f8f94 ; 0d
+	dw SurfingMinigameWaveFunction_Type01 ; 01
+	dw SurfingMinigameWaveFunction_Type02 ; 02
+	dw SurfingMinigameWaveFunction_Type03 ; 03
+	dw SurfingMinigameWaveFunction_Type04 ; 04
+	dw SurfingMinigameWaveFunction_Flat ; 05
+	dw SurfingMinigameWaveFunction_Type06 ; 06
+	dw SurfingMinigameWaveFunction_Type07 ; 07
+	dw SurfingMinigameWaveFunction_Type08 ; 08
+	dw SurfingMinigameWaveFunction_Flat ; 09
+	dw SurfingMinigameWaveFunction_Flat ; 0a
+	dw SurfingMinigameWaveFunction_Flat ; 0b
+	dw SurfingMinigameWaveFunction_Flat ; 0c
+	dw SurfingMinigameWaveFunction_ResetFlat ; 0d
 
-	dw Func_f8ec5 ; 0e
-	dw Func_f8ece ; 0f
-	dw Func_f8ed7 ; 10
-	dw Func_f8ee0 ; 11
-	dw Func_f8ee9 ; 12
-	dw Func_f8ef2 ; 13
-	dw Func_f8e7d ; 14
-	dw Func_f8e7d ; 15
-	dw Func_f8e7d ; 16
-	dw Func_f8e7d ; 17
-	dw Func_f8e7d ; 18
-	dw Func_f8f94 ; 19
+	dw SurfingMinigameWaveFunction_Type0E ; 0e
+	dw SurfingMinigameWaveFunction_Type0F ; 0f
+	dw SurfingMinigameWaveFunction_Type10 ; 10
+	dw SurfingMinigameWaveFunction_Type11 ; 11
+	dw SurfingMinigameWaveFunction_Type12 ; 12
+	dw SurfingMinigameWaveFunction_Type13 ; 13
+	dw SurfingMinigameWaveFunction_Flat ; 14
+	dw SurfingMinigameWaveFunction_Flat ; 15
+	dw SurfingMinigameWaveFunction_Flat ; 16
+	dw SurfingMinigameWaveFunction_Flat ; 17
+	dw SurfingMinigameWaveFunction_Flat ; 18
+	dw SurfingMinigameWaveFunction_ResetFlat ; 19
 
-	dw Func_f8efb ; 1a
-	dw Func_f8f04 ; 1b
-	dw Func_f8f0d ; 1c
-	dw Func_f8f16 ; 1d
-	dw Func_f8f1f ; 1e
-	dw Func_f8efb ; 1f
-	dw Func_f8f04 ; 20
-	dw Func_f8f0d ; 21
-	dw Func_f8f16 ; 22
-	dw Func_f8f1f ; 23
-	dw Func_f8e7d ; 24
-	dw Func_f8e7d ; 25
-	dw Func_f8e7d ; 26
-	dw Func_f8e7d ; 27
-	dw Func_f8f94 ; 28
+	dw SurfingMinigameWaveFunction_Type1A ; 1a
+	dw SurfingMinigameWaveFunction_Type1B ; 1b
+	dw SurfingMinigameWaveFunction_Type1C ; 1c
+	dw SurfingMinigameWaveFunction_Type1D ; 1d
+	dw SurfingMinigameWaveFunction_Type1E ; 1e
+	dw SurfingMinigameWaveFunction_Type1A ; 1f
+	dw SurfingMinigameWaveFunction_Type1B ; 20
+	dw SurfingMinigameWaveFunction_Type1C ; 21
+	dw SurfingMinigameWaveFunction_Type1D ; 22
+	dw SurfingMinigameWaveFunction_Type1E ; 23
+	dw SurfingMinigameWaveFunction_Flat ; 24
+	dw SurfingMinigameWaveFunction_Flat ; 25
+	dw SurfingMinigameWaveFunction_Flat ; 26
+	dw SurfingMinigameWaveFunction_Flat ; 27
+	dw SurfingMinigameWaveFunction_ResetFlat ; 28
 
-	dw Func_f8f28 ; 29
-	dw Func_f8f31 ; 2a
-	dw Func_f8f3a ; 2b
-	dw Func_f8f43 ; 2c
-	dw Func_f8e7d ; 2d
-	dw Func_f8e7d ; 2e
-	dw Func_f8e7d ; 2f
-	dw Func_f8e7d ; 30
-	dw Func_f8f94 ; 31
+	dw SurfingMinigameWaveFunction_Type01 ; 29
+	dw SurfingMinigameWaveFunction_Type02 ; 2a
+	dw SurfingMinigameWaveFunction_Type03 ; 2b
+	dw SurfingMinigameWaveFunction_Type04 ; 2c
+	dw SurfingMinigameWaveFunction_Flat ; 2d
+	dw SurfingMinigameWaveFunction_Flat ; 2e
+	dw SurfingMinigameWaveFunction_Flat ; 2f
+	dw SurfingMinigameWaveFunction_Flat ; 30
+	dw SurfingMinigameWaveFunction_ResetFlat ; 31
 
-	dw Func_f8f4c ; 32
-	dw Func_f8f55 ; 33
-	dw Func_f8f5e ; 34
-	dw Func_f8f4c ; 35
-	dw Func_f8f55 ; 36
-	dw Func_f8f5e ; 37
-	dw Func_f8f4c ; 38
-	dw Func_f8f55 ; 39
-	dw Func_f8f5e ; 3a
-	dw Func_f8e7d ; 3b
-	dw Func_f8e7d ; 3c
-	dw Func_f8e7d ; 3d
-	dw Func_f8e7d ; 3e
-	dw Func_f8f94 ; 3f
+	dw SurfingMinigameWaveFunction_Type06 ; 32
+	dw SurfingMinigameWaveFunction_Type07 ; 33
+	dw SurfingMinigameWaveFunction_Type08 ; 34
+	dw SurfingMinigameWaveFunction_Type06 ; 35
+	dw SurfingMinigameWaveFunction_Type07 ; 36
+	dw SurfingMinigameWaveFunction_Type08 ; 37
+	dw SurfingMinigameWaveFunction_Type06 ; 38
+	dw SurfingMinigameWaveFunction_Type07 ; 39
+	dw SurfingMinigameWaveFunction_Type08 ; 3a
+	dw SurfingMinigameWaveFunction_Flat ; 3b
+	dw SurfingMinigameWaveFunction_Flat ; 3c
+	dw SurfingMinigameWaveFunction_Flat ; 3d
+	dw SurfingMinigameWaveFunction_Flat ; 3e
+	dw SurfingMinigameWaveFunction_ResetFlat ; 3f
 
-	dw Func_f8f67 ; 40
-	dw Func_f8f70 ; 41
-	dw Func_f8efb ; 42
-	dw Func_f8f04 ; 43
-	dw Func_f8f0d ; 44
-	dw Func_f8f16 ; 45
-	dw Func_f8f1f ; 46
-	dw Func_f8f67 ; 47
-	dw Func_f8f70 ; 48
-	dw Func_f8e7d ; 49
-	dw Func_f8e7d ; 4a
-	dw Func_f8e7d ; 4b
-	dw Func_f8f94 ; 4c
+	dw SurfingMinigameWaveFunction_Type40 ; 40
+	dw SurfingMinigameWaveFunction_Type41 ; 41
+	dw SurfingMinigameWaveFunction_Type1A ; 42
+	dw SurfingMinigameWaveFunction_Type1B ; 43
+	dw SurfingMinigameWaveFunction_Type1C ; 44
+	dw SurfingMinigameWaveFunction_Type1D ; 45
+	dw SurfingMinigameWaveFunction_Type1E ; 46
+	dw SurfingMinigameWaveFunction_Type40 ; 47
+	dw SurfingMinigameWaveFunction_Type41 ; 48
+	dw SurfingMinigameWaveFunction_Flat ; 49
+	dw SurfingMinigameWaveFunction_Flat ; 4a
+	dw SurfingMinigameWaveFunction_Flat ; 4b
+	dw SurfingMinigameWaveFunction_ResetFlat ; 4c
 
-	dw Func_f8ec5 ; 4d
-	dw Func_f8ece ; 4e
-	dw Func_f8ed7 ; 4f
-	dw Func_f8ee0 ; 50
-	dw Func_f8ee9 ; 51
-	dw Func_f8ef2 ; 52
-	dw Func_f8e7d ; 53
-	dw Func_f8f67 ; 54
-	dw Func_f8f70 ; 55
-	dw Func_f8f67 ; 56
-	dw Func_f8f70 ; 57
-	dw Func_f8e7d ; 58
-	dw Func_f8e7d ; 59
-	dw Func_f8e7d ; 5a
-	dw Func_f8f94 ; 5b
+	dw SurfingMinigameWaveFunction_Type0E ; 4d
+	dw SurfingMinigameWaveFunction_Type0F ; 4e
+	dw SurfingMinigameWaveFunction_Type10 ; 4f
+	dw SurfingMinigameWaveFunction_Type11 ; 50
+	dw SurfingMinigameWaveFunction_Type12 ; 51
+	dw SurfingMinigameWaveFunction_Type13 ; 52
+	dw SurfingMinigameWaveFunction_Flat ; 53
+	dw SurfingMinigameWaveFunction_Type40 ; 54
+	dw SurfingMinigameWaveFunction_Type41 ; 55
+	dw SurfingMinigameWaveFunction_Type40 ; 56
+	dw SurfingMinigameWaveFunction_Type41 ; 57
+	dw SurfingMinigameWaveFunction_Flat ; 58
+	dw SurfingMinigameWaveFunction_Flat ; 59
+	dw SurfingMinigameWaveFunction_Flat ; 5a
+	dw SurfingMinigameWaveFunction_ResetFlat ; 5b
 
-	dw Func_f8efb ; 5c
-	dw Func_f8f04 ; 5d
-	dw Func_f8f0d ; 5e
-	dw Func_f8f16 ; 5f
-	dw Func_f8f1f ; 60
-	dw Func_f8f28 ; 61
-	dw Func_f8f31 ; 62
-	dw Func_f8f3a ; 63
-	dw Func_f8f43 ; 64
-	dw Func_f8e7d ; 65
-	dw Func_f8e7d ; 66
-	dw Func_f8e7d ; 67
-	dw Func_f8e7d ; 68
-	dw Func_f8f94 ; 69
+	dw SurfingMinigameWaveFunction_Type1A ; 5c
+	dw SurfingMinigameWaveFunction_Type1B ; 5d
+	dw SurfingMinigameWaveFunction_Type1C ; 5e
+	dw SurfingMinigameWaveFunction_Type1D ; 5f
+	dw SurfingMinigameWaveFunction_Type1E ; 60
+	dw SurfingMinigameWaveFunction_Type01 ; 61
+	dw SurfingMinigameWaveFunction_Type02 ; 62
+	dw SurfingMinigameWaveFunction_Type03 ; 63
+	dw SurfingMinigameWaveFunction_Type04 ; 64
+	dw SurfingMinigameWaveFunction_Flat ; 65
+	dw SurfingMinigameWaveFunction_Flat ; 66
+	dw SurfingMinigameWaveFunction_Flat ; 67
+	dw SurfingMinigameWaveFunction_Flat ; 68
+	dw SurfingMinigameWaveFunction_ResetFlat ; 69
 
-	dw Func_f8e86 ; 6a
-	dw Func_f8e8f ; 6b
-	dw Func_f8e98 ; 6c
-	dw Func_f8ea1 ; 6d
-	dw Func_f8eaa ; 6e
-	dw Func_f8eb3 ; 6f
-	dw Func_f8ebc ; 70
-	dw Func_f8f9d ; 71
+	dw SurfingMinigameWaveFunction_BigKahuna1 ; 6a
+	dw SurfingMinigameWaveFunction_BigKahuna2 ; 6b
+	dw SurfingMinigameWaveFunction_BigKahuna3 ; 6c
+	dw SurfingMinigameWaveFunction_BigKahuna4 ; 6d
+	dw SurfingMinigameWaveFunction_BigKahuna5 ; 6e
+	dw SurfingMinigameWaveFunction_BigKahuna6 ; 6f
+	dw SurfingMinigameWaveFunction_BigKahuna7 ; 70
+	dw SurfingMinigameWaveFunction_EndFlat ; 71
 
-	dw Func_f8e7d ; 72
-	dw Func_f8f79 ; 73
-	dw Func_f8f82 ; 74
-	dw Func_f8f82 ; 75
-	dw Func_f8f82 ; 76
-	dw Func_f8f82 ; 77
-	dw Func_f8f82 ; 78
-	dw Func_f8f82 ; 79
-	dw Func_f8f82 ; 7a
-	dw Func_f8f8b ; 7b
+	dw SurfingMinigameWaveFunction_Flat ; 72
+	dw SurfingMinigameWaveFunction_Type73 ; 73
+	dw SurfingMinigameWaveFunction_Type74 ; 74
+	dw SurfingMinigameWaveFunction_Type74 ; 75
+	dw SurfingMinigameWaveFunction_Type74 ; 76
+	dw SurfingMinigameWaveFunction_Type74 ; 77
+	dw SurfingMinigameWaveFunction_Type74 ; 78
+	dw SurfingMinigameWaveFunction_Type74 ; 79
+	dw SurfingMinigameWaveFunction_Type74 ; 7a
+	dw SurfingMinigameWaveFunction_ResetType74 ; 7b
 
 SurfingMinigameWaveFunction_NoWave:
 	ld a, [wc5e5]
@@ -2132,185 +2132,185 @@ SurfingMinigameWaveFunction_NoWave:
 	and $7
 	ld e, a
 	ld d, $0
-	ld hl, Unkn_f8e75
+	ld hl, SurfingMinigameInitialWaveFunctions
 	add hl, de
 	ld a, [hl]
 .got_next_fn
 	ld [wSurfingMinigameWaveFunctionNumber], a
 .got_wave
 	lb bc, $74, $74
-	ld de, Unkn_f973d
+	ld de, SurfingMinigameWaveTiles_Flat
 	ret
 
-Unkn_f8e75:
+SurfingMinigameInitialWaveFunctions:
 	db $01,$0e,$1a,$29,$32,$40,$4d,$5c
 
-Func_f8e7d:
+SurfingMinigameWaveFunction_Flat:
 	lb bc, $74, $74
-	ld de, Unkn_f973d
+	ld de, SurfingMinigameWaveTiles_Flat
 	jp SurfingMinigameWaveFunction_GoToNextWaveFunction
 
-Func_f8e86:
+SurfingMinigameWaveFunction_BigKahuna1:
 	lb bc, $74, $6c
-	ld de, Unkn_f9745
+	ld de, SurfingMinigameWaveTiles_BigKahuna1
 	jp SurfingMinigameWaveFunction_GoToNextWaveFunction
 
-Func_f8e8f:
+SurfingMinigameWaveFunction_BigKahuna2:
 	lb bc, $64, $5c
-	ld de, Unkn_f974d
+	ld de, SurfingMinigameWaveTiles_BigKahuna2
 	jp SurfingMinigameWaveFunction_GoToNextWaveFunction
 
-Func_f8e98:
+SurfingMinigameWaveFunction_BigKahuna3:
 	lb bc, $54, $4c
-	ld de, Unkn_f9755
+	ld de, SurfingMinigameWaveTiles_BigKahuna3
 	jp SurfingMinigameWaveFunction_GoToNextWaveFunction
 
-Func_f8ea1:
+SurfingMinigameWaveFunction_BigKahuna4:
 	lb bc, $44, $44
-	ld de, Unkn_f975d
+	ld de, SurfingMinigameWaveTiles_BigKahuna4
 	jp SurfingMinigameWaveFunction_GoToNextWaveFunction
 
-Func_f8eaa:
+SurfingMinigameWaveFunction_BigKahuna5:
 	lb bc, $44, $4c
-	ld de, Unkn_f9765
+	ld de, SurfingMinigameWaveTiles_BigKahuna5
 	jp SurfingMinigameWaveFunction_GoToNextWaveFunction
 
-Func_f8eb3:
+SurfingMinigameWaveFunction_BigKahuna6:
 	lb bc, $54, $5c
-	ld de, Unkn_f976d
+	ld de, SurfingMinigameWaveTiles_BigKahuna6
 	jp SurfingMinigameWaveFunction_GoToNextWaveFunction
 
-Func_f8ebc:
+SurfingMinigameWaveFunction_BigKahuna7:
 	lb bc, $64, $6c
-	ld de, Unkn_f9775
+	ld de, SurfingMinigameWaveTiles_BigKahuna7
 	jp SurfingMinigameWaveFunction_GoToNextWaveFunction
 
-Func_f8ec5:
+SurfingMinigameWaveFunction_Type0E:
 	lb bc, $74, $6c
-	ld de, Unkn_f977d
+	ld de, SurfingMinigameWaveTiles_Type0E
 	jp SurfingMinigameWaveFunction_GoToNextWaveFunction
 
-Func_f8ece:
+SurfingMinigameWaveFunction_Type0F:
 	lb bc, $64, $5c
-	ld de, Unkn_f9785
+	ld de, SurfingMinigameWaveTiles_Type0F
 	jp SurfingMinigameWaveFunction_GoToNextWaveFunction
 
-Func_f8ed7:
+SurfingMinigameWaveFunction_Type10:
 	lb bc, $54, $4c
-	ld de, Unkn_f978d
+	ld de, SurfingMinigameWaveTiles_Type10
 	jp SurfingMinigameWaveFunction_GoToNextWaveFunction
 
-Func_f8ee0:
+SurfingMinigameWaveFunction_Type11:
 	lb bc, $4c, $4c
-	ld de, Unkn_f9795
+	ld de, SurfingMinigameWaveTiles_Type11
 	jp SurfingMinigameWaveFunction_GoToNextWaveFunction
 
-Func_f8ee9:
+SurfingMinigameWaveFunction_Type12:
 	lb bc, $54, $5c
-	ld de, Unkn_f979d
+	ld de, SurfingMinigameWaveTiles_Type12
 	jp SurfingMinigameWaveFunction_GoToNextWaveFunction
 
-Func_f8ef2:
+SurfingMinigameWaveFunction_Type13:
 	lb bc, $64, $6c
-	ld de, Unkn_f97a5
+	ld de, SurfingMinigameWaveTiles_Type13
 	jp SurfingMinigameWaveFunction_GoToNextWaveFunction
 
-Func_f8efb:
+SurfingMinigameWaveFunction_Type1A:
 	lb bc, $74, $6c
-	ld de, Unkn_f97ad
+	ld de, SurfingMinigameWaveTiles_Type1A
 	jp SurfingMinigameWaveFunction_GoToNextWaveFunction
 
-Func_f8f04:
+SurfingMinigameWaveFunction_Type1B:
 	lb bc, $64, $5c
-	ld de, Unkn_f97b5
+	ld de, SurfingMinigameWaveTiles_Type1B
 	jp SurfingMinigameWaveFunction_GoToNextWaveFunction
 
-Func_f8f0d:
+SurfingMinigameWaveFunction_Type1C:
 	lb bc, $54, $54
-	ld de, Unkn_f97bd
+	ld de, SurfingMinigameWaveTiles_Type1C
 	jp SurfingMinigameWaveFunction_GoToNextWaveFunction
 
-Func_f8f16:
+SurfingMinigameWaveFunction_Type1D:
 	lb bc, $54, $5c
-	ld de, Unkn_f97c5
+	ld de, SurfingMinigameWaveTiles_Type1D
 	jp SurfingMinigameWaveFunction_GoToNextWaveFunction
 
-Func_f8f1f:
+SurfingMinigameWaveFunction_Type1E:
 	lb bc, $64, $6c
-	ld de, Unkn_f97cd
+	ld de, SurfingMinigameWaveTiles_Type1E
 	jp SurfingMinigameWaveFunction_GoToNextWaveFunction
 
-Func_f8f28:
+SurfingMinigameWaveFunction_Type01:
 	lb bc, $74, $6c
-	ld de, Unkn_f97d5
+	ld de, SurfingMinigameWaveTiles_Type01
 	jp SurfingMinigameWaveFunction_GoToNextWaveFunction
 
-Func_f8f31:
+SurfingMinigameWaveFunction_Type02:
 	lb bc, $64, $5c
-	ld de, Unkn_f97dd
+	ld de, SurfingMinigameWaveTiles_Type02
 	jp SurfingMinigameWaveFunction_GoToNextWaveFunction
 
-Func_f8f3a:
+SurfingMinigameWaveFunction_Type03:
 	lb bc, $5c, $5c
-	ld de, Unkn_f97e5
+	ld de, SurfingMinigameWaveTiles_Type03
 	jp SurfingMinigameWaveFunction_GoToNextWaveFunction
 
-Func_f8f43:
+SurfingMinigameWaveFunction_Type04:
 	lb bc, $64, $6c
-	ld de, Unkn_f97ed
+	ld de, SurfingMinigameWaveTiles_Type04
 	jp SurfingMinigameWaveFunction_GoToNextWaveFunction
 
-Func_f8f4c:
+SurfingMinigameWaveFunction_Type06:
 	lb bc, $74, $6c
-	ld de, Unkn_f97f5
+	ld de, SurfingMinigameWaveTiles_Type06
 	jp SurfingMinigameWaveFunction_GoToNextWaveFunction
 
-Func_f8f55:
+SurfingMinigameWaveFunction_Type07:
 	lb bc, $64, $64
-	ld de, Unkn_f97fd
+	ld de, SurfingMinigameWaveTiles_Type07
 	jp SurfingMinigameWaveFunction_GoToNextWaveFunction
 
-Func_f8f5e:
+SurfingMinigameWaveFunction_Type08:
 	lb bc, $64, $6c
-	ld de, Unkn_f9805
+	ld de, SurfingMinigameWaveTiles_Type08
 	jp SurfingMinigameWaveFunction_GoToNextWaveFunction
 
-Func_f8f67:
+SurfingMinigameWaveFunction_Type40:
 	lb bc, $74, $6c
-	ld de, Unkn_f980d
+	ld de, SurfingMinigameWaveTiles_Type40
 	jp SurfingMinigameWaveFunction_GoToNextWaveFunction
 
-Func_f8f70:
+SurfingMinigameWaveFunction_Type41:
 	lb bc, $6c, $6c
-	ld de, Unkn_f9815
+	ld de, SurfingMinigameWaveTiles_Type41
 	jp SurfingMinigameWaveFunction_GoToNextWaveFunction
 
-Func_f8f79:
+SurfingMinigameWaveFunction_Type73:
 	lb bc, $74, $74
-	ld de, Unkn_f981d
+	ld de, SurfingMinigameWaveTiles_Type73
 	jp SurfingMinigameWaveFunction_GoToNextWaveFunction
 
-Func_f8f82:
+SurfingMinigameWaveFunction_Type74:
 	lb bc, $74, $74
-	ld de, Unkn_f9825
+	ld de, SurfingMinigameWaveTiles_Type74
 	jp SurfingMinigameWaveFunction_GoToNextWaveFunction
 
-Func_f8f8b:
+SurfingMinigameWaveFunction_ResetType74:
 	lb bc, $74, $74
-	ld de, Unkn_f9825
+	ld de, SurfingMinigameWaveTiles_Type74
 	jp SurfingMinigameWaveFunction_ResetWaveFunction
 
-Func_f8f94:
+SurfingMinigameWaveFunction_ResetFlat:
 	lb bc, $74, $74
-	ld de, Unkn_f973d
+	ld de, SurfingMinigameWaveTiles_Flat
 	jp SurfingMinigameWaveFunction_ResetWaveFunction
 
-Func_f8f9d:
+SurfingMinigameWaveFunction_EndFlat:
 	lb bc, $74, $74
-	ld de, Unkn_f973d
+	ld de, SurfingMinigameWaveTiles_Flat
 	ret
 
-Func_f8fa4: ; unused
+UnusedSurfingMinigameWaveFunction_Increment: ; unused
 	inc a
 	ld [wSurfingMinigameWaveFunctionNumber], a
 	ret
@@ -2399,22 +2399,22 @@ DrawSurfingPikachuMinigameIntroBackground:
 	ld bc, SCREEN_AREA
 	ld a, $ff
 	call FillMemory
-	ld hl, Tilemap_f90bc
+	ld hl, SurfingPikachuIntroBeachTilemap
 	decoord 0, 6
 	ld bc, 12 * SCREEN_WIDTH
 	call CopyData
-	ld de, Tilemap_f91c8
+	ld de, SurfingPikachuIntroTitleTilemap
 	hlcoord 4, 0
 	lb bc, 6, 12
 	call .CopyBox
 	hlcoord 3, 7
 	lb bc, 3, 15
 	call .FillBoxWithFF
-	ld hl, Tilemap_f91ac
+	ld hl, SurfingPikachuIntroSignTopTilemap
 	decoord 3, 7
 	ld bc, 15
 	call CopyData
-	ld hl, Tilemap_f91bb
+	ld hl, SurfingPikachuIntroSignBottomTilemap
 	decoord 4, 9
 	ld bc, 13
 	call CopyData
@@ -2455,10 +2455,10 @@ DrawSurfingPikachuMinigameIntroBackground:
 	jr nz, .fill_row
 	ret
 
-Tilemap_f90bc: INCBIN "gfx/surfing_pikachu/unknown_f90bc.tilemap"
-Tilemap_f91ac: INCBIN "gfx/surfing_pikachu/unknown_f91ac.tilemap"
-Tilemap_f91bb: INCBIN "gfx/surfing_pikachu/unknown_f91bb.tilemap"
-Tilemap_f91c8: INCBIN "gfx/surfing_pikachu/unknown_f91c8.tilemap"
+SurfingPikachuIntroBeachTilemap: INCBIN "gfx/surfing_pikachu/unknown_f90bc.tilemap"
+SurfingPikachuIntroSignTopTilemap: INCBIN "gfx/surfing_pikachu/unknown_f91ac.tilemap"
+SurfingPikachuIntroSignBottomTilemap: INCBIN "gfx/surfing_pikachu/unknown_f91bb.tilemap"
+SurfingPikachuIntroTitleTilemap: INCBIN "gfx/surfing_pikachu/unknown_f91c8.tilemap"
 
 SurfingMinigame_UpdateLYOverrides:
 	ld hl, wLYOverrides + $10
@@ -2541,7 +2541,7 @@ SurfingPikachu_ClearTileMap:
 	call FillMemory
 	ret
 
-Func_f9284:
+SurfingMinigame_ResetPikachuJumpArc:
 	xor a
 	ld [wc5ed], a
 	ld [wc5ee], a
@@ -2760,7 +2760,7 @@ SurfingPikachuSpawnStateDataPointer:
 SurfingPikachuObjectJumptable:
 	dw SurfingMinigameAnimatedObjectFn_nop ; 0
 	dw SurfingMinigameAnimatedObjectFn_Pikachu ; 1
-	dw Func_f87fb ; 2
+	dw SurfingMinigameAnimatedObjectFn_MoveRightToX58 ; 2
 	dw SurfingMinigameAnimatedObjectFn_FlippingPika ; 3
 	dw SurfingMinigameAnimatedObjectFn_IntroAnimationPikachu ; 4
 
@@ -2777,7 +2777,7 @@ SurfingMinigame_LYOverridesInitialSineWave:
 	db  0,  0,  0, -1, -1, -1, -1, -2
 	db -2, -2, -1, -1, -1, -1,  0,  0
 
-Unkn_f96e5:
+SurfingMinigameWaveMetatileTilemap:
 	db $00, $00, $00, $00 ; 00
 	db $0b, $0b, $0b, $0b ; 01
 	db $0b, $02, $02, $06 ; 02
@@ -2801,63 +2801,63 @@ Unkn_f96e5:
 	db $0e, $0f, $10, $0b ; 14
 	db $12, $13, $12, $13 ; 15
 
-Unkn_f973d:
+SurfingMinigameWaveTiles_Flat:
 	db $00, $00, $00, $01, $01, $01, $01, $01
-Unkn_f9745:
+SurfingMinigameWaveTiles_BigKahuna1:
 	db $00, $00, $00, $01, $01, $02, $04, $06
-Unkn_f974d:
+SurfingMinigameWaveTiles_BigKahuna2:
 	db $00, $00, $00, $01, $02, $04, $06, $0e
-Unkn_f9755:
+SurfingMinigameWaveTiles_BigKahuna3:
 	db $00, $00, $00, $10, $11, $06, $0e, $0e
-Unkn_f975d:
+SurfingMinigameWaveTiles_BigKahuna4:
 	db $00, $00, $00, $15, $15, $0e, $0e, $0e
-Unkn_f9765:
+SurfingMinigameWaveTiles_BigKahuna5:
 	db $00, $00, $00, $03, $05, $07, $0e, $0e
-Unkn_f976d:
+SurfingMinigameWaveTiles_BigKahuna6:
 	db $00, $00, $00, $01, $03, $05, $07, $0e
-Unkn_f9775:
+SurfingMinigameWaveTiles_BigKahuna7:
 	db $00, $00, $00, $01, $01, $03, $05, $07
-Unkn_f977d:
+SurfingMinigameWaveTiles_Type0E:
 	db $00, $00, $00, $01, $01, $02, $04, $06
-Unkn_f9785:
+SurfingMinigameWaveTiles_Type0F:
 	db $00, $00, $00, $01, $02, $04, $06, $0e
-Unkn_f978d:
+SurfingMinigameWaveTiles_Type10:
 	db $00, $00, $00, $08, $0f, $0a, $0e, $0e
-Unkn_f9795:
+SurfingMinigameWaveTiles_Type11:
 	db $00, $00, $00, $09, $0d, $0b, $0e, $0e
-Unkn_f979d:
+SurfingMinigameWaveTiles_Type12:
 	db $00, $00, $00, $01, $03, $05, $07, $0e
-Unkn_f97a5:
+SurfingMinigameWaveTiles_Type13:
 	db $00, $00, $00, $01, $01, $03, $05, $07
-Unkn_f97ad:
+SurfingMinigameWaveTiles_Type1A:
 	db $00, $00, $00, $01, $01, $02, $04, $06
-Unkn_f97b5:
+SurfingMinigameWaveTiles_Type1B:
 	db $00, $00, $00, $01, $10, $11, $06, $0e
-Unkn_f97bd:
+SurfingMinigameWaveTiles_Type1C:
 	db $00, $00, $00, $01, $15, $15, $0e, $0e
-Unkn_f97c5:
+SurfingMinigameWaveTiles_Type1D:
 	db $00, $00, $00, $01, $03, $05, $07, $0e
-Unkn_f97cd:
+SurfingMinigameWaveTiles_Type1E:
 	db $00, $00, $00, $01, $01, $03, $05, $07
-Unkn_f97d5:
+SurfingMinigameWaveTiles_Type01:
 	db $00, $00, $00, $01, $01, $02, $04, $06
-Unkn_f97dd:
+SurfingMinigameWaveTiles_Type02:
 	db $00, $00, $00, $01, $08, $0f, $0a, $0e
-Unkn_f97e5:
+SurfingMinigameWaveTiles_Type03:
 	db $00, $00, $00, $01, $09, $0d, $0b, $0e
-Unkn_f97ed:
+SurfingMinigameWaveTiles_Type04:
 	db $00, $00, $00, $01, $01, $03, $05, $07
-Unkn_f97f5:
+SurfingMinigameWaveTiles_Type06:
 	db $00, $00, $00, $01, $01, $10, $11, $06
-Unkn_f97fd:
+SurfingMinigameWaveTiles_Type07:
 	db $00, $00, $00, $01, $01, $15, $15, $0e
-Unkn_f9805:
+SurfingMinigameWaveTiles_Type08:
 	db $00, $00, $00, $01, $01, $03, $05, $07
-Unkn_f980d:
+SurfingMinigameWaveTiles_Type40:
 	db $00, $00, $00, $01, $01, $08, $0f, $0a
-Unkn_f9815:
+SurfingMinigameWaveTiles_Type41:
 	db $00, $00, $00, $01, $01, $09, $0d, $0b
-Unkn_f981d:
+SurfingMinigameWaveTiles_Type73:
 	db $00, $00, $00, $14, $14, $14, $14, $14
-Unkn_f9825:
+SurfingMinigameWaveTiles_Type74:
 	db $00, $00, $00, $12, $13, $13, $13, $13

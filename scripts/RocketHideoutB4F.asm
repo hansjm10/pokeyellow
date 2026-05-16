@@ -87,12 +87,12 @@ RocketHideoutB4FScript_455a5:
 	ResetEvent EVENT_ROCKET_HIDEOUT_4_JESSIE_JAMES_ON_LEFT
 	ld a, [wXCoord]
 	cp $18
-	jr z, .asm_455c2
+	jr z, .start_encounter
 	ld a, [wXCoord]
 	cp $19
 	ret nz
 	SetEvent EVENT_ROCKET_HIDEOUT_4_JESSIE_JAMES_ON_LEFT
-.asm_455c2
+.start_encounter
 	xor a
 	ldh [hJoyHeld], a
 	ld a, PAD_SELECT | PAD_START | PAD_CTRL_PAD
@@ -122,20 +122,20 @@ RocketHideoutB4FScript_455a5:
 	call RocketHideoutB4FSetScript
 	ret
 
-RocketHideoutB4FJessieJamesMovementData_45605:
+RocketHideoutB4FFourStepDownMovement:
 	db $4
-RocketHideoutB4FJessieJamesMovementData_45606:
+RocketHideoutB4FThreeStepDownMovement:
 	db $4
 	db $4
 	db $4
 	db $ff
 
 RocketHideoutB4FScript4:
-	ld de, RocketHideoutB4FJessieJamesMovementData_45605
+	ld de, RocketHideoutB4FFourStepDownMovement
 	CheckEvent EVENT_ROCKET_HIDEOUT_4_JESSIE_JAMES_ON_LEFT
-	jr z, .asm_45617
-	ld de, RocketHideoutB4FJessieJamesMovementData_45606
-.asm_45617
+	jr z, .move_james
+	ld de, RocketHideoutB4FThreeStepDownMovement
+.move_james
 	ld a, ROCKETHIDEOUTB4F_JAMES
 	ldh [hSpriteIndex], a
 	call MoveSprite
@@ -157,19 +157,19 @@ RocketHideoutB4FScript6:
 	ld a, SPRITE_FACING_LEFT
 	ld [wSprite02StateData1FacingDirection], a
 	CheckEvent EVENT_ROCKET_HIDEOUT_4_JESSIE_JAMES_ON_LEFT
-	jr z, .asm_4564a
+	jr z, .continue
 	ld a, SPRITE_FACING_DOWN
 	ld [wSprite02StateData1FacingDirection], a
-.asm_4564a
+.continue
 	call Delay3
 	ld a, PAD_SELECT | PAD_START | PAD_CTRL_PAD
 	ld [wJoyIgnore], a
 RocketHideoutB4FScript7:
-	ld de, RocketHideoutB4FJessieJamesMovementData_45606
+	ld de, RocketHideoutB4FThreeStepDownMovement
 	CheckEvent EVENT_ROCKET_HIDEOUT_4_JESSIE_JAMES_ON_LEFT
-	jr z, .asm_4565f
-	ld de, RocketHideoutB4FJessieJamesMovementData_45605
-.asm_4565f
+	jr z, .move_jessie
+	ld de, RocketHideoutB4FFourStepDownMovement
+.move_jessie
 	ld a, ROCKETHIDEOUTB4F_JESSIE
 	ldh [hSpriteIndex], a
 	call MoveSprite
@@ -193,10 +193,10 @@ RocketHideoutB4FScript9:
 	ld a, SPRITE_FACING_DOWN
 	ld [wSprite03StateData1FacingDirection], a
 	CheckEvent EVENT_ROCKET_HIDEOUT_4_JESSIE_JAMES_ON_LEFT
-	jr z, .asm_45697
+	jr z, .continue
 	ld a, SPRITE_FACING_RIGHT
 	ld [wSprite03StateData1FacingDirection], a
-.asm_45697
+.continue
 	call Delay3
 	ld a, TEXT_ROCKETHIDEOUTB4F_TEXT12
 	ldh [hTextID], a

@@ -807,7 +807,7 @@ ItemUseEvoStone:
 	jr c, .canceledItemUse
 	ld a, b
 	ld [wCurPartySpecies], a
-	call Func_d85d
+	call CanEvolveWithCurrentItem
 	jr nc, .noEffect
 	callfar IsThisPartyMonStarterPikachu
 	jr nc, .notPlayerPikachu
@@ -846,7 +846,7 @@ ItemUseEvoStone:
 	pop af
 	ret
 
-Func_d85d:
+CanEvolveWithCurrentItem:
 	ld hl, EvosMovesPointerTable
 	ld a, [wLoadedMon]
 	dec a
@@ -903,7 +903,7 @@ ItemUseVitamin:
 ItemUseMedicine:
 	ld a, [wPartyCount]
 	and a
-	jp z, Func_e4bf
+	jp z, ItemUseDontHavePokemon
 	ld a, [wWhichPokemon]
 	push af
 	ld a, [wCurItem]
@@ -1650,7 +1650,7 @@ ItemUseEscapeRope:
 	ld hl, wStatusFlags6
 	set BIT_FLY_WARP, [hl]
 	set BIT_ESCAPE_WARP, [hl]
-	call Func_1510
+	call HidePikachuForMapTransition
 	ld hl, wStatusFlags4
 	res BIT_NO_BATTLES, [hl]
 	ResetEvent EVENT_IN_SAFARI_ZONE
@@ -1921,10 +1921,10 @@ ItemUsePokeFlute:
 	ld [hl], a
 	ld a, c
 	and SLP_MASK
-	jr z, .asm_e063
+	jr z, .done_checking_enemy
 	ld a, $1
 	ld [wWereAnyMonsAsleep], a
-.asm_e063
+.done_checking_enemy
 	call LoadScreenTilesFromBuffer2 ; restore saved screen
 	ld a, [wWereAnyMonsAsleep]
 	and a ; were any pokemon asleep before playing the flute?
@@ -2560,7 +2560,7 @@ ItemUseNotYoursToUse:
 	ld hl, ItemUseNotYoursToUseText
 	jr ItemUseFailed
 
-Func_e4bf:
+ItemUseDontHavePokemon:
 	ld a, $2
 	ld [wActionResultOrTookBattleTurn], a
 	ld hl, DontHavePokemonText

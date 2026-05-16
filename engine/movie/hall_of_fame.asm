@@ -157,17 +157,17 @@ HoFDisplayAndRecordMonInfo:
 	ld a, [wHoFPartyMonIndex]
 	ld [wWhichPokemon], a
 	callfar IsThisPartyMonStarterPikachu
-	jr nc, .asm_70336
+	jr nc, .play_default_cry
 	ldpikacry e, PikachuCry35
 	callfar PlayPikachuSoundClip
-	jr .asm_7033c
-.asm_70336
+	jr .record
+.play_default_cry
 	ld a, [wHoFMonSpecies]
 	call PlayCry
-.asm_7033c
+.record
 	jp HoFRecordMonInfo
 
-Func_7033f:
+HoFDisplayMonInfoAndPlayCry:
 	call HoFDisplayMonInfo
 	ld a, [wHoFMonSpecies]
 	jp PlayCry

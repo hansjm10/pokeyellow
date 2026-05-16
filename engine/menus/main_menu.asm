@@ -131,8 +131,8 @@ InitOptions:
 	ld [wPrinterSettings], a
 	ret
 
-Func_5cc1:
-; unused?
+CheckForNotEnoughMemory:
+; This always returns before printing the text.
 	ld a, $6d
 	cp $80
 	ret c ; will always be executed
@@ -170,7 +170,7 @@ SpecialEnterMap::
 	call ResetPlayerSpriteData
 	ld c, 20
 	call DelayFrames
-	call Func_5cc1
+	call CheckForNotEnoughMemory
 	ld a, [wEnteringCableClub]
 	and a
 	ret nz

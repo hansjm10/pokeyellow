@@ -81,12 +81,12 @@ PokemonFanClub_TextPointers:
 PokemonFanClubClefairyFanText:
 	text_asm
 	CheckEventHL EVENT_LEFT_FANCLUB_AFTER_BIKE_VOUCHER
-	jr z, .asm_59aaf
+	jr z, .compare_boasts
 	ld hl, .yellowtext
 	call PrintText
 	jr .done
 
-.asm_59aaf
+.compare_boasts
 	CheckEventReuseHL EVENT_PIKACHU_FAN_BOAST
 	jr nz, .mineisbetter
 	SetEventReuseHL EVENT_SEEL_FAN_BOAST
@@ -115,12 +115,12 @@ PokemonFanClubClefairyFanText:
 PokemonFanClubSeelFanText:
 	text_asm
 	CheckEventHL EVENT_LEFT_FANCLUB_AFTER_BIKE_VOUCHER
-	jr z, .asm_59ae7
+	jr z, .compare_boasts
 	ld hl, .yellowtext
 	call PrintText
 	jr .done
 
-.asm_59ae7
+.compare_boasts
 	CheckEventReuseHL EVENT_SEEL_FAN_BOAST
 	jr nz, .mineisbetter
 	SetEventReuseHL EVENT_PIKACHU_FAN_BOAST

@@ -381,81 +381,81 @@ LearnMoveFromLevelUp:
 	ld [wPokedexNum], a
 	ret
 
-Func_3b079:
+CanCurrentSpeciesOrPreEvolutionLearnMove:
 	ld a, [wCurPartySpecies]
 	push af
-	call Func_3b0a2
-	jr c, .asm_3b09c
+	call CanCurrentSpeciesLearnMove
+	jr c, .can_learn
 
-	call Func_3b10f
-	jr nc, .asm_3b096
+	call FindPreEvolutionOfCurrentSpecies
+	jr nc, .cannot_learn
 
-	call Func_3b0a2
-	jr c, .asm_3b09c
+	call CanCurrentSpeciesLearnMove
+	jr c, .can_learn
 
-	call Func_3b10f
-	jr nc, .asm_3b096
+	call FindPreEvolutionOfCurrentSpecies
+	jr nc, .cannot_learn
 
-	call Func_3b0a2
-	jr c, .asm_3b09c
-.asm_3b096
+	call CanCurrentSpeciesLearnMove
+	jr c, .can_learn
+.cannot_learn
 	pop af
 	ld [wCurPartySpecies], a
 	and a
 	ret
-.asm_3b09c
+.can_learn
 	pop af
 	ld [wCurPartySpecies], a
 	scf
 	ret
 
-Func_3b0a2:
+CanCurrentSpeciesLearnMove:
 	ld a, [wTempTMHM]
 	ld [wMoveNum], a
 	predef CanLearnTM
 	ld a, c
 	and a
-	jr nz, .asm_3b0ec
-	ld hl, Pointer_3b0ee
+	jr nz, .can_learn
+	ld hl, MoveLearningCheckSpeciesList
 	ld a, [wCurPartySpecies]
 	ld de, $1
 	call IsInArray
-	jr c, .asm_3b0d2
+	jr c, .check_level_up_learnset
 	ld a, $ff
 	ld [wMonHGrowthRate], a
 	ld a, [wTempTMHM]
 	ld hl, wMonHMoves
 	ld de, $1
 	call IsInArray
-	jr c, .asm_3b0ec
-.asm_3b0d2
+	jr c, .can_learn
+.check_level_up_learnset
 	ld a, [wTempTMHM]
 	ld d, a
 	call GetMonLearnset
 .loop
 	ld a, [hli]
 	and a
-	jr z, .asm_3b0ea
+	jr z, .cannot_learn
 	ld b, a
 	ld a, [wCurEnemyLevel]
 	cp b
-	jr c, .asm_3b0ea
+	jr c, .cannot_learn
 	ld a, [hli]
 	cp d
-	jr z, .asm_3b0ec
+	jr z, .can_learn
 	jr .loop
-.asm_3b0ea
+.cannot_learn
 	and a
 	ret
-.asm_3b0ec
+.can_learn
 	scf
 	ret
 
 INCLUDE "data/pokemon/unknown_list.asm"
 
-Func_3b10f:
+FindPreEvolutionOfCurrentSpecies:
 	ld c, $0
-.asm_3b111
+.species_loop
 	ld hl, EvosMovesPointerTable
 	ld b, $0
 	add hl, bc
@@ -463,30 +463,30 @@ Func_3b10f:
 	ld a, [hli]
 	ld h, [hl]
 	ld l, a
-.asm_3b11b
+.evolution_loop
 	ld a, [hli]
 	and a
-	jr z, .asm_3b130
+	jr z, .next_species
 	cp $2
-	jr nz, .asm_3b124
+	jr nz, .check_target_species
 	inc hl
-.asm_3b124
+.check_target_species
 	inc hl
 	ld a, [wCurPartySpecies]
 	cp [hl]
-	jr z, .asm_3b138
+	jr z, .found
 	inc hl
 	ld a, [hl]
 	and a
-	jr nz, .asm_3b11b
-.asm_3b130
+	jr nz, .evolution_loop
+.next_species
 	inc c
 	ld a, c
 	cp VICTREEBEL
-	jr c, .asm_3b111
+	jr c, .species_loop
 	and a
 	ret
-.asm_3b138
+.found
 	inc c
 	ld a, c
 	ld [wCurPartySpecies], a

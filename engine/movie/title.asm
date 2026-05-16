@@ -207,19 +207,19 @@ ELSE
 	jp MainMenu
 ENDC
 
-.asm_42f0
+.unusedPrinterDebug
 ; unreferenced
 	callfar PrinterDebug
 	jp .loop
 
-.asm_42fb
+.unusedPlayNextPikachuCry
 ; unreferenced
 	ld a, [wTitleScreenScene + 4]
 	inc a
 	cp NUM_PIKA_CRIES
-	jr c, .asm_4305
+	jr c, .play_cry
 	ldpikacry a, PikachuCry16
-.asm_4305
+.play_cry
 	ld [wTitleScreenScene + 4], a
 	ld e, a
 	callfar PlayPikachuSoundClip

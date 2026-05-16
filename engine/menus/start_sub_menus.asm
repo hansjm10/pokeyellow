@@ -144,13 +144,13 @@ StartMenu_Pokemon::
 	call ChooseFlyDestination
 	ld a, [wStatusFlags6]
 	bit BIT_FLY_WARP, a
-	jr nz, .asm_5d4c
+	jr nz, .fly_selected
 	call LoadFontTilePatterns
 	ld hl, wStatusFlags4
 	set BIT_UNKNOWN_4_1, [hl]
 	jp StartMenu_Pokemon
-.asm_5d4c
-	call Func_1510
+.fly_selected
+	call HidePikachuForMapTransition
 	jp .goBackToMap
 .cut
 	bit BIT_CASCADEBADGE, a
@@ -233,7 +233,7 @@ StartMenu_Pokemon::
 	ld hl, wStatusFlags6
 	set BIT_FLY_WARP, [hl]
 	set BIT_ESCAPE_WARP, [hl]
-	call Func_1510
+	call HidePikachuForMapTransition
 	ld hl, wStatusFlags4
 	set BIT_UNKNOWN_4_1, [hl]
 	res BIT_NO_BATTLES, [hl]

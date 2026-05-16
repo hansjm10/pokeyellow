@@ -1,21 +1,21 @@
-Func_f531b::
+Colosseum2Menu::
 	ld c, $14
 	call DelayFrames
 	ld a, $1
 	ld [wBuffer], a
 	xor a
-	ld [wUnknownSerialFlag_d499], a
+	ld [wStadiumRulesCup], a
 	hlcoord 0, 0
 	lb bc, 4, 5
 	call TextBoxBorder
-	ld de, Text_f5791
+	ld de, Colosseum2ViewRulesText
 	hlcoord 1, 2
 	call PlaceString
 	hlcoord 8, 0
 	lb bc, 8, 10
 	call TextBoxBorder
 	hlcoord 10, 2
-	ld de, Text_f579c
+	ld de, Colosseum2CupMenuText
 	call PlaceString
 	hlcoord 0, 10
 	lb bc, 6, 18
@@ -39,8 +39,8 @@ Func_f531b::
 	ld [hli], a
 	xor a
 	ld [hl], a
-.asm_f5377
-	call Func_f56bd
+.menu_loop
+	call UpdateColosseum2RulesText
 	call HandleMenuInput
 	and $3
 	add a
@@ -48,17 +48,17 @@ Func_f531b::
 	ld b, a
 	ld a, [wCurrentMenuItem]
 	cp $3
-	jr nz, .asm_f5390
+	jr nz, .got_menu_input
 	bit 2, b
-	jr z, .asm_f5390
+	jr z, .got_menu_input
 	dec a
 	ld b, $8
-.asm_f5390
+.got_menu_input
 	add b
 	add $c0
 	ld [wLinkMenuSelectionSendBuffer], a
 	ld [wLinkMenuSelectionSendBuffer+1], a
-.asm_f5399
+.exchange_selection_loop
 	ld hl, wLinkMenuSelectionSendBuffer
 	ld a, [hl]
 	ldh [hSerialSendData], a
@@ -70,32 +70,32 @@ Func_f531b::
 	call Serial_ExchangeByte
 	pop bc
 	cp b
-	jr nz, .asm_f5399
+	jr nz, .exchange_selection_loop
 	and $f0
 	cp $c0
-	jr nz, .asm_f5399
+	jr nz, .exchange_selection_loop
 	ld a, b
 	and $c
-	jr nz, .asm_f53c4
+	jr nz, .remote_pressed_a_or_b
 	ld a, [wLinkMenuSelectionSendBuffer]
 	and $c
-	jr z, .asm_f5377
-	jr .asm_f53df
-.asm_f53c4
+	jr z, .menu_loop
+	jr .done_choosing_menu_selection
+.remote_pressed_a_or_b
 	ld a, [wLinkMenuSelectionSendBuffer]
 	and $c
-	jr z, .asm_f53d1
+	jr z, .use_remote_selection
 	ldh a, [hSerialConnectionStatus]
 	cp $2
-	jr z, .asm_f53df
-.asm_f53d1
+	jr z, .done_choosing_menu_selection
+.use_remote_selection
 	ld a, $1
 	ld [wNamedObjectIndex], a
 	ld a, b
 	ld [wLinkMenuSelectionSendBuffer], a
 	and $3
 	ld [wCurrentMenuItem], a
-.asm_f53df
+.done_choosing_menu_selection
 	call DelayFrame
 	call DelayFrame
 	ld hl, wLinkMenuSelectionSendBuffer
@@ -115,19 +115,19 @@ Func_f531b::
 	ld e, '▷'
 	ld a, [wLinkMenuSelectionSendBuffer]
 	bit 3, a
-	jr nz, .asm_f541a
+	jr nz, .draw_cursor
 	ld b, e
 	ld e, c
 	ld a, [wCurrentMenuItem]
 	and a
-	jr z, .asm_f541a
+	jr z, .draw_cursor
 	ld c, b
 	ld b, d
 	dec a
-	jr z, .asm_f541a
+	jr z, .draw_cursor
 	ld d, c
 	ld c, b
-.asm_f541a
+.draw_cursor
 	ld a, b
 	ldcoord_a 9, 2
 	ld a, c
@@ -140,14 +140,14 @@ Func_f531b::
 	call DelayFrames
 	ld a, [wLinkMenuSelectionSendBuffer]
 	bit 3, a
-	jr nz, asm_f547f
+	jr nz, Colosseum2MenuCanceled
 	ld a, [wCurrentMenuItem]
 	cp $3
-	jr z, asm_f547f
+	jr z, Colosseum2MenuCanceled
 	inc a
-	ld [wUnknownSerialFlag_d499], a
+	ld [wStadiumRulesCup], a
 	ld a, [wCurrentMenuItem]
-	ld hl, PointerTable_f5488
+	ld hl, Colosseum2CupEligibilityFunctions
 	ld c, a
 	ld b, $0
 	add hl, bc
@@ -161,35 +161,35 @@ Func_f531b::
 .returnaddress
 	ld [wLinkMenuSelectionSendBuffer], a
 	xor a
-	ld [wUnknownSerialCounter], a
-	ld [wUnknownSerialCounter+1], a
+	ld [wSerialConnectionTimeoutCounter], a
+	ld [wSerialConnectionTimeoutCounter+1], a
 	call Serial_SyncAndExchangeNybble
 	ld a, [wLinkMenuSelectionSendBuffer]
 	and a
-	jr nz, asm_f547c
+	jr nz, RestartColosseum2Menu
 	ld a, [wLinkMenuSelectionReceiveBuffer]
 	and a
-	jr nz, Func_f5476
+	jr nz, PrintColosseum2IneligibleAndRestart
 	xor a
-	ld [wUnknownSerialCounter], a
-	ld [wUnknownSerialCounter+1], a
+	ld [wSerialConnectionTimeoutCounter], a
+	ld [wSerialConnectionTimeoutCounter+1], a
 	and a
 	ret
 
-Func_f5476::
+PrintColosseum2IneligibleAndRestart::
 	ld hl, ColosseumIneligibleText
 	call PrintText
-asm_f547c::
-	jp Func_f531b
+RestartColosseum2Menu::
+	jp Colosseum2Menu
 
-asm_f547f::
+Colosseum2MenuCanceled::
 	xor a
-	ld [wUnknownSerialCounter], a
-	ld [wUnknownSerialCounter+1], a
+	ld [wSerialConnectionTimeoutCounter], a
+	ld [wSerialConnectionTimeoutCounter+1], a
 	scf
 	ret
 
-PointerTable_f5488::
+Colosseum2CupEligibilityFunctions::
 	dw PokeCup
 	dw PikaCup
 	dw PetitCup
@@ -312,23 +312,23 @@ PetitCup::
 	ld a, [hl]
 	ld [wCurPartySpecies], a
 	push hl
-	callfar Func_3b10f
+	callfar FindPreEvolutionOfCurrentSpecies
 	pop hl
-	jp c, asm_f56ad
+	jp c, PetitCupPokemonEvolved
 	inc hl
 	ld a, [hl]
 	ld [wCurPartySpecies], a
 	push hl
-	callfar Func_3b10f
+	callfar FindPreEvolutionOfCurrentSpecies
 	pop hl
-	jp c, asm_f56ad
+	jp c, PetitCupPokemonEvolved
 	inc hl
 	ld a, [hl]
 	ld [wCurPartySpecies], a
 	push hl
-	callfar Func_3b10f
+	callfar FindPreEvolutionOfCurrentSpecies
 	pop hl
-	jp c, asm_f56ad
+	jp c, PetitCupPokemonEvolved
 	dec hl
 	dec hl
 	ld b, $3
@@ -362,7 +362,7 @@ PetitCup::
 	jr nz, .loop2
 	ld a, [hli]
 	cp $7
-	jp nc, asm_f5689
+	jp nc, PetitCupHeightTooTall
 	add a
 	add a
 	ld b, a
@@ -372,12 +372,12 @@ PetitCup::
 	ld a, [hli]
 	add b
 	cp $51
-	jp nc, asm_f5689
+	jp nc, PetitCupHeightTooTall
 	ld a, [hli]
 	sub $b9
 	ld a, [hl]
 	sbc $1
-	jp nc, asm_f569b
+	jp nc, PetitCupWeightTooHeavy
 	pop af
 	pop bc
 	pop hl
@@ -479,7 +479,7 @@ CombinedLevelsAbove50::
 	ld a, $c
 	ret
 
-asm_f5689::
+PetitCupHeightTooTall::
 	pop af
 	pop bc
 	pop hl
@@ -490,7 +490,7 @@ asm_f5689::
 	ld a, $d
 	ret
 
-asm_f569b::
+PetitCupWeightTooHeavy::
 	pop af
 	pop bc
 	pop hl
@@ -501,7 +501,7 @@ asm_f569b::
 	ld a, $e
 	ret
 
-asm_f56ad::
+PetitCupPokemonEvolved::
 	ld a, [hl]
 	ld [wNamedObjectIndex], a
 	call GetMonName
@@ -510,7 +510,7 @@ asm_f56ad::
 	ld a, $f
 	ret
 
-Func_f56bd::
+UpdateColosseum2RulesText::
 	xor a
 	ldh [hAutoBGTransferEnabled], a
 	hlcoord 1, 11
@@ -518,8 +518,8 @@ Func_f56bd::
 	call ClearScreenArea
 	ld a, [wCurrentMenuItem]
 	cp $3
-	jr nc, .asm_f56e6
-	ld hl, PointerTable_f56ee
+	jr nc, .done
+	ld hl, Colosseum2RulesTextPointers
 	ld a, [wCurrentMenuItem]
 	ld c, a
 	ld b, $0
@@ -532,37 +532,37 @@ Func_f56bd::
 	ld e, l
 	hlcoord 1, 12
 	call PlaceString
-.asm_f56e6
+.done
 	call Delay3
 	ld a, $1
 	ldh [hAutoBGTransferEnabled], a
 	ret
 
-PointerTable_f56ee::
-	dw Text_f56f4
-	dw Text_f5728
-	dw Text_f575b
+Colosseum2RulesTextPointers::
+	dw PokeCupRulesText
+	dw PikaCupRulesText
+	dw PetitCupRulesText
 
-Text_f56f4::
+PokeCupRulesText::
 	db "LVs of 3<PKMN>:50-55"
 	next "Sum of LVs:155 MAX"
 	next "MEW can't attend.@"
 
-Text_f5728::
+PikaCupRulesText::
 	db "LVs of 3<PKMN>:15-20"
 	next "Sum of LVs:50 MAX"
 	next "MEW can't attend.@"
 
-Text_f575b::
+PetitCupRulesText::
 	db "3 Basic <PKMN>.LV25-30"
 	next "Sum of LVs:80 MAX"
 	next "6’8” and 44lb MAX@"
 
-Text_f5791::
+Colosseum2ViewRulesText::
 	db "View"
 	next "Rules@"
 
-Text_f579c::
+Colosseum2CupMenuText::
 	db "# Cup"
 	next "Pika Cup"
 	next "Petit Cup"
@@ -637,7 +637,7 @@ LinkMenu:
 	ld [wLetterPrintingDelayFlags], a
 	ld hl, wStatusFlags4
 	set BIT_LINK_CONNECTED, [hl]
-	ld hl, TextTerminator_f5a16
+	ld hl, EmptyLinkMenuText
 	call PrintText
 	call SaveScreenTilesToBuffer1
 	ld hl, ColosseumWhereToText
@@ -680,12 +680,12 @@ LinkMenu:
 	ld b, a
 	ld a, [wCurrentMenuItem]
 	cp $3
-	jr nz, .asm_f586b
+	jr nz, .got_menu_input
 	bit 2, b
-	jr z, .asm_f586b
+	jr z, .got_menu_input
 	dec a
 	ld b, $8
-.asm_f586b
+.got_menu_input
 	add b
 	add $d0
 	ld [wLinkMenuSelectionSendBuffer], a
@@ -746,7 +746,7 @@ LinkMenu:
 ; A button was pressed
 	ld a, [wCurrentMenuItem]
 	cp $2
-	jp z, .asm_f5963
+	jp z, .chose_colosseum2
 	ld b, e
 	ld e, c
 	ld a, [wCurrentMenuItem]
@@ -759,7 +759,7 @@ LinkMenu:
 	ld d, c
 	ld c, b
 .updateCursorPosition
-	call Func_f59ec
+	call DrawLinkMenuCursor
 	call LoadScreenTilesFromBuffer1
 	ld a, [wLinkMenuSelectionSendBuffer]
 	and PAD_B << 2 ; was B button pressed?
@@ -807,16 +807,16 @@ LinkMenu:
 	vc_hook Wireless_net_end
 	ret
 
-.asm_f5963
+.chose_colosseum2
 	ld a, [wNamedObjectIndex]
 	and a
-	jr nz, .asm_f5974
+	jr nz, .start_colosseum2_handshake
 	ld b, ' '
 	ld c, ' '
 	ld d, '▷'
 	ld e, ' '
-	call Func_f59ec
-.asm_f5974
+	call DrawLinkMenuCursor
+.start_colosseum2_handshake
 	xor a
 	ld [wBuffer], a
 	ld a, $ff
@@ -829,7 +829,7 @@ LinkMenu:
 	cp $2
 	call z, DelayFrame
 	dec b
-	jr z, .asm_f59b2
+	jr z, .handshake_timed_out
 	call Serial_ExchangeNybble
 	call DelayFrame
 	ld a, [wSerialExchangeNybbleReceiveData]
@@ -847,39 +847,39 @@ LinkMenu:
 	call Serial_SendZeroByte
 	dec b
 	jr nz, .loop3
-	jr .asm_f59d6
+	jr .open_colosseum2_menu
 
-.asm_f59b2
+.handshake_timed_out
 	xor a
-	ld [wUnknownSerialCounter], a
-	ld [wUnknownSerialCounter+1], a
+	ld [wSerialConnectionTimeoutCounter], a
+	ld [wSerialConnectionTimeoutCounter+1], a
 	ld a, [wNamedObjectIndex]
 	and a
-	jr z, .asm_f59cd
+	jr z, .print_version_text
 	ld b, ' '
 	ld c, ' '
 	ld d, ' '
 	ld e, '▷'
-	call Func_f59ec
+	call DrawLinkMenuCursor
 	jp .choseCancel
 
-.asm_f59cd
+.print_version_text
 	ld hl, ColosseumVersionText
 	call PrintText
 	jp .choseCancel
 
-.asm_f59d6
+.open_colosseum2_menu
 	ld b, ' '
 	ld c, ' '
 	ld d, '▷'
 	ld e, ' '
-	call Func_f59ec
-	call Func_f531b
+	call DrawLinkMenuCursor
+	call Colosseum2Menu
 	jp c, .choseCancel
 	ld a, $f0
 	jp .next
 
-Func_f59ec::
+DrawLinkMenuCursor::
 	ld a, b
 	ldcoord_a 6, 5
 	ld a, c
@@ -908,7 +908,7 @@ ColosseumVersionText:
 	text_far _ColosseumVersionText
 	text_end
 
-TextTerminator_f5a16:
+EmptyLinkMenuText:
 	text_end
 
 TradeCenterText:

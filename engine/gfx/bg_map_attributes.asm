@@ -48,7 +48,7 @@ LoadBGMapAttributes::
 .lcdOff
 	ld a, c ; number of BG attributes to transfer, plus 1 times 16
 	ldh [rVDMA_LEN], a ; initiate transfer
-	call Func_3082 ; update audio so it doesn't "lag"
+	call UpdateAudioDuringBGMapAttributesTransfer ; update audio so it doesn't "lag"
 	pop hl
 	ld a, [hli]
 	ld c, a     ; number of BG attributes to transfer, plus 1 times 16
@@ -94,7 +94,7 @@ LoadBGMapAttributes::
 	dec a
 	call z, HandlePartyHPBarAttributes
 .done
-	call Func_3082
+	call UpdateAudioDuringBGMapAttributesTransfer
 	ldh a, [rIF]
 	res B_IF_VBLANK, a
 	ldh [rIF], a
@@ -104,8 +104,8 @@ LoadBGMapAttributes::
 	ret
 
 BGMapAttributesPointers:
-	dw BGMapAttributes_Unknown1
-	dw BGMapAttributes_Unknown2
+	dw BGMapAttributes_PikachusBeachTitle
+	dw BGMapAttributes_DynamicPalPacket
 	dw BGMapAttributes_GameFreakIntro
 	dw BGMapAttributes_TrainerCard
 	dw BGMapAttributes_PartyMenu
@@ -116,7 +116,7 @@ BGMapAttributesPointers:
 	dw BGMapAttributes_StatusScreen
 	dw BGMapAttributes_Battle
 	dw BGMapAttributes_WholeScreen
-	dw BGMapAttributes_Unknown13
+	dw BGMapAttributes_Unused
 
 HandleBadgeFaceAttributes:
 ; zero out the attributes if the player doesn't have the respective badge

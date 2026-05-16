@@ -553,7 +553,7 @@ PikaPicAnimCommand_ret:
 	ld [wPikaPicAnimTimer + 1], a
 	jr PikaPicAnimCommand_run
 
-; XXX
+; Unreferenced leftover return.
 	ret
 
 PikaPicAnimCommand_setduration:

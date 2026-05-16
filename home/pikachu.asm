@@ -1,13 +1,13 @@
-Func_1510::
+HidePikachuForMapTransition::
 	push hl
 	ld hl, wPikachuOverworldStateFlags
 	set 7, [hl]
-	ld hl, wSpritePikachuStateData1ImageIndex ; pikachu data?
+	ld hl, wSpritePikachuStateData1ImageIndex
 	ld [hl], $ff
 	pop hl
 	ret
 
-Func_151d::
+ShowPikachuAfterMapTransition::
 	push hl
 	ld hl, wPikachuOverworldStateFlags
 	res 7, [hl]

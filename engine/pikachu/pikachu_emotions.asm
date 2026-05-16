@@ -323,7 +323,7 @@ MapSpecificPikachuExpression:
 	jr .check_pikachu_status
 
 .notPewterPokecenter
-	callfar Func_f24ae
+	callfar GetBillsHousePikachuEmotion
 	ld a, e
 	cp $ff
 	jr nz, .play_emotion

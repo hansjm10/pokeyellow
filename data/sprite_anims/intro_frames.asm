@@ -1,59 +1,59 @@
 YellowIntro_AnimatedObjectFramesData:
-	dw Unkn_fa100
-	dw Unkn_fa103
-	dw Unkn_fa10a
-	dw Unkn_fa111
-	dw Unkn_fa118
-	dw Unkn_fa11b
-	dw Unkn_fa11e
-	dw Unkn_fa121
-	dw Unkn_fa124
-	dw Unkn_fa127
-	dw Unkn_fa138
+	dw YellowIntroFrame00
+	dw YellowIntroFrame01
+	dw YellowIntroFrame02
+	dw YellowIntroFrame03
+	dw YellowIntroFrame04
+	dw YellowIntroFrame05
+	dw YellowIntroFrame06
+	dw YellowIntroFrame07
+	dw YellowIntroFrame08
+	dw YellowIntroFrame09
+	dw YellowIntroFrame0A
 
-Unkn_fa100:
+YellowIntroFrame00:
 	frame $00, 32
 	endanim
 
-Unkn_fa103:
+YellowIntroFrame01:
 	frame $01, 4
 	frame $02, 4
 	frame $03, 4
 	dorestart
 
-Unkn_fa10a:
+YellowIntroFrame02:
 	frame $04, 4
 	frame $05, 4
 	frame $06, 4
 	dorestart
 
-Unkn_fa111:
+YellowIntroFrame03:
 	frame $07, 4
 	frame $08, 4
 	frame $09, 4
 	dorestart
 
-Unkn_fa118:
+YellowIntroFrame04:
 	frame $0a, 32
 	endanim
 
-Unkn_fa11b:
+YellowIntroFrame05:
 	frame $0b, 32
 	endanim
 
-Unkn_fa11e:
+YellowIntroFrame06:
 	frame $0c, 32
 	endanim
 
-Unkn_fa121:
+YellowIntroFrame07:
 	frame $0d, 32
 	endanim
 
-Unkn_fa124:
+YellowIntroFrame08:
 	frame $0e, 32
 	endanim
 
-Unkn_fa127:
+YellowIntroFrame09:
 	frame $0f, 31
 	frame $11, 2
 	frame $0f, 2
@@ -64,7 +64,7 @@ Unkn_fa127:
 	frame $10, 32
 	endanim
 
-Unkn_fa138:
+YellowIntroFrame0A:
 	frame $12, 4
 	frame $13, 4
 	dorestart

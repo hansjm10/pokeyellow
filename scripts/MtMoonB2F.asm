@@ -79,20 +79,20 @@ IF DEF(_DEBUG)
 	ret nz
 ENDC
 	CheckEitherEventSet EVENT_GOT_DOME_FOSSIL, EVENT_GOT_HELIX_FOSSIL
-	call z, MtMoonB2FScript_49d28
+	call z, MtMoonB2FCheckSuperNerdFossilTriggerScript
 	CheckEvent EVENT_BEAT_MT_MOON_3_JESSIE_JAMES
-	call z, MtMoonB2FScript_49e15
+	call z, MtMoonB2FCheckJessieJamesTriggerScript
 	ret
 
-MtMoonB2FScript_49d28:
+MtMoonB2FCheckSuperNerdFossilTriggerScript:
 	CheckEvent EVENT_BEAT_MT_MOON_EXIT_SUPER_NERD
-	jp nz, .asm_49d4b
+	jp nz, .check_trainers
 	ld a, [wYCoord]
 	cp 8
-	jp nz, .asm_49d4b
+	jp nz, .check_trainers
 	ld a, [wXCoord]
 	cp 13
-	jp nz, .asm_49d4b
+	jp nz, .check_trainers
 	xor a
 	ldh [hJoyHeld], a
 	ld a, TEXT_MTMOONB2F_SUPER_NERD
@@ -100,7 +100,7 @@ MtMoonB2FScript_49d28:
 	call DisplayTextID
 	ret
 
-.asm_49d4b
+.check_trainers
 	CheckEitherEventSet EVENT_GOT_DOME_FOSSIL, EVENT_GOT_HELIX_FOSSIL
 	jp z, CheckFightingMapTrainers
 	ret
@@ -122,35 +122,35 @@ MtMoonB2FMoveSuperNerdScript:
 	ld a, MTMOONB2F_SUPER_NERD
 	ldh [hSpriteIndex], a
 	call SetSpriteMovementBytesToFF
-	ld hl, CoordsData_49dc7
+	ld hl, SuperNerdMoveRightPikachuCoords
 	call ArePlayerCoordsInArray
-	jr c, .asm_49da8
-	ld hl, CoordsData_49dc0
+	jr c, .move_right_with_pikachu
+	ld hl, SuperNerdMoveRightCoords
 	call ArePlayerCoordsInArray
-	jr c, .asm_49db0
-	ld hl, CoordsData_49dd5
+	jr c, .move_right
+	ld hl, SuperNerdMoveUpPikachuCoords
 	call ArePlayerCoordsInArray
-	jr c, .asm_49d9b
-	ld hl, CoordsData_49dce
+	jr c, .move_up_with_pikachu
+	ld hl, SuperNerdMoveUpCoords
 	call ArePlayerCoordsInArray
-	jr c, .asm_49da3
+	jr c, .move_up
 	jp CheckFightingMapTrainers
 
-.asm_49d9b
+.move_up_with_pikachu
 	ld b, SPRITE_FACING_LEFT
-	ld hl, PikachuMovementData_49dd8
+	ld hl, PikachuTurnsLeftForSuperNerdMovement
 	call MtMoonB2FScript_ApplyPikachuMovementData
-.asm_49da3
-	ld de, MovementData_49ddd
-	jr .asm_49db3
+.move_up
+	ld de, SuperNerdMoveUp
+	jr .move_super_nerd
 
-.asm_49da8
+.move_right_with_pikachu
 	ld b, SPRITE_FACING_RIGHT
-	ld hl, PikachuMovementData_49dca
+	ld hl, PikachuTurnsRightForSuperNerdMovement
 	call MtMoonB2FScript_ApplyPikachuMovementData
-.asm_49db0
-	ld de, MovementData_49ddc
-.asm_49db3
+.move_right
+	ld de, SuperNerdMoveRight
+.move_super_nerd
 	ld a, MTMOONB2F_SUPER_NERD
 	ldh [hSpriteIndex], a
 	call MoveSprite
@@ -158,41 +158,41 @@ MtMoonB2FMoveSuperNerdScript:
 	call MtMoonB2FSetScript
 	ret
 
-CoordsData_49dc0:
+SuperNerdMoveRightCoords:
 	dbmapcoord 12,  7
 	dbmapcoord 11,  6
 	dbmapcoord 12,  5
 	db -1 ; end
 
-CoordsData_49dc7:
+SuperNerdMoveRightPikachuCoords:
 	dbmapcoord 12,  7
 	db -1 ; end
 
-PikachuMovementData_49dca:
+PikachuTurnsRightForSuperNerdMovement:
 	db $00
 	db $35
 	db $33
 	db $3f
 
-CoordsData_49dce:
+SuperNerdMoveUpCoords:
 	dbmapcoord 13,  7
 	dbmapcoord 14,  6
 	dbmapcoord 14,  5
 	db -1 ; end
 
-CoordsData_49dd5:
+SuperNerdMoveUpPikachuCoords:
 	dbmapcoord 13,  7
 	db -1 ; end
 
-PikachuMovementData_49dd8:
+PikachuTurnsLeftForSuperNerdMovement:
 	db $00
 	db $35
 	db $34
 	db $3f
 
-MovementData_49ddc:
+SuperNerdMoveRight:
 	db NPC_MOVEMENT_RIGHT
-MovementData_49ddd:
+SuperNerdMoveUp:
 	db NPC_MOVEMENT_UP
 	db -1 ; end
 
@@ -222,7 +222,7 @@ MtMoonB2FSuperNerdTakesOtherFossilScript:
 	call MtMoonB2FSetScript
 	ret
 
-MtMoonB2FScript_49e15:
+MtMoonB2FCheckJessieJamesTriggerScript:
 	ld a, [wXCoord]
 	cp $3
 	ret nz
@@ -259,9 +259,9 @@ MtMoonB2FScript_49e15:
 	call MtMoonB2FSetScript
 	ret
 
-MovementData_f9e65:
+JessieMovesDownForMtMoonExitScene:
 	db $06
-MovementData_f9e66:
+JamesMovesDownForMtMoonExitScene:
 	db $06
 	db $06
 	db $06
@@ -278,7 +278,7 @@ MtMoonB2FScript6:
 	call Delay3
 	ld a, MTMOONB2F_JESSIE
 	ldh [hSpriteIndex], a
-	ld de, MovementData_f9e65
+	ld de, JessieMovesDownForMtMoonExitScene
 	call MoveSprite
 	ld a, PAD_BUTTONS | PAD_CTRL_PAD
 	ld [wJoyIgnore], a
@@ -300,7 +300,7 @@ MtMoonB2FScript8:
 MtMoonB2FScript9:
 	ld a, MTMOONB2F_JAMES
 	ldh [hSpriteIndex], a
-	ld de, MovementData_f9e66
+	ld de, JamesMovesDownForMtMoonExitScene
 	call MoveSprite
 	ld a, PAD_BUTTONS | PAD_CTRL_PAD
 	ld [wJoyIgnore], a

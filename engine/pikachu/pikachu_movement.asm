@@ -644,7 +644,7 @@ PikaMovementFunc2_UpdateJump:
 	call PikaMovementFunc2_Timer
 	or d
 	ld [wCurPikaMovementSpriteImageIdx], a
-	call PikaMovementFunc_Sine
+	call GetPikachuMovementSineYOffset
 	ld [wPikachuMovementYOffset], a
 	and a
 	ret z
@@ -657,7 +657,7 @@ PikaMovementFunc2_CopyFacingToJump:
 	call PikaMovementFunc2_GetImageBaseOffset
 	or d
 	ld [wCurPikaMovementSpriteImageIdx], a
-	call PikaMovementFunc_Sine
+	call GetPikachuMovementSineYOffset
 	ld [wPikachuMovementYOffset], a
 	ret
 
@@ -673,7 +673,7 @@ PikaMovementFunc2_TurnClockwise:
 	ld d, a
 	call CheckPikachuStepTimer2
 	jr nz, .skip
-	ld hl, Data_fd731
+	ld hl, PikachuMovementClockwiseDirections
 .loop
 	ld a, [hli]
 	cp d
@@ -690,7 +690,7 @@ PikaMovementFunc2_TurnCounterClockwise:
 	ld d, a
 	call CheckPikachuStepTimer2
 	jr nz, .skip
-	ld hl, Data_fd731End
+	ld hl, PikachuMovementClockwiseDirectionsEnd
 .loop
 	ld a, [hld]
 	cp d
@@ -702,13 +702,13 @@ PikaMovementFunc2_TurnCounterClockwise:
 	ld [wCurPikaMovementSpriteImageIdx], a
 	ret
 
-Data_fd731:
+PikachuMovementClockwiseDirections:
 	db SPRITE_FACING_DOWN
 	db SPRITE_FACING_LEFT
 	db SPRITE_FACING_UP
 	db SPRITE_FACING_RIGHT
 	db SPRITE_FACING_DOWN
-Data_fd731End:
+PikachuMovementClockwiseDirectionsEnd:
 
 PikaMovementFunc2_Timer:
 	push hl
@@ -798,7 +798,7 @@ CheckPikachuStepTimer2:
 	ld [hl], 0
 	ret
 
-PikaMovementFunc_Sine:
+GetPikachuMovementSineYOffset:
 	call .GetArgument
 	ld a, [wPikachuStepSubtimer]
 	add e
@@ -930,7 +930,7 @@ LoadPikachuBallIconIntoVRAM:
 	lb bc, BANK(OverworldPikachuBallGFX), 1
 	jp CopyVideoDataDoubleAlternate
 
-Func_fd851:
+LoadPikachuBallSpriteIntoVRAM:
 	ld hl, vNPCSprites + $c * $10
 	ld a, 3
 .loop
@@ -1002,19 +1002,19 @@ Pikachu_LoadCurrentMapViewUpdateSpritesAndDelay3:
 Cosine_e: ; cosine?
 	ld a, e
 	add $10
-	jr asm_fd908
+	jr SineCommon
 
 Sine_e: ; sine?
 	ld a, e
-asm_fd908:
+SineCommon:
 	and $3f
 	cp $20
-	jr nc, .asm_fd913
+	jr nc, .negative
 	call GetSine
 	ld a, h
 	ret
 
-.asm_fd913
+.negative
 	and $1f
 	call GetSine
 	ld a, h
@@ -1033,15 +1033,15 @@ GetSine:
 	inc hl
 	ld d, [hl]
 	ld hl, 0
-.asm_fd92b
+.multiply_loop
 	srl a
-	jr nc, .asm_fd930
+	jr nc, .next_bit
 	add hl, de
-.asm_fd930
+.next_bit
 	sla e
 	rl d
 	and a
-	jr nz, .asm_fd92b
+	jr nz, .multiply_loop
 	ret
 
 SineWave_3f:

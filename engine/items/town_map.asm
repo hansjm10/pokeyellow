@@ -107,7 +107,7 @@ DisplayTownMap:
 	ld [wWhichTownMapLocation], a
 	jp .townMapLoop
 
-Func_70f87: ; unreferenced
+UnusedPlayPikachuCryOnTownMapInput: ; unreferenced
 	ldh a, [hJoy5]
 	and PAD_DOWN | PAD_UP
 	ret z
@@ -414,7 +414,7 @@ DisplayWildLocations:
 	lb bc, 2, 15
 	call TextBoxBorder
 	hlcoord 2, 9
-	ld de, AreaUnknownText
+	ld de, TownMapNoAreaDataText
 	call PlaceString
 	jr .done
 .drawPlayerSprite
@@ -427,7 +427,7 @@ DisplayWildLocations:
 	ld bc, OAM_COUNT * 4
 	jp CopyData
 
-AreaUnknownText:
+TownMapNoAreaDataText:
 	db " AREA UNKNOWN@"
 
 TownMapCoordsToOAMCoords:

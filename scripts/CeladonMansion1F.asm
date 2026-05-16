@@ -22,12 +22,12 @@ CeladonMansion1FGrannyText:
 	farcall CeladonMansion1FPrintGrannyText
 	ld a, [wPikachuHappiness]
 	cp 251
-	jr c, .asm_485d9
+	jr c, .done
 	ld c, 50
 	call DelayFrames
 	ldpikacry e, PikachuCry23
 	callfar PlayPikachuSoundClip
-.asm_485d9
+.done
 	jp TextScriptEnd
 
 CeladonMansion1FClefairyText:

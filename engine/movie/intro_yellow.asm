@@ -17,15 +17,15 @@ PlayIntroScene:
 	ldh a, [hJoyPressed]
 	and PAD_A | PAD_B | PAD_START
 	jr nz, .go_to_title_screen
-	call Func_f98fc
+	call RunYellowIntroCurrentScene
 	ld a, $0
 	ld [wCurrentAnimatedObjectOAMBufferOffset], a
 	call RunObjectAnimations
 	ld a, [wYellowIntroCurrentScene]
 	cp $7
-	call z, Func_f98a2
+	call z, YellowIntro_SetScene7OAMPalettes
 	cp $b
-	call z, Func_f98cb
+	call z, YellowIntro_SetScene11OAMPalettes
 	call DelayFrame
 	jr .loop
 
@@ -56,7 +56,7 @@ PlayIntroScene:
 	ldh [hAutoBGTransferEnabled], a
 	ret
 
-Func_f98a2:
+YellowIntro_SetScene7OAMPalettes:
 	ld a, [wShadowOAMSprite08Attributes]
 	or $1
 	ld [wShadowOAMSprite08Attributes], a
@@ -74,7 +74,7 @@ Func_f98a2:
 	ld [wShadowOAMSprite19Attributes], a
 	ret
 
-Func_f98cb:
+YellowIntro_SetScene11OAMPalettes:
 	ld a, [wShadowOAMSprite18Attributes]
 	or $1
 	ld [wShadowOAMSprite18Attributes], a
@@ -95,13 +95,13 @@ Func_f98cb:
 	ld [wShadowOAMSprite28Attributes], a
 	ret
 
-Func_f98fc:
+RunYellowIntroCurrentScene:
 	ld a, [wYellowIntroCurrentScene]
-	ld hl, Jumptable_f9906
-	call Func_fa06e
+	ld hl, YellowIntroScenePointers
+	call GetYellowIntroJumptablePointer
 	jp hl
 
-Jumptable_f9906:
+YellowIntroScenePointers:
 	dw YellowIntroScene0 ; running pika 1
 	dw YellowIntroScene1 ; wait last
 	dw YellowIntroScene2 ; pikachu kick
@@ -173,7 +173,7 @@ YellowIntroScene2:
 	ld a, $4 ; overloaded
 	call LoadYellowIntroFlyingSpeedBars
 	ld a, $1
-	call Func_f9e9a
+	call YellowIntro_LoadPaletteActionAndResetScroll
 	call YellowIntro_SetTimerFor128Frames
 	call YellowIntro_NextScene
 	ret
@@ -304,12 +304,12 @@ YellowIntroScene4:
 .dmg_sgb
 	xor a
 	ldh [hLCDCPointer], a
-	call Func_f9e5f
+	call YellowIntro_ClearRunningSceneBGMap
 	lb de, $58, $58
 	ld a, $2
 	call YellowIntro_SpawnAnimatedObjectAndSavePointer
 	xor a
-	call Func_f9e9a
+	call YellowIntro_LoadPaletteActionAndResetScroll
 	call YellowIntro_SetTimerFor128Frames
 	call YellowIntro_NextScene
 	ret
@@ -335,13 +335,13 @@ YellowIntroScene6:
 	ld hl, $9860
 	ld c, $10
 	ld a, $20
-.asm_f9a8b
+.fill_water_tiles
 	ld [hli], a
 	inc a
 	ld [hli], a
 	dec a
 	dec c
-	jr nz, .asm_f9a8b
+	jr nz, .fill_water_tiles
 	ld hl, $9880
 	ld bc, $300
 	ld a, $10
@@ -350,7 +350,7 @@ YellowIntroScene6:
 	ld a, $5
 	call YellowIntro_SpawnAnimatedObjectAndSavePointer
 	ld a, $1
-	call Func_f9e9a
+	call YellowIntro_LoadPaletteActionAndResetScroll
 	call YellowIntro_SetTimerFor88Frames
 	call YellowIntro_NextScene
 	ret
@@ -388,12 +388,12 @@ YellowIntroScene8:
 	call UpdateMusicCTimes
 	xor a
 	ldh [hLCDCPointer], a
-	call Func_f9e5f
+	call YellowIntro_ClearRunningSceneBGMap
 	lb de, $58, $58
 	ld a, $3
 	call YellowIntro_SpawnAnimatedObjectAndSavePointer
 	xor a
-	call Func_f9e9a
+	call YellowIntro_LoadPaletteActionAndResetScroll
 	call YellowIntro_SetTimerFor128Frames
 	call YellowIntro_NextScene
 	ret
@@ -420,22 +420,22 @@ YellowIntroScene10:
 	ld a, $2
 	call Bank3E_FillMemory
 	ld hl, $9900
-	ld de, Unkn_f9b6e
+	ld de, YellowIntroFlyingSceneTilemap
 	lb bc, 6, 20
 	call .FillBGMapBox
 	ld hl, $988c
-	ld de, Unkn_f9be6
+	ld de, YellowIntroFlyingCloudTilemap
 	lb bc, 3, 4
 	call .FillBGMapBox
 	ld hl, $98e3
-	ld de, Unkn_f9bf2
+	ld de, YellowIntroFlyingSmallCloudTilemap
 	lb bc, 2, 2
 	call .FillBGMapBox
 	lb de, $98, $58
 	ld a, $6
 	call YellowIntro_SpawnAnimatedObjectAndSavePointer
 	ld a, $1
-	call Func_f9e9a
+	call YellowIntro_LoadPaletteActionAndResetScroll
 	call YellowIntro_SetTimerFor128Frames
 	call YellowIntro_NextScene
 	ret
@@ -458,9 +458,9 @@ YellowIntroScene10:
 	jr nz, .fill_row
 	ret
 
-Unkn_f9b6e: INCBIN "gfx/intro/unknown_f9b6e.tilemap"
-Unkn_f9be6: INCBIN "gfx/intro/unknown_f9be6.tilemap"
-Unkn_f9bf2: INCBIN "gfx/intro/unknown_f9bf2.tilemap"
+YellowIntroFlyingSceneTilemap: INCBIN "gfx/intro/unknown_f9b6e.tilemap"
+YellowIntroFlyingCloudTilemap: INCBIN "gfx/intro/unknown_f9be6.tilemap"
+YellowIntroFlyingSmallCloudTilemap: INCBIN "gfx/intro/unknown_f9bf2.tilemap"
 
 YellowIntroScene11:
 	call YellowIntro_CheckFrameTimerDecrement
@@ -544,7 +544,7 @@ YellowIntroScene12:
 	ld a, $9
 	call YellowIntro_SpawnAnimatedObjectAndSavePointer
 	xor a
-	call Func_f9e9a
+	call YellowIntro_LoadPaletteActionAndResetScroll
 	call YellowIntro_SetTimerFor128Frames
 	call YellowIntro_NextScene
 	ret
@@ -702,12 +702,12 @@ YellowIntro_CheckFrameTimerDecrement:
 	ld hl, wYellowIntroSceneTimer
 	ld a, [hl]
 	and a
-	jr z, .asm_f9e4b
+	jr z, .expired
 	dec [hl]
 	and a
 	ret
 
-.asm_f9e4b
+.expired
 	vc_hook Stop_reducing_intro_scene_flashing_0F
 	scf
 	ret
@@ -722,15 +722,15 @@ YellowIntro_LoadDMGPalAndIncrementCounter:
 	add hl, de
 	ld a, [hl]
 	cp $ff
-	jr z, .asm_f9e5d
+	jr z, .end
 	and a
 	ret
 
-.asm_f9e5d
+.end
 	scf
 	ret
 
-Func_f9e5f:
+YellowIntro_ClearRunningSceneBGMap:
 	ld hl, vBGMap0
 	ld bc, $80
 	ld a, $1
@@ -758,7 +758,7 @@ YellowIntro_BlankPalsDelay2AndDisableLCD:
 	call DisableLCD
 	ret
 
-Func_f9e9a:
+YellowIntro_LoadPaletteActionAndResetScroll:
 	ld e, a
 	callfar YellowIntroPaletteAction
 	xor a
@@ -941,17 +941,17 @@ YellowIntro_AnimatedObjectSpawnStateData:
 	db $0a, $01, $00
 
 YellowIntro_AnimatedObjectJumptable:
-	dw Func_fa007
-	dw Func_fa007
-	dw Func_fa008
-	dw Func_fa014
-	dw Func_fa02b
-	dw Func_fa062
+	dw YellowIntroAnim_NoOp
+	dw YellowIntroAnim_NoOp
+	dw YellowIntroAnim_MoveUpToY58
+	dw YellowIntroAnim_MoveDownRightToCenter
+	dw YellowIntroAnim_SurfingPikachu
+	dw YellowIntroAnim_AddVerticalVelocity
 
-Func_fa007:
+YellowIntroAnim_NoOp:
 	ret
 
-Func_fa008:
+YellowIntroAnim_MoveUpToY58:
 	ld hl, $4
 	add hl, bc
 	ld a, [hl]
@@ -961,15 +961,15 @@ Func_fa008:
 	ld [hl], a
 	ret
 
-Func_fa014:
+YellowIntroAnim_MoveDownRightToCenter:
 	ld hl, $4
 	add hl, bc
 	ld a, [hl]
 	cp $58
-	jr z, .asm_fa020
+	jr z, .update_x
 	add $4
 	ld [hl], a
-.asm_fa020
+.update_x
 	ld hl, $5
 	add hl, bc
 	cp $58
@@ -978,12 +978,12 @@ Func_fa014:
 	ld [hl], a
 	ret
 
-Func_fa02b:
+YellowIntroAnim_SurfingPikachu:
 	ld hl, $b
 	add hl, bc
 	ld e, [hl]
 	ld d, $0
-	ld hl, Jumptable_fa03b
+	ld hl, YellowIntroSurfingPikachuAnimPointers
 	add hl, de
 	add hl, de
 	ld a, [hli]
@@ -991,37 +991,37 @@ Func_fa02b:
 	ld l, a
 	jp hl
 
-Jumptable_fa03b:
-	dw Func_fa03f
-	dw Func_fa051
+YellowIntroSurfingPikachuAnimPointers:
+	dw YellowIntroAnim_MoveLeftToX58
+	dw YellowIntroAnim_BobWithSine
 
-Func_fa03f:
+YellowIntroAnim_MoveLeftToX58:
 	ld hl, $5
 	add hl, bc
 	ld a, [hl]
 	cp $58
-	jr z, .asm_fa04c
+	jr z, .start_bobbing
 	sub $2
 	ld [hl], a
 	ret
 
-.asm_fa04c
+.start_bobbing
 	ld hl, $b
 	add hl, bc
 	inc [hl]
-Func_fa051:
+YellowIntroAnim_BobWithSine:
 	ld hl, $c
 	add hl, bc
 	ld a, [hl]
 	inc [hl]
 	ld d, $8
-	call Func_fa079
+	call YellowIntro_Sine
 	ld hl, $7
 	add hl, bc
 	ld [hl], a
 	ret
 
-Func_fa062:
+YellowIntroAnim_AddVerticalVelocity:
 	ld hl, $b
 	add hl, bc
 	ld a, [hl]
@@ -1031,7 +1031,7 @@ Func_fa062:
 	ld [hl], a
 	ret
 
-Func_fa06e:
+GetYellowIntroJumptablePointer:
 	ld e, a
 	ld d, $0
 	add hl, de
@@ -1041,47 +1041,47 @@ Func_fa06e:
 	ld l, a
 	ret
 
-Func_fa077: ; cosine
+YellowIntro_Cosine:
 	add $10
-Func_fa079:
+YellowIntro_Sine:
 	and $3f
 	cp $20
-	jr nc, .asm_fa084
-	call Func_fa08e
+	jr nc, .negative
+	call YellowIntro_SineCommon
 	ld a, h
 	ret
 
-.asm_fa084
+.negative
 	and $1f
-	call Func_fa08e
+	call YellowIntro_SineCommon
 	ld a, h
 	xor $ff
 	inc a
 	ret
 
-Func_fa08e:
+YellowIntro_SineCommon:
 	ld e, a
 	ld a, d
 	ld d, $0
-	ld hl, Unkn_fa0aa
+	ld hl, YellowIntroSineTable
 	add hl, de
 	add hl, de
 	ld e, [hl]
 	inc hl
 	ld d, [hl]
 	ld hl, $0
-.asm_fa09d
+.multiply_loop
 	srl a
-	jr nc, .asm_fa0a2
+	jr nc, .next_bit
 	add hl, de
-.asm_fa0a2
+.next_bit
 	sla e
 	rl d
 	and a
-	jr nz, .asm_fa09d
+	jr nz, .multiply_loop
 	ret
 
-Unkn_fa0aa:
+YellowIntroSineTable:
 	sine_table 32
 
 INCLUDE "data/sprite_anims/intro_frames.asm"

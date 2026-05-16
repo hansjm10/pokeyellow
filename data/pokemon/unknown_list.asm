@@ -1,6 +1,6 @@
-; This list is used by a unreferenced function.
+; Species that use only TM/HM and level-up learnsets in CanCurrentSpeciesLearnMove.
 
-Pointer_3b0ee:
+MoveLearningCheckSpeciesList:
 	db NIDOKING
 	db IVYSAUR
 	db EXEGGUTOR

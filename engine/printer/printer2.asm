@@ -243,116 +243,116 @@ PrinterDebug_DoFunction:
 	jp hl
 
 .Jumptable:
-	dw Func_ea623
-	dw Func_ea6d2
-	dw Func_ea6af
-	dw Func_ea645
-	dw Func_ea701
-	dw Func_ea6bd
-	dw Func_ea671
-	dw Func_ea701
-	dw Func_ea6af
-	dw Func_ea68a
-	dw Func_ea701
-	dw Func_ea6af
-	dw Func_ea721
-	dw Func_ea610
-	dw Func_ea61a
-	dw Func_ea6af
-	dw Func_ea61e
-	dw Func_ea72f
-	dw Func_ea732
+	dw PrinterDebug_SendInitCommand
+	dw PrinterDebug_CheckConnectionStatus
+	dw PrinterDebug_WaitSerialThenNext
+	dw PrinterDebug_SendNextDataCommand
+	dw PrinterDebug_CheckTransmissionStatus
+	dw PrinterDebug_WaitSerialThenBackTwoAndDecRow
+	dw PrinterDebug_SendDataEndCommand
+	dw PrinterDebug_CheckTransmissionStatus
+	dw PrinterDebug_WaitSerialThenNext
+	dw PrinterDebug_SendPrintCommand
+	dw PrinterDebug_CheckTransmissionStatus
+	dw PrinterDebug_WaitSerialThenNext
+	dw PrinterDebug_WaitUntilFinished
+	dw PrinterDebug_StopStateMachine
+	dw PrinterDebug_AdvanceState
+	dw PrinterDebug_WaitSerialThenNext
+	dw PrinterDebug_ResetSendState
+	dw PrinterDebug_NextAndWaitForLoopBack
+	dw PrinterDebug_WaitForLoopBack
 
-Func_ea606:
+PrinterDebug_NextState:
 	ld hl, wPrinterSendState
 	inc [hl]
 	ret
 
-Func_ea60b:
+PrinterDebug_PreviousState:
 	ld hl, wPrinterSendState
 	dec [hl]
 	ret
 
-Func_ea610:
+PrinterDebug_StopStateMachine:
 	xor a
 	ld [wPrinterStatusFlags], a
 	ld hl, wPrinterSendState
 	set 7, [hl]
 	ret
 
-Func_ea61a:
-	call Func_ea606
+PrinterDebug_AdvanceState:
+	call PrinterDebug_NextState
 	ret
 
-Func_ea61e:
+PrinterDebug_ResetSendState:
 	xor a
 	ld [wPrinterSendState], a
 	ret
 
-Func_ea623:
-	call Func_ea784
-	ld hl, Data_ea9de
-	call Func_ea76b
+PrinterDebug_SendInitCommand:
+	call PrinterDebug_ClearPacketData
+	ld hl, PrinterInitCommandHeader
+	call PrinterDebug_LoadPacketHeader
 	xor a
 	ld [wPrinterDataSize], a
 	ld [wPrinterDataSize + 1], a
 	ld a, [wPrinterQueueLength]
 	ld [wPrinterRowIndex], a
-	call Func_ea606
-	call Func_ea74c
+	call PrinterDebug_NextState
+	call PrinterDebug_StartSerialTransfer
 	ld a, $1
 	ld [wPrinterStatusIndicator], a
 	ret
 
-Func_ea645:
-	call Func_ea784
+PrinterDebug_SendNextDataCommand:
+	call PrinterDebug_ClearPacketData
 	ld hl, wPrinterRowIndex
 	ld a, [hl]
 	and a
-	jr z, Func_ea671
-	ld hl, Data_ea9ea
-	call Func_ea76b
+	jr z, PrinterDebug_SendDataEndCommand
+	ld hl, PrinterDataCommandHeader
+	call PrinterDebug_LoadPacketHeader
 	call PrinterDebug_PrepOAMForPrinting
 	ld a, $80
 	ld [wPrinterDataSize], a
 	ld a, $2
 	ld [wPrinterDataSize + 1], a
-	call Func_ea7a2
-	call Func_ea606
-	call Func_ea74c
+	call PrinterDebug_UpdatePacketChecksum
+	call PrinterDebug_NextState
+	call PrinterDebug_StartSerialTransfer
 	ld a, $2
 	ld [wPrinterStatusIndicator], a
 	ret
 
-Func_ea671:
+PrinterDebug_SendDataEndCommand:
 	ld a, $6
 	ld [wPrinterSendState], a
-	ld hl, Data_ea9f0
-	call Func_ea76b
+	ld hl, PrinterDataEndCommandHeader
+	call PrinterDebug_LoadPacketHeader
 	xor a
 	ld [wPrinterDataSize], a
 	ld [wPrinterDataSize + 1], a
-	call Func_ea606
-	call Func_ea74c
+	call PrinterDebug_NextState
+	call PrinterDebug_StartSerialTransfer
 	ret
 
-Func_ea68a:
-	call Func_ea784
-	ld hl, Data_ea9e4
-	call Func_ea76b
-	call Func_ea7d2
+PrinterDebug_SendPrintCommand:
+	call PrinterDebug_ClearPacketData
+	ld hl, PrinterPrintCommandHeader
+	call PrinterDebug_LoadPacketHeader
+	call PrinterDebug_LoadPrintCommandPayload
 	ld a, $4
 	ld [wPrinterDataSize], a
 	ld a, $0
 	ld [wPrinterDataSize + 1], a
-	call Func_ea7a2
-	call Func_ea606
-	call Func_ea74c
+	call PrinterDebug_UpdatePacketChecksum
+	call PrinterDebug_NextState
+	call PrinterDebug_StartSerialTransfer
 	ld a, $3
 	ld [wPrinterStatusIndicator], a
 	ret
 
-Func_ea6af:
+PrinterDebug_WaitSerialThenNext:
 	ld hl, wPrinterSerialFrameDelay
 	inc [hl]
 	ld a, [hl]
@@ -360,10 +360,10 @@ Func_ea6af:
 	ret c
 	xor a
 	ld [hl], a
-	call Func_ea606
+	call PrinterDebug_NextState
 	ret
 
-Func_ea6bd:
+PrinterDebug_WaitSerialThenBackTwoAndDecRow:
 	ld hl, wPrinterSerialFrameDelay
 	inc [hl]
 	ld a, [hl]
@@ -373,69 +373,69 @@ Func_ea6bd:
 	ld [hl], a
 	ld hl, wPrinterRowIndex
 	dec [hl]
-	call Func_ea60b
-	call Func_ea60b
+	call PrinterDebug_PreviousState
+	call PrinterDebug_PreviousState
 	ret
 
-Func_ea6d2:
-	call Func_ea742
+PrinterDebug_CheckConnectionStatus:
+	call PrinterDebug_IsOpcodeBusy
 	ret c
 	ld a, [wPrinterHandshake]
 	cp $ff
-	jr nz, .asm_ea6e4
+	jr nz, .check_ready
 	ld a, [wPrinterStatusFlags]
 	cp $ff
-	jr z, .asm_ea6fb
-.asm_ea6e4
+	jr z, .connection_error
+.check_ready
 	ld a, [wPrinterHandshake]
 	cp $81
-	jr nz, .asm_ea6fb
+	jr nz, .connection_error
 	ld a, [wPrinterStatusFlags]
 	cp $0
-	jr nz, .asm_ea6fb
+	jr nz, .connection_error
 	ld hl, wPrinterConnectionOpen
 	set 1, [hl]
-	call Func_ea606
+	call PrinterDebug_NextState
 	ret
 
-.asm_ea6fb
+.connection_error
 	ld a, $e
 	ld [wPrinterSendState], a
 	ret
 
-Func_ea701:
-	call Func_ea742
+PrinterDebug_CheckTransmissionStatus:
+	call PrinterDebug_IsOpcodeBusy
 	ret c
 	ld a, [wPrinterStatusFlags]
 	and $f0
-	jr nz, .asm_ea71b
+	jr nz, .printer_error
 	ld a, [wPrinterStatusFlags]
 	and $1
-	jr nz, .asm_ea717
-	call Func_ea606
+	jr nz, .printer_busy
+	call PrinterDebug_NextState
 	ret
 
-.asm_ea717
-	call Func_ea60b
+.printer_busy
+	call PrinterDebug_PreviousState
 	ret
 
-.asm_ea71b
+.printer_error
 	ld a, $11
 	ld [wPrinterSendState], a
 	ret
 
-Func_ea721:
-	call Func_ea742
+PrinterDebug_WaitUntilFinished:
+	call PrinterDebug_IsOpcodeBusy
 	ret c
 	ld a, [wPrinterStatusFlags]
 	and $f3
 	ret nz
-	call Func_ea606
+	call PrinterDebug_NextState
 	ret
 
-Func_ea72f:
-	call Func_ea606
-Func_ea732:
+PrinterDebug_NextAndWaitForLoopBack:
+	call PrinterDebug_NextState
+PrinterDebug_WaitForLoopBack:
 	ld a, [wPrinterOpcode]
 	and a
 	ret nz
@@ -446,22 +446,22 @@ Func_ea732:
 	ld [wPrinterSendState], a
 	ret
 
-Func_ea742:
+PrinterDebug_IsOpcodeBusy:
 	ld a, [wPrinterOpcode]
 	and a
-	jr nz, .asm_ea74a
+	jr nz, .busy
 	and a
 	ret
 
-.asm_ea74a
+.busy
 	scf
 	ret
 
-Func_ea74c:
-.asm_ea74c
+PrinterDebug_StartSerialTransfer:
+.wait
 	ld a, [wPrinterOpcode]
 	and a
-	jr nz, .asm_ea74c
+	jr nz, .wait
 	ld a, $1
 	ld [wPrinterOpcode], a
 	xor a
@@ -475,7 +475,7 @@ Func_ea74c:
 	ldh [rSC], a
 	ret
 
-Func_ea76b:
+PrinterDebug_LoadPacketHeader:
 	ld a, [hli]
 	ld [wPrinterDataHeader], a
 	ld a, [hli]
@@ -490,7 +490,7 @@ Func_ea76b:
 	ld [wPrinterDataHeader + 5], a
 	ret
 
-Func_ea784:
+PrinterDebug_ClearPacketData:
 	xor a
 	ld hl, wPrinterDataHeader
 	ld [hli], a
@@ -508,39 +508,39 @@ Func_ea784:
 	call FillMemory
 	ret
 
-Func_ea7a2:
+PrinterDebug_UpdatePacketChecksum:
 	ld hl, $0
 	ld bc, $4
 	ld de, wPrinterDataHeader
-	call Func_ea7c5
+	call PrinterDebug_AddBytesToChecksum
 	ld a, [wPrinterDataSize]
 	ld c, a
 	ld a, [wPrinterDataSize + 1]
 	ld b, a
 	ld de, wPrinterSendDataSource1
-	call Func_ea7c5
+	call PrinterDebug_AddBytesToChecksum
 	ld a, l
 	ld [wPrinterDataHeader + 4], a
 	ld a, h
 	ld [wPrinterDataHeader + 5], a
 	ret
 
-Func_ea7c5:
-.asm_ea7c5
+PrinterDebug_AddBytesToChecksum:
+.loop
 	ld a, [de]
 	inc de
 	add l
-	jr nc, .asm_ea7cb
+	jr nc, .no_carry
 	inc h
-.asm_ea7cb
+.no_carry
 	ld l, a
 	dec bc
 	ld a, c
 	or b
-	jr nz, .asm_ea7c5
+	jr nz, .loop
 	ret
 
-Func_ea7d2:
+PrinterDebug_LoadPrintCommandPayload:
 	ld a, $1
 	ld [wPrinterSendDataSource1], a
 	ld a, [wcae2]
@@ -953,21 +953,21 @@ PrinterDebug_PrepOAMForPrinting:
 	pop hl
 	ret
 
-Data_ea9de:
+PrinterInitCommandHeader:
 	db  1, 0, $00, 0
 	dw 1
-Data_ea9e4:
+PrinterPrintCommandHeader:
 	db  2, 0, $04, 0
 	dw 0
-Data_ea9ea:
+PrinterDataCommandHeader:
 	db  4, 0, $80, 2
 	dw 0
-Data_ea9f0:
+PrinterDataEndCommandHeader:
 	db  4, 0, $00, 0
 	dw 4
-Data_ea9f6:
+UnusedPrinterBreakCommandHeader:
 	db  8, 0, $00, 0
 	dw 8
-Data_ea9fc:
+UnusedPrinterStatusCommandHeader:
 	db 15, 0, $00, 0
 	dw 15

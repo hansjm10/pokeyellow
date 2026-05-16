@@ -191,7 +191,7 @@ PewterGymGuideText:
 	jr nz, .PewterGymGuideBeginAdviceText
 	ld a, [wd471]
 	bit 7, a
-	jp nz, .asm_5c3fa
+	jp nz, .pikachu_advice
 	ld hl, PewterGymGuideBeginAdviceText
 	call PrintText
 	jr .PewterGymGuideAdviceText
@@ -207,7 +207,7 @@ PewterGymGuideText:
 	call PrintText
 .done
 	jp TextScriptEnd
-.asm_5c3fa
+.pikachu_advice
 	ld hl, PewterGymText_5c41c
 	call PrintText
 	jp TextScriptEnd

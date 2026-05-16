@@ -226,14 +226,14 @@ SilphCo11FScript_6229c:
 	ResetEvents EVENT_780, EVENT_781
 	ld a, [wXCoord]
 	cp $3
-	jr z, .asm_622c3
+	jr z, .start_encounter
 	SetEventReuseHL EVENT_780
 	ld a, [wXCoord]
 	cp $2
-	jr z, .asm_622c3
+	jr z, .start_encounter
 	ResetEventReuseHL EVENT_780
 	SetEventReuseHL EVENT_781
-.asm_622c3
+.start_encounter
 	call StopAllMusic
 	ld c, BANK(Music_MeetJessieJames)
 	ld a, MUSIC_MEET_JESSIE_JAMES
@@ -256,7 +256,7 @@ SilphCo11FScript_6229c:
 	call SilphCo11FSetCurScript
 	ret
 
-SilphCo11FMovementData_622f5:
+SilphCo11FJamesRightApproachMovement:
 	db $5
 	db $5
 	db $5
@@ -264,21 +264,21 @@ SilphCo11FMovementData_622f5:
 	db $5
 	db $ff
 
-SilphCo11FMovementData_622fb:
+SilphCo11FJessieRightApproachMovement:
 	db $5
 	db $5
 	db $5
 	db $5
 	db $ff
 
-SilphCo11FMovementData_62300:
+SilphCo11FJamesCenterApproachMovement:
 	db $5
 	db $5
 	db $5
 	db $5
 	db $ff
 
-SilphCo11FMovementData_62305:
+SilphCo11FJessieCenterApproachMovement:
 	db $5
 	db $5
 	db $5
@@ -286,7 +286,7 @@ SilphCo11FMovementData_62305:
 	db $5
 	db $ff
 
-SilphCo11FMovementData_6230b:
+SilphCo11FJamesLeftApproachMovement:
 	db $5
 	db $5
 	db $6
@@ -294,7 +294,7 @@ SilphCo11FMovementData_6230b:
 	db $5
 	db $ff
 
-SilphCo11FMovementData_62311:
+SilphCo11FJessieLeftApproachMovement:
 	db $5
 	db $5
 	db $5
@@ -304,15 +304,15 @@ SilphCo11FMovementData_62311:
 	db $ff
 
 SilphCo11FScript5:
-	ld de, SilphCo11FMovementData_622f5
+	ld de, SilphCo11FJamesRightApproachMovement
 	CheckEitherEventSet EVENT_780, EVENT_781
 	and a
-	jr z, .asm_6232d
-	ld de, SilphCo11FMovementData_62300
+	jr z, .move_james
+	ld de, SilphCo11FJamesCenterApproachMovement
 	cp $1
-	jr z, .asm_6232d
-	ld de, SilphCo11FMovementData_6230b
-.asm_6232d
+	jr z, .move_james
+	ld de, SilphCo11FJamesLeftApproachMovement
+.move_james
 	ld a, SILPHCO11F_JAMES
 	ldh [hSpriteIndex], a
 	call MoveSprite
@@ -335,22 +335,22 @@ SilphCo11FScript7:
 	ld [hl], SPRITE_FACING_RIGHT
 	CheckEitherEventSet EVENT_780, EVENT_781
 	and a
-	jr z, .asm_6235e
+	jr z, .continue
 	ld [hl], SPRITE_FACING_UP
-.asm_6235e
+.continue
 	call Delay3
 	ld a, PAD_SELECT | PAD_START | PAD_CTRL_PAD
 	ld [wJoyIgnore], a
 SilphCo11FScript8:
-	ld de, SilphCo11FMovementData_622fb
+	ld de, SilphCo11FJessieRightApproachMovement
 	CheckEitherEventSet EVENT_780, EVENT_781
 	and a
-	jr z, .asm_6237b
-	ld de, SilphCo11FMovementData_62305
+	jr z, .move_jessie
+	ld de, SilphCo11FJessieCenterApproachMovement
 	cp $1
-	jr z, .asm_6237b
-	ld de, SilphCo11FMovementData_62311
-.asm_6237b
+	jr z, .move_jessie
+	ld de, SilphCo11FJessieLeftApproachMovement
+.move_jessie
 	ld a, SILPHCO11F_JESSIE
 	ldh [hSpriteIndex], a
 	call MoveSprite
@@ -375,9 +375,9 @@ SilphCo11FScript10:
 	ld [hl], SPRITE_FACING_UP
 	CheckEitherEventSet EVENT_780, EVENT_781
 	and a
-	jr z, .asm_623b1
+	jr z, .continue
 	ld [hl], SPRITE_FACING_LEFT
-.asm_623b1
+.continue
 	call Delay3
 	ld a, TEXT_SILPHCO11F_TEXT9
 	ldh [hTextID], a

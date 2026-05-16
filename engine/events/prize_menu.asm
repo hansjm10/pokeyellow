@@ -253,8 +253,8 @@ HandlePrizeChoice:
 	ld hl, OhFineThenText
 	jp PrintText
 
-UnknownPrizeData:
-; XXX what's this?
+UnusedPrizeMenuData:
+; purpose unknown
 	db $00,$01,$00,$01,$00,$01,$00,$00,$01
 
 HereYouGoText: ; unreferenced

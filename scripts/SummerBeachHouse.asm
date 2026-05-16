@@ -39,14 +39,14 @@ ENDC
 	call YesNoChoice
 	ld a, [wCurrentMenuItem]
 	and a
-	jr nz, .asm_f226b
+	jr nz, .declined
 	ld a, 1
 	ld [wDoNotWaitForButtonPressAfterDisplayingText], a
 	farcall SurfingPikachuMinigame
 	ld hl, wd492
 	set 1, [hl]
 	jr .done
-.asm_f226b
+.declined
 	ld hl, .SurfinDudeText2
 	call PrintText
 .done
@@ -144,7 +144,7 @@ ELSE
 	bit 6, a
 ENDC
 	vc_patch_end
-	jr z, .asm_f2369
+	jr z, .not_available
 
 	ld hl, wd492
 	bit 1, [hl]
@@ -156,7 +156,7 @@ ENDC
 	call PrintText
 	ld a, [wd492]
 	bit 1, a
-	jr z, .asm_f236f
+	jr z, .done
 
 	ld a, 1
 	ld [wDoNotWaitForButtonPressAfterDisplayingText], a
@@ -165,7 +165,7 @@ ENDC
 	call YesNoChoice
 	ld a, [wCurrentMenuItem]
 	and a
-	jp z, Func_f23d0
+	jp z, SummerBeachHousePrintHighScore
 	call SaveScreenTilesToBuffer2
 	ld hl, wStatusFlags5
 	set BIT_NO_TEXT_DELAY, [hl]
@@ -183,11 +183,11 @@ ENDC
 	call GBPalNormal
 	ld a, 1
 	ld [wUpdateSpritesEnabled], a
-	jr .asm_f236f
-.asm_f2369
+	jr .done
+.not_available
 	ld hl, .SummerBeachHousePrinterText1
 	call PrintText
-.asm_f236f
+.done
 	jp TextScriptEnd
 
 .SummerBeachHousePrinterText1

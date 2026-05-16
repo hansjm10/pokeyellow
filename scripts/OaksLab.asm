@@ -218,7 +218,7 @@ OaksLabChoseStarterScript:
 OaksLabRivalTakesPokeballScript:
 	ld a, [wStatusFlags5]
 	bit BIT_SCRIPTED_NPC_MOVEMENT, a
-	jr nz, .asm_1c564
+	jr nz, .check_player_pushback
 	ld a, TOGGLE_STARTER_BALL_1
 	ld [wToggleableObjectIndex], a
 	predef HideObject
@@ -242,7 +242,7 @@ OaksLabRivalTakesPokeballScript:
 	ld [wOaksLabCurScript], a
 	ret
 
-.asm_1c564
+.check_player_pushback
 	ld a, [wYCoord]
 	cp 4
 	ret nz
@@ -262,20 +262,20 @@ OaksLabRivalTakesPokeballScript:
 OaksLabPlayerWalksToOakScript:
 	ld a, [wYCoord]
 	cp 4
-	jr z, .asm_1c599
+	jr z, .use_rle_path
 	ld a, $1
 	ld [wSimulatedJoypadStatesIndex], a
 	ld a, PAD_LEFT
 	ld [wSimulatedJoypadStatesEnd], a
-	jr .asm_1c5a6
+	jr .start_walking
 
-.asm_1c599
+.use_rle_path
 	ld hl, wSimulatedJoypadStatesEnd
 	ld de, OaksLabRLE_PlayerWalksToOak
 	call DecodeRLEList
 	dec a
 	ld [wSimulatedJoypadStatesIndex], a
-.asm_1c5a6
+.start_walking
 	call StartSimulatingJoypadStates
 	ld a, SCRIPT_OAKSLAB_PLAYER_RECEIVES_PIKACHU
 	ld [wOaksLabCurScript], a

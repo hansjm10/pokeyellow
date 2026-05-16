@@ -19,16 +19,16 @@ PikachuEmotion10:
 PikachuEmotion7:
 	pikaemotion_dummy2
 	pikaemotion_subcmd PIKAEMOTION_SUBCMD_LOADEXTRAPIKASPRITES
-	pikaemotion_movement PikachuMovementData_fd224
+	pikaemotion_movement PikachuEmotionDoubleJumpHeight2Movement
 	pikaemotion_pcm PikachuCry1
-	pikaemotion_movement PikachuMovementData_fd224
+	pikaemotion_movement PikachuEmotionDoubleJumpHeight2Movement
 	pikaemotion_pikapic PikaPicAnimScript7
 	db $ff
 
 PikachuEmotion4:
 	pikaemotion_dummy2
 	pikaemotion_subcmd PIKAEMOTION_SUBCMD_LOADEXTRAPIKASPRITES
-	pikaemotion_movement PikachuMovementData_fd230
+	pikaemotion_movement PikachuEmotionDoubleJumpHeight1Movement
 	pikaemotion_pcm PikachuCry29
 	pikaemotion_pikapic PikaPicAnimScript4
 	db $ff
@@ -55,7 +55,7 @@ PikachuEmotion6:
 	pikaemotion_dummy2
 	pikaemotion_subcmd PIKAEMOTION_SUBCMD_LOADEXTRAPIKASPRITES
 	pikaemotion_pcm
-	pikaemotion_movement PikachuMovementData_fd21e
+	pikaemotion_movement PikachuEmotionTurnClockwise1FrameMovement
 	pikaemotion_emotebubble SKULL_BUBBLE
 	pikaemotion_pikapic PikaPicAnimScript6
 	db $ff
@@ -70,7 +70,7 @@ PikachuEmotion9:
 	pikaemotion_dummy2
 	pikaemotion_subcmd PIKAEMOTION_SUBCMD_LOADEXTRAPIKASPRITES
 	pikaemotion_pcm PikachuCry6
-	pikaemotion_movement PikachuMovementData_fd218
+	pikaemotion_movement PikachuEmotionTurnClockwise2FramesMovement
 	pikaemotion_emotebubble SKULL_BUBBLE
 	pikaemotion_pikapic PikaPicAnimScript9
 	db $ff
@@ -90,7 +90,7 @@ PikachuEmotion12:
 PikachuEmotion13:
 	pikaemotion_dummy2
 	pikaemotion_subcmd PIKAEMOTION_SUBCMD_LOADEXTRAPIKASPRITES
-	pikaemotion_movement PikachuMovementData_fd21e
+	pikaemotion_movement PikachuEmotionTurnClockwise1FrameMovement
 	pikaemotion_pikapic PikaPicAnimScript13
 	db $ff
 
@@ -221,35 +221,35 @@ PikachuEmotion32:
 	pikaemotion_pikapic PikaPicAnimScript23
 	db $ff
 
-PikachuMovementData_fd218:
+PikachuEmotionTurnClockwise2FramesMovement:
 	db $00
 	db $39,  2 - 1
 	db $3e, 31 - 1
 	db $3f
 
-PikachuMovementData_fd21e:
+PikachuEmotionTurnClockwise1FrameMovement:
 	db $00
 	db $39,  1 - 1
 	db $3e, 31 - 1
 	db $3f
 
-PikachuMovementData_fd224:
+PikachuEmotionDoubleJumpHeight2Movement:
 	db $00
 	db $3c, 8 - 1, (2 << 4) | (16 - 1)
 	db $3c, 8 - 1, (2 << 4) | (16 - 1)
 	db $3f
 
-PikachuMovementData_fd22c:
+UnusedPikachuEmotionTurnMovement:
 	db $3b, 32 - 1, 4 - 1
 	db $3f
 
-PikachuMovementData_fd230:
+PikachuEmotionDoubleJumpHeight1Movement:
 	db $00
 	db $3c, 16 - 1, (1 << 4) | (16 - 1)
 	db $3c, 16 - 1, (1 << 4) | (16 - 1)
 	db $3f
 
-PikachuMovementData_fd238:
+UnusedPikachuEmotionLookAroundMovement:
 	db $00
 	db $05, 8 - 1
 	db $39, 1 - 1

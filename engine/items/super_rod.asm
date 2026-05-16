@@ -21,18 +21,18 @@ ReadSuperRodData:
 GenerateRandomFishingEncounter:
 	call Random
 	cp $66
-	jr c, .asm_f5ed6
+	jr c, .select_slot
 	inc hl
 	inc hl
 	cp $b2
-	jr c, .asm_f5ed6
+	jr c, .select_slot
 	inc hl
 	inc hl
 	cp $e5
-	jr c, .asm_f5ed6
+	jr c, .select_slot
 	inc hl
 	inc hl
-.asm_f5ed6
+.select_slot
 	ld e, [hl]
 	inc hl
 	ld d, [hl]

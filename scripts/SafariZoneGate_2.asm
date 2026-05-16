@@ -152,12 +152,12 @@ SafariZoneEntranceCalculateLowCostAdmission:
 	xor a
 	ld bc, $3
 	call FillMemory
-	ld hl, SafariZoneEntranceText_f20c4
+	ld hl, SafariZoneLowCostPayWhatYouHaveText
 	call PrintText_NoCreatingTextBox
 	ld a, MONEY_BOX
 	ld [wTextBoxID], a
 	call DisplayTextBoxID
-	ld hl, SafariZoneEntranceText_f20c9
+	ld hl, SafariZoneLowCostFewerBallsText
 	call PrintText
 	pop af
 	inc a
@@ -171,11 +171,11 @@ SafariZoneEntranceCalculateLowCostAdmission:
 	and a
 	ret
 
-SafariZoneEntranceText_f20c4:
+SafariZoneLowCostPayWhatYouHaveText:
 	text_far _SafariZoneLowCostText1
 	text_end
 
-SafariZoneEntranceText_f20c9:
+SafariZoneLowCostFewerBallsText:
 	text_far _SafariZoneLowCostText2
 	text_end
 
@@ -186,7 +186,7 @@ SafariZoneEntranceGetLowCostAdmissionText:
 	inc [hl]
 	ld e, a
 	ld d, $0
-	ld hl, Pointers_f2100
+	ld hl, SafariZoneLowCostRefusalTexts
 	add hl, de
 	add hl, de
 	ld a, [hli]
@@ -200,39 +200,39 @@ SafariZoneEntranceGetLowCostAdmissionText:
 	ret
 
 .give_one_ball
-	ld hl, SafariZoneEntranceText_f20f6
+	ld hl, SafariZoneLowCostFreeEntryText
 	call PrintText_NoCreatingTextBox
 	ld a, $1
 	ld hl, 502
 	and a
 	ret
 
-SafariZoneEntranceText_f20f6:
+SafariZoneLowCostFreeEntryText:
 	text_far _SafariZoneLowCostText3
 	sound_get_item_1
 	text_far _SafariZoneLowCostText4
 	text_end
 
-Pointers_f2100:
-	dw SafariZoneEntranceText_f210a
-	dw SafariZoneEntranceText_f210f
-	dw SafariZoneEntranceText_f2114
-	dw SafariZoneEntranceText_f2119
-	dw SafariZoneEntranceText_f2119
+SafariZoneLowCostRefusalTexts:
+	dw SafariZoneLowCostMustPayText
+	dw SafariZoneLowCostCantEnterText
+	dw SafariZoneLowCostNoMoneyNoEntryText
+	dw SafariZoneLowCostReadMyLipsText
+	dw SafariZoneLowCostReadMyLipsText
 
-SafariZoneEntranceText_f210a:
+SafariZoneLowCostMustPayText:
 	text_far _SafariZoneLowCostText5
 	text_end
 
-SafariZoneEntranceText_f210f:
+SafariZoneLowCostCantEnterText:
 	text_far _SafariZoneLowCostText6
 	text_end
 
-SafariZoneEntranceText_f2114:
+SafariZoneLowCostNoMoneyNoEntryText:
 	text_far _SafariZoneLowCostText7
 	text_end
 
-SafariZoneEntranceText_f2119:
+SafariZoneLowCostReadMyLipsText:
 	text_far _SafariZoneLowCostText8
 	text_end
 

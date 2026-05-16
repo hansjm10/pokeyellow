@@ -5,6 +5,23 @@ These instructions explain how to set up the tools required to build **pokeyello
 If you run into trouble, ask for help on IRC or Discord (see [README.md](README.md)).
 
 
+## Docker
+
+If you have Docker Desktop installed, you can build with a pinned Ubuntu and **rgbds 1.0.1** environment:
+
+```powershell
+.\build.ps1 compare
+```
+
+The script builds the local Docker image the first time it runs, then forwards arguments to `make`. For example:
+
+```powershell
+.\build.ps1
+.\build.ps1 clean
+.\build.ps1 yellow
+```
+
+
 ## Windows 10
 
 Download and install [**Windows Subsystem for Linux**](https://docs.microsoft.com/en-us/windows/wsl/install-win10). Then open the **WSL terminal**.

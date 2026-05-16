@@ -32,23 +32,23 @@ Museum2FHikerText:
 	text_asm
 	ld a, [wd471]
 	bit 7, a
-	jr nz, .asm_5c1f6
+	jr nz, .check_pikachu_happiness
 	ld hl, Museum2FText_5c20e
 	call PrintText
-	jr .asm_5c20b
+	jr .done
 
-.asm_5c1f6
+.check_pikachu_happiness
 	ld a, [wPikachuHappiness]
 	cp 101
-	jr c, .asm_5c205
+	jr c, .low_happiness
 	ld hl, Museum2FText_5c218
 	call PrintText
-	jr .asm_5c20b
+	jr .done
 
-.asm_5c205
+.low_happiness
 	ld hl, Museum2FText_5c213
 	call PrintText
-.asm_5c20b
+.done
 	jp TextScriptEnd
 
 Museum2FText_5c20e:

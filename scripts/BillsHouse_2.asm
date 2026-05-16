@@ -81,12 +81,12 @@ BillsHousePrintBillCheckOutMyRarePokemonText::
 	text_far _BillsHouseBillCheckOutMyRarePokemonText
 	text_end
 
-Func_f24ae::
+GetBillsHousePikachuEmotion::
 	ld a, [wCurMap]
 	cp BILLS_HOUSE
-	jr nz, .asm_f24d2
+	jr nz, .not_applicable
 	call CheckPikachuFollowingPlayer
-	jr z, .asm_f24d2
+	jr z, .not_applicable
 	ld a, [wBillsHouseCurScript]
 	cp SCRIPT_BILLSHOUSE_SCRIPT5
 	ldpikaemotion e, PikachuEmotion27
@@ -100,18 +100,18 @@ Func_f24ae::
 	ldpikaemotion e, PikachuEmotion31
 	ret
 
-.asm_f24d2
+.not_applicable
 	ld e, $ff
 	ret
 
-Func_f24d5::
+BillsHousePikachuReactionToBill::
 	ld a, PAD_BUTTONS | PAD_CTRL_PAD
 	ld [wJoyIgnore], a
 	xor a
 	ld [wPlayerMovingDirection], a
 	call UpdateSprites
 	call UpdateSprites
-	ld hl, Data_f2505
+	ld hl, BillsHousePikachuQuestionMovement
 	call ApplyPikachuMovementData
 	ld a, $f ; pikachu
 	ld [wEmotionBubbleSpriteIndex], a
@@ -122,7 +122,7 @@ Func_f24d5::
 	callfar InitializePikachuTextID
 	ret
 
-Data_f2505:
+BillsHousePikachuQuestionMovement:
 	db $00
 	db $20
 	db $20
@@ -130,23 +130,23 @@ Data_f2505:
 	db $1e
 	db $3f
 
-Func_f250b::
-	ld hl, Data_f251c
+BillsHouseMovePikachuForBillCutscene::
+	ld hl, BillsHousePikachuMovementFacingUp
 	ld b, SPRITE_FACING_UP
 	call TryApplyPikachuMovementData
-	ld hl, Data_f2521
+	ld hl, BillsHousePikachuMovementFacingRight
 	ld b, SPRITE_FACING_RIGHT
 	call TryApplyPikachuMovementData
 	ret
 
-Data_f251c:
+BillsHousePikachuMovementFacingUp:
 	db $00
 	db $1f
 	db $1d
 	db $38
 	db $3f
 
-Data_f2521:
+BillsHousePikachuMovementFacingRight:
 	db $00
 	db $1e
 	db $1f

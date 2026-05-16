@@ -43,12 +43,12 @@ PokemonTower7FScript_60d2a:
 	ResetEvent EVENT_POKEMONTOWER_7_JESSIE_JAMES_ON_LEFT
 	ld a, [wXCoord]
 	cp $a
-	jr z, .asm_60d47
+	jr z, .start_encounter
 	ld a, [wXCoord] ; why?
 	cp $b
 	ret nz
 	SetEvent EVENT_POKEMONTOWER_7_JESSIE_JAMES_ON_LEFT
-.asm_60d47
+.start_encounter
 	call StopAllMusic
 	ld c, BANK(Music_MeetJessieJames)
 	ld a, MUSIC_MEET_JESSIE_JAMES
@@ -72,20 +72,20 @@ PokemonTower7FScript_60d2a:
 	call PokemonTower7FSetScript
 	ret
 
-PokemonTower7FMovementData_60d7a:
+PokemonTower7FFourStepDownMovement:
 	db $4
-PokemonTower7FMovementData_60d7b:
+PokemonTower7FThreeStepDownMovement:
 	db $4
 	db $4
 	db $4
 	db $FF
 
 PokemonTower7FScript1:
-	ld de, PokemonTower7FMovementData_60d7b
+	ld de, PokemonTower7FThreeStepDownMovement
 	CheckEvent EVENT_POKEMONTOWER_7_JESSIE_JAMES_ON_LEFT
-	jr z, .asm_60d8c
-	ld de, PokemonTower7FMovementData_60d7a
-.asm_60d8c
+	jr z, .move_jessie
+	ld de, PokemonTower7FFourStepDownMovement
+.move_jessie
 	ld a, POKEMONTOWER7F_JESSIE
 	ldh [hSpriteIndex], a
 	call MoveSprite
@@ -105,18 +105,18 @@ PokemonTower7FScript3:
 	ld a, SPRITE_FACING_DOWN
 	ld [wSprite01StateData1FacingDirection], a
 	CheckEvent EVENT_POKEMONTOWER_7_JESSIE_JAMES_ON_LEFT
-	jr z, .asm_60dba
+	jr z, .set_jessie_movement_status
 	ld a, SPRITE_FACING_RIGHT
 	ld [wSprite01StateData1FacingDirection], a
-.asm_60dba
+.set_jessie_movement_status
 	ld a, $2
 	ld [wSprite01StateData1MovementStatus], a
 PokemonTower7FScript4:
-	ld de, PokemonTower7FMovementData_60d7a
+	ld de, PokemonTower7FFourStepDownMovement
 	CheckEvent EVENT_POKEMONTOWER_7_JESSIE_JAMES_ON_LEFT
-	jr z, .asm_60dcc
-	ld de, PokemonTower7FMovementData_60d7b
-.asm_60dcc
+	jr z, .move_james
+	ld de, PokemonTower7FThreeStepDownMovement
+.move_james
 	ld a, POKEMONTOWER7F_JAMES
 	ldh [hSpriteIndex], a
 	call MoveSprite
@@ -138,10 +138,10 @@ PokemonTower7FScript6:
 	ld a, SPRITE_FACING_LEFT
 	ld [wSprite02StateData1FacingDirection], a
 	CheckEvent EVENT_POKEMONTOWER_7_JESSIE_JAMES_ON_LEFT
-	jr z, .asm_60dff
+	jr z, .continue
 	ld a, SPRITE_FACING_DOWN
 	ld [wSprite02StateData1FacingDirection], a
-.asm_60dff
+.continue
 	call Delay3
 	ld a, PAD_SELECT | PAD_START | PAD_CTRL_PAD
 	ld [wJoyIgnore], a

@@ -25,7 +25,7 @@
 ;ReduceColorB1 = 0	;0~31 (for Green Mode)
 ;MotionBlur1 = 31	;0~31 (for Green Mode)
 ;PaletteX = c31,31,31	;X:0~15, cR,G,B (0~31)
-[SaveLimit@Unknown_save_limit]
+[SaveLimit]
 Mode = 12
 Type = 1
 Index = {hex sGameData}
@@ -132,17 +132,17 @@ Type = 4
 ;Address = 0x150
 ;Fixcode = 0xC9
 
-[PLAY_MUTE@Unknown_PlayPikachuSoundClip_end]
+[PLAY_MUTE@PlayPikachuSoundClip_end]
 Mode = 1
 Address = {HEX @+1}
 Fixcode = {PATCH +1}
 
-[PLAY_HACK@Unknown_PlayPikachuPCM]
+[PLAY_HACK@PlayPikachuPCM]
 Mode = 2
 Address = {HEX @}
 Type = 6
 
-[PLAY_NEW@Unknown_PlayPikachuSoundClip_start]
+[PLAY_NEW@PlayPikachuSoundClip_start]
 Mode = 2
 Address = {HEX @}
 Type = 21
@@ -162,7 +162,7 @@ Mode = 2
 Address = {HEX @}
 Type = 9
 
-[Network_RESET@Unknown_network_reset]
+[Network_RESET@Wireless_net_reset]
 Mode = 2
 Address = {HEX @}
 Type = 10
@@ -202,7 +202,7 @@ Mode = 1
 Address = {hex @}
 Fixcode = {PATCH}
 
-[fight_ret_c@Unknown_BattleRandom_ret_c]
+[fight_ret_c@BattleRandom_ret_c]
 Mode = 2
 Address = {hex @}
 Type = 98

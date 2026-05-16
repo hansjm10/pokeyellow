@@ -76,9 +76,9 @@ PrepareOAMData::
 	add [hl]
 	cp $a0
 	jr z, .hidden
-	jr nc, .asm_4a41
+	jr nc, .clear_unused_oam
 .hidden
-	call Func_4a7b
+	call GetSpriteOAMTileOffset
 	ld [wSavedSpriteImageIndex], a
 	ldh a, [hOAMBufferOffset]
 
@@ -104,11 +104,11 @@ PrepareOAMData::
 	ld a, [wSavedSpriteImageIndex]
 	add [hl]
 	cp $80
-	jr c, .asm_4a1c
+	jr c, .write_tile_id
 	ld b, a
 	ldh a, [hPikachuSpriteVRAMOffset]
 	add b
-.asm_4a1c
+.write_tile_id
 	ld [de], a ; tile id
 	inc hl
 	inc e
@@ -138,7 +138,7 @@ PrepareOAMData::
 	jp nz, .spriteLoop
 
 	; Clear unused OAM.
-.asm_4a41
+.clear_unused_oam
 	ld a, [wMovementFlags]
 	bit BIT_LEDGE_OR_FISHING, a
 	ld c, LOW(wShadowOAMEnd)
@@ -186,7 +186,7 @@ GetSpriteScreenXY:
 	ld [de], a  ; [x#SPRITESTATEDATA1_XADJUSTED]
 	ret
 
-Func_4a7b:
+GetSpriteOAMTileOffset:
 	push bc
 	ld a, [wSavedSpriteImageIndex]
 	swap a                   ; high nybble determines sprite used (0 is always player sprite, next are some npcs)

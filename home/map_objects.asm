@@ -146,7 +146,7 @@ SetSpriteImageIndexAfterSettingFacingDirection::
 	ld [hl], a
 	ret
 
-SpriteFunc_34a1::
+UpdateSpriteOAMTileID::
 	ldh a, [hSpriteIndex]
 	swap a
 	add $e

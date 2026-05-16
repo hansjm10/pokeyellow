@@ -80,7 +80,7 @@ IF DEF(_DEBUG)
 	ld a, RIVAL_STARTER_JOLTEON
 	ld [hli], a
 	ld a, NUM_POKEMON
-	ld [hli], a ; hl = wUnknownDebugByte
+	ld [hli], a ; hl = wDebugPokedexEntryCount
 	ld a, STARTER_PIKACHU
 	ld [hl], a
 

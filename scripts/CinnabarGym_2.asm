@@ -1,8 +1,8 @@
-CinnabarGymScript_753de:
-	callfar Func_f2150
+CinnabarGymPrintQuizTextScript:
+	callfar PrintCinnabarGymQuizText
 	jp TextScriptEnd
 
-CinnabarGymScript_753e9:
+ResetCinnabarGymWrongAnswerFlag:
 	push hl
 	ld hl, wd474
 	bit 7, [hl]
@@ -10,7 +10,7 @@ CinnabarGymScript_753e9:
 	pop hl
 	ret
 
-CinnabarGymScript_753f3:
+CheckCinnabarGymWrongAnswerPending:
 	push hl
 	ld hl, wd474
 	bit 7, [hl]

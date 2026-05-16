@@ -2,11 +2,11 @@ CableClubNPC::
 	ld hl, CableClubNPCWelcomeText
 	call PrintText
 	call CheckPikachuFollowingPlayer
-	jr nz, .asm_7048
+	jr nz, .making_preparations
 	CheckEvent EVENT_GOT_POKEDEX
 	jp nz, .receivedPokedex
 ; if the player hasn't received the pokedex
-.asm_7048
+.making_preparations
 	ld c, 60
 	call DelayFrames
 	ld hl, CableClubNPCMakingPreparationsText
@@ -73,7 +73,7 @@ CableClubNPC::
 	call PlaySoundWaitForCurrent
 	ld hl, CableClubNPCPleaseWaitText
 	call PrintText
-	ld hl, wUnknownSerialCounter
+	ld hl, wSerialConnectionTimeoutCounter
 	ld a, $3
 	ld [hli], a
 	xor a
@@ -83,7 +83,7 @@ CableClubNPC::
 	vc_hook Wireless_prompt
 	call Serial_SyncAndExchangeNybble
 	vc_hook Wireless_net_recheck
-	ld hl, wUnknownSerialCounter
+	ld hl, wSerialConnectionTimeoutCounter
 	ld a, [hli]
 	inc a
 	jr nz, .connected
@@ -110,7 +110,7 @@ CableClubNPC::
 	call PrintText
 .didNotConnect
 	xor a
-	ld hl, wUnknownSerialCounter
+	ld hl, wSerialConnectionTimeoutCounter
 	ld [hli], a
 	ld [hl], a
 	ld hl, wStatusFlags4
@@ -137,14 +137,14 @@ Serial_SyncAndExchangeNybbleDouble:
 	call Serial_ExchangeNybble
 	call DelayFrame
 	push hl
-	ld hl, wUnknownSerialCounter + 1
+	ld hl, wSerialConnectionTimeoutCounter + 1
 	dec [hl]
 	jr nz, .next
 	dec hl
 	dec [hl]
 	jr nz, .next
 	pop hl
-	jr .setUnknownSerialCounterToFFFF
+	jr .set_connection_timeout_expired
 .next
 	pop hl
 	ld a, [wSerialExchangeNybbleReceiveData]
@@ -172,10 +172,10 @@ Serial_SyncAndExchangeNybbleDouble:
 	ld a, [wSerialExchangeNybbleReceiveData]
 	ld [wSerialSyncAndExchangeNybbleReceiveData], a
 	ret
-.setUnknownSerialCounterToFFFF
+.set_connection_timeout_expired
 	ld a, $ff
-	ld [wUnknownSerialCounter], a
-	ld [wUnknownSerialCounter + 1], a
+	ld [wSerialConnectionTimeoutCounter], a
+	ld [wSerialConnectionTimeoutCounter + 1], a
 	ret
 
 CableClubNPCAreaReservedFor2FriendsLinkedByCableText:
