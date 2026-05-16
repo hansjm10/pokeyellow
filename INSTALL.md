@@ -19,6 +19,7 @@ The script builds the local Docker image the first time it runs, then forwards a
 .\build.ps1
 .\build.ps1 clean
 .\build.ps1 yellow
+.\build.ps1 unnamed
 ```
 
 
@@ -166,6 +167,12 @@ To build **pokeyellow.gbc**:
 
 ```bash
 make
+```
+
+To list the remaining automatically named symbols:
+
+```bash
+make unnamed
 ```
 
 ### Build with a local rgbds version

@@ -9,6 +9,7 @@ Parse the symfile to find unnamed symbols.
 
 import sys
 import argparse
+import os
 import subprocess
 import struct
 import enum
@@ -31,8 +32,9 @@ def read_string(file):
 			return buf.decode()
 		buf += b
 
-# Fix broken pipe when using `head`
-signal.signal(signal.SIGPIPE, signal.SIG_DFL)
+# Fix broken pipe when using `head` on platforms that expose SIGPIPE.
+if hasattr(signal, 'SIGPIPE'):
+	signal.signal(signal.SIGPIPE, signal.SIG_DFL)
 
 parser = argparse.ArgumentParser(description='Parse the symfile to find unnamed symbols')
 parser.add_argument('symfile', type=argparse.FileType('r'),
@@ -46,8 +48,17 @@ args = parser.parse_args()
 # Get list of object files
 objects = None
 if args.rootdir:
-	for line in subprocess.Popen(['make', '-C', args.rootdir, '-s', '-p', 'DEBUG=1'],
-			stdout=subprocess.PIPE).stdout.read().decode().split('\n'):
+	make = os.environ.get('MAKE', 'make')
+	try:
+		make_proc = subprocess.run([make, '-C', args.rootdir, '-s', '-p', 'DEBUG=1'],
+			stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+	except FileNotFoundError:
+		print(f"Error: '{make}' was not found.", file=sys.stderr)
+		sys.exit(1)
+	if make_proc.returncode:
+		print(make_proc.stderr, end='', file=sys.stderr)
+		sys.exit(make_proc.returncode)
+	for line in make_proc.stdout.split('\n'):
 		if line.startswith('pokeyellow_obj :='):
 			objects = line[len('pokeyellow_obj :='):].strip().split()
 			break
@@ -81,7 +92,8 @@ if not objects:
 # Count the amount of symbols in each file
 file_symbols = {}
 for objfile in objects:
-	with open(objfile, 'rb') as file:
+	objpath = os.path.join(args.rootdir, objfile)
+	with open(objpath, 'rb') as file:
 		obj_ver = None
 
 		magic = unpack_from('4s', file)[0]
@@ -90,7 +102,7 @@ for objfile in objects:
 		elif magic == b'RGB9':
 			obj_ver = 10 + unpack_from('<I', file)[0]
 
-		if obj_ver not in [6, 10, 11, 12, 13] and obj_ver < 15:
+		if obj_ver is None or (obj_ver not in [6, 10, 11, 12, 13] and obj_ver < 15):
 			print(f"Error: File '{objfile}' is of an unknown format.", file=sys.stderr)
 			sys.exit(1)
 

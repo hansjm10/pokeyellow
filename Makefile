@@ -30,6 +30,9 @@ else
 SHA1 := sha1sum
 endif
 
+PYTHON ?= python3
+UNNAMED_LIST ?= 10
+
 RGBDS ?=
 RGBASM  ?= $(RGBDS)rgbasm
 RGBFIX  ?= $(RGBDS)rgbfix
@@ -56,7 +59,8 @@ RGBGFXFLAGS  ?= -Weverything
 	clean \
 	tidy \
 	compare \
-	tools
+	tools \
+	unnamed
 
 all: $(roms)
 yellow:       pokeyellow.gbc
@@ -93,6 +97,11 @@ compare: $(roms) $(patches)
 
 tools:
 	$(MAKE) -C tools/
+
+unnamed:
+	@if [ ! -f pokeyellow.sym ]; then $(RM) pokeyellow.gbc; fi
+	$(MAKE) DEBUG=1 pokeyellow.gbc
+	$(PYTHON) tools/unnamed.py -r . -l $(UNNAMED_LIST) pokeyellow.sym
 
 
 RGBASMFLAGS += -Q8 -P includes.asm

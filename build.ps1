@@ -6,7 +6,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-$Image = "pokeyellow-build:rgbds-1.0.1"
+$Image = "pokeyellow-build:rgbds-1.0.1-python3"
 $RepoRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 
 if (-not $MakeArgs -or $MakeArgs.Count -eq 0) {

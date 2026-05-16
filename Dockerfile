@@ -13,6 +13,7 @@ RUN apt-get update \
       git \
       libpng-dev \
       make \
+      python3 \
       pkg-config \
  && rm -rf /var/lib/apt/lists/*
 
