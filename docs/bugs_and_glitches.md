@@ -15,6 +15,7 @@ Fixes are written in the `diff` format. If you've used Git before, this should l
 
 - [Options menu code fails to clear joypad state on initialization](#options-menu-code-fails-to-clear-joypad-state-on-initialization)
 - [Battle transitions fail to account for scripted battles](#battle-transitions-fail-to-account-for-scripted-battles)
+- [Rocket Hideout B1F door sound repeats](#rocket-hideout-b1f-door-sound-repeats)
 - [`wPikachuFollowCommandBuffer` can overflow](#wpikachufollowcommandbuffer-can-overflow)
 - [Unexpected Counter damage](#unexpected-counter-damage)
 
@@ -42,6 +43,23 @@ This means you can manipulate this first transition to be faster by choosing a d
 A similar series of bugs appears to exist in pokecrystal.
 
 **Fix:** TBD in [engine/battle/battle_transitions.asm#L93](/engine/battle/battle_transitions.asm#L93)
+
+
+## Rocket Hideout B1F door sound repeats
+
+After beating the Rocket who opens the door on Rocket Hideout B1F, the door-opening sound plays every time the map is loaded.
+The script checks `EVENT_ENTERED_ROCKET_HIDEOUT` after playing the sound, but never sets it.
+
+**Fix:** Update [scripts/RocketHideoutB1F.asm](/scripts/RocketHideoutB1F.asm)
+
+```diff
+ .play_sound_door_open
+    ld a, SFX_GO_INSIDE
+    call PlaySound
+-   CheckEventHL EVENT_ENTERED_ROCKET_HIDEOUT
++   SetEvent EVENT_ENTERED_ROCKET_HIDEOUT
+ .door_open
+```
 
 
 ## `wPikachuFollowCommandBuffer` can overflow
