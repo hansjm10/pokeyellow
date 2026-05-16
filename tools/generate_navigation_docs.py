@@ -179,6 +179,355 @@ def const_to_title(name: str) -> str:
 	return " ".join(part.capitalize() for part in name.split("_"))
 
 
+@dataclass
+class MapConst:
+	name: str
+	value: int
+	width: int
+	height: int
+	line: int
+
+
+@dataclass
+class MapHeader:
+	label: str
+	const: str
+	tileset: str
+	relpath: str
+	line: int
+
+
+def parse_map_constants() -> list[MapConst]:
+	value = 0
+	items: list[MapConst] = []
+	for lineno, line_text in enumerate(read_lines("constants/map_constants.asm"), 1):
+		code = clean_code(line_text)
+		parts = code.split()
+		if not parts:
+			continue
+		if parts[0] == "const_def":
+			value = int(parts[1], 0) if len(parts) > 1 else 0
+			continue
+		if parts[0] == "const_next":
+			value = int(parts[1].replace("$", "0x"), 0)
+			continue
+		if parts[0] == "const_skip":
+			count = int(parts[1], 0) if len(parts) > 1 else 1
+			value += count
+			continue
+		match = re.match(r"map_const\s+([A-Z0-9_]+),\s*([0-9]+),\s*([0-9]+)", code)
+		if not match:
+			continue
+		items.append(MapConst(
+			name=match.group(1),
+			value=value,
+			width=int(match.group(2)),
+			height=int(match.group(3)),
+			line=lineno,
+		))
+		value += 1
+	return items
+
+
+def parse_map_header_pointers() -> list[str]:
+	pointers = []
+	in_table = False
+	for line_text in read_lines("data/maps/map_header_pointers.asm"):
+		code = clean_code(line_text)
+		if code == "MapHeaderPointers::":
+			in_table = True
+			continue
+		if not in_table:
+			continue
+		if "assert_table_length NUM_MAPS" in code:
+			break
+		match = re.match(r"dw\s+([A-Za-z0-9_]+_h)", code)
+		if match:
+			pointers.append(match.group(1))
+	return pointers
+
+
+def parse_map_headers() -> dict[str, MapHeader]:
+	headers: dict[str, MapHeader] = {}
+	for path in sorted((ROOT / "data/maps/headers").glob("*.asm"), key=path_sort_key):
+		rel = repo_path(path)
+		for lineno, line_text in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+			code = clean_code(line_text)
+			match = re.match(r"map_header\s+([A-Za-z0-9_]+),\s*([A-Z0-9_]+),\s*([A-Z0-9_]+),", code)
+			if not match:
+				continue
+			label = match.group(1)
+			headers[f"{label}_h"] = MapHeader(
+				label=label,
+				const=match.group(2),
+				tileset=match.group(3),
+				relpath=rel,
+				line=lineno,
+			)
+			break
+	return headers
+
+
+def parse_label_incbins(relpath: str, suffix: str) -> dict[str, str]:
+	paths: dict[str, str] = {}
+	pending_labels: list[str] = []
+	for line_text in read_lines(relpath):
+		code = clean_code(line_text)
+		if code.startswith("SECTION "):
+			pending_labels.clear()
+			continue
+		for match in re.finditer(r"\b([A-Za-z_][A-Za-z0-9_]*):{1,2}", code):
+			label = match.group(1)
+			if label.endswith(suffix):
+				pending_labels.append(label)
+		match = re.search(r'INCBIN\s+"([^"]+)"', code)
+		if not match:
+			continue
+		for label in pending_labels:
+			paths[label] = match.group(1)
+		pending_labels.clear()
+	return paths
+
+
+def parse_tileset_id_to_asset_label() -> dict[str, str]:
+	consts = parse_const_block("constants/tileset_constants.asm")
+	asset_labels = []
+	for line_text in read_lines("data/tilesets/tileset_headers.asm"):
+		match = re.match(r"\s*tileset\s+([A-Za-z0-9_]+),", clean_code(line_text))
+		if match:
+			asset_labels.append(match.group(1))
+	return {
+		str(item["name"]): asset_labels[idx]
+		for idx, item in enumerate(consts)
+		if idx < len(asset_labels)
+	}
+
+
+def parse_map_songs() -> list[dict[str, str]]:
+	rows = []
+	in_table = False
+	for line_text in read_lines("data/maps/songs.asm"):
+		code = clean_code(line_text)
+		if code == "MapSongBanks::":
+			in_table = True
+			continue
+		if not in_table:
+			continue
+		if "assert_table_length NUM_MAPS" in code:
+			break
+		match = re.match(r"db\s+(MUSIC_[A-Z0-9_]+),\s*BANK\((Music_[A-Za-z0-9_]+)\)", code)
+		if match:
+			rows.append({
+				"const": match.group(1),
+				"label": match.group(2),
+			})
+	return rows
+
+
+def music_path(music_label: str) -> str | None:
+	stem = music_label.removeprefix("Music_").lower()
+	path = ROOT / "audio/music" / f"{stem}.asm"
+	if path.exists():
+		return repo_path(path)
+	return None
+
+
+def parse_wild_pointer_labels() -> list[str]:
+	labels = []
+	in_table = False
+	for line_text in read_lines("data/wild/grass_water.asm"):
+		code = clean_code(line_text)
+		if code == "WildDataPointers:":
+			in_table = True
+			continue
+		if not in_table:
+			continue
+		if "assert_table_length NUM_MAPS" in code:
+			break
+		match = re.match(r"dw\s+([A-Za-z0-9_]+)", code)
+		if match:
+			labels.append(match.group(1))
+	return labels
+
+
+def parse_wild_label_sources() -> dict[str, str]:
+	sources: dict[str, str] = {}
+	for line_text in read_lines("data/wild/grass_water.asm"):
+		match = re.search(r'INCLUDE\s+"(data/wild/maps/[^"]+)"', line_text)
+		if not match:
+			continue
+		rel = match.group(1)
+		for source_line in read_lines(rel):
+			label_match = re.match(r"([A-Za-z0-9_]+WildMons):", clean_code(source_line))
+			if label_match:
+				sources[label_match.group(1)] = rel
+	return sources
+
+
+def parse_super_rod_maps() -> set[str]:
+	maps = set()
+	for line_text in read_lines("data/wild/super_rod.asm"):
+		code = clean_code(line_text)
+		match = re.match(r"db\s+([A-Z0-9_]+),", code)
+		if match:
+			maps.add(match.group(1))
+	return maps
+
+
+def matching_named_files(dirname: str, base: str) -> list[Path]:
+	root = ROOT / dirname
+	return sorted(
+		(
+			path for path in root.glob("*.asm")
+			if path.stem == base or path.stem.startswith(f"{base}_")
+		),
+		key=path_sort_key,
+	)
+
+
+def format_path_links(paths: list[Path]) -> str:
+	return "<br>".join(link(path) for path in paths) or "-"
+
+
+def format_map_name(map_const: MapConst, header: MapHeader) -> str:
+	text = f"`{map_const.name}`"
+	if header.const != map_const.name:
+		text += f"<br>uses `{header.const}` header data"
+	return text
+
+
+def format_wild_encounters(map_name: str, wild_label: str | None, wild_sources: dict[str, str], super_rod_maps: set[str]) -> str:
+	if not wild_label:
+		text = "-"
+	elif wild_label == "NothingWildMons":
+		text = f"Grass/water: None<br>{link(wild_sources.get(wild_label, 'data/wild/maps/nothing.asm'))}"
+	else:
+		text = f"Grass/water: `{wild_label}`"
+		if wild_label in wild_sources:
+			text += f"<br>{link(wild_sources[wild_label])}"
+	if map_name in super_rod_maps:
+		text += f"<br>Super Rod: {link('data/wild/super_rod.asm')}"
+	return text
+
+
+def format_map_music(song: dict[str, str] | None) -> str:
+	if not song:
+		return "-"
+	text = f"`{song['const']}`"
+	path = music_path(song["label"])
+	if path:
+		text += f"<br>{link(path)}"
+	return text
+
+
+def format_tileset(tileset: str, tileset_assets: dict[str, str], gfx_paths: dict[str, str], block_paths: dict[str, str]) -> str:
+	text = f"`{tileset}`"
+	asset_label = tileset_assets.get(tileset)
+	if not asset_label:
+		return text
+	gfx_path = gfx_paths.get(f"{asset_label}_GFX")
+	block_path = block_paths.get(f"{asset_label}_Block")
+	if gfx_path:
+		if gfx_path.endswith(".2bpp") or gfx_path.endswith(".1bpp"):
+			gfx_path = str(Path(gfx_path).with_suffix(".png")).replace("\\", "/")
+		text += f"<br>{link(gfx_path)}"
+	if block_path:
+		text += f"<br>{link(block_path)}"
+	return text
+
+
+def build_map_index() -> None:
+	map_consts = parse_map_constants()
+	header_pointers = parse_map_header_pointers()
+	headers = parse_map_headers()
+	map_block_paths = parse_label_incbins("maps.asm", "_Blocks")
+	tileset_assets = parse_tileset_id_to_asset_label()
+	gfx_paths = parse_label_incbins("gfx/tilesets.asm", "_GFX")
+	blockset_paths = parse_label_incbins("gfx/tilesets.asm", "_Block")
+	songs = parse_map_songs()
+	wild_labels = parse_wild_pointer_labels()
+	wild_sources = parse_wild_label_sources()
+	super_rod_maps = parse_super_rod_maps()
+
+	rows = []
+	for idx, map_const in enumerate(map_consts):
+		header_label = header_pointers[idx] if idx < len(header_pointers) else ""
+		header = headers.get(header_label)
+		if header is None:
+			rows.append([
+				f"`${map_const.value:02X}`",
+				f"`{map_const.name}`",
+				f"{map_const.width}x{map_const.height}",
+				"-",
+				"-",
+				"-",
+				"-",
+				"-",
+				format_wild_encounters(map_const.name, wild_labels[idx] if idx < len(wild_labels) else None, wild_sources, super_rod_maps),
+				format_map_music(songs[idx] if idx < len(songs) else None),
+				"-",
+			])
+			continue
+
+		object_path = ROOT / "data/maps/objects" / f"{header.label}.asm"
+		block_path = map_block_paths.get(f"{header.label}_Blocks")
+		rows.append([
+			f"`${map_const.value:02X}`",
+			format_map_name(map_const, header),
+			f"{map_const.width}x{map_const.height}",
+			link(header.relpath),
+			link(repo_path(object_path)) if object_path.exists() else "-",
+			link(block_path) if block_path else "-",
+			format_path_links(matching_named_files("scripts", header.label)),
+			format_path_links(matching_named_files("text", header.label)),
+			format_wild_encounters(map_const.name, wild_labels[idx] if idx < len(wild_labels) else None, wild_sources, super_rod_maps),
+			format_map_music(songs[idx] if idx < len(songs) else None),
+			format_tileset(header.tileset, tileset_assets, gfx_paths, blockset_paths),
+		])
+
+	lines = [
+		"# Map Editing Index",
+		"",
+		"Generated by `tools/generate_navigation_docs.py`. Do not edit by hand.",
+		"",
+		"This index maps every `map_const` entry to the source files usually touched when editing that map. The order follows `constants/map_constants.asm`, which is also the order used by the map header, music, sprite, town-map, and wild-encounter tables.",
+		"",
+		"Copy and unused map IDs may intentionally reuse another map's header data. In those rows, the `Map` column notes the reused header constant, and the file links point to the files actually referenced by `MapHeaderPointers` and the `map_header` macro.",
+		"",
+		"Generated graphics such as `.1bpp`, `.2bpp`, and `.pic` are not listed here; edit the source `.png`, `.blk`, and `.bst` files instead. Grass and water encounter files are listed per map. Good Rod encounters are global, and Super Rod maps are marked in the Wild Encounters column.",
+		"",
+		"## Source Tables",
+		"",
+		"- " + link("constants/map_constants.asm"),
+		"- " + link("data/maps/map_header_pointers.asm"),
+		"- " + link("data/maps/songs.asm"),
+		"- " + link("data/wild/grass_water.asm"),
+		"- " + link("data/wild/good_rod.asm"),
+		"- " + link("data/wild/super_rod.asm"),
+		"- " + link("data/wild/probabilities.asm"),
+		"- " + link("data/tilesets/tileset_headers.asm"),
+		"- " + link("maps.asm"),
+		"- " + link("gfx/tilesets.asm"),
+		"",
+		"## Maps",
+		"",
+	]
+	lines.extend(table([
+		"ID",
+		"Map",
+		"Size",
+		"Header",
+		"Objects",
+		"Blocks",
+		"Scripts",
+		"Text",
+		"Wild Encounters",
+		"Music",
+		"Tileset",
+	], rows))
+	write_doc("docs/map_index.md", lines)
+
+
 def pokemon_label_prefix(const_name: str) -> str:
 	special = {
 		"NIDORAN_M": "NidoranM",
@@ -1010,6 +1359,7 @@ def main() -> None:
 	CHECK_ONLY = args.check
 
 	DOCS.mkdir(exist_ok=True)
+	build_map_index()
 	build_pokemon_index()
 	build_move_index()
 	build_trainer_index()

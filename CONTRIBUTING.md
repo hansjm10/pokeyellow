@@ -114,7 +114,7 @@ and writes before renaming or resizing anything.
 
 The generated navigation docs in [docs/](docs/) are meant to make common edit
 paths easier to follow. Regenerate them after changing source tables for
-Pokemon, moves, trainers, or RAM layouts:
+maps, Pokemon, moves, trainers, or RAM layouts:
 
 ```sh
 make docs
@@ -128,8 +128,7 @@ On Windows with Docker:
 .\build.ps1 check-docs
 ```
 
-[docs/map_index.md](docs/map_index.md) is maintained separately. Update it when
-map source tables change.
+[docs/map_index.md](docs/map_index.md) is generated from map source tables.
 
 ## Matching Builds
 
