@@ -92,6 +92,8 @@ map script in [scripts/](scripts/).
 For map behavior, check [scripts/](scripts/), [data/maps/headers/](data/maps/headers/),
 [data/maps/objects/](data/maps/objects/), and the corresponding [maps/](maps/)
 `.blk` file.
+Use [docs/map_index.md](docs/map_index.md) to find the script, text, object,
+block, wild encounter, music, and tileset files for a specific map.
 
 For Pokemon data, check [data/pokemon/](data/pokemon/), then the matching
 constants in [constants/](constants/).
@@ -189,4 +191,3 @@ Use the output to confirm:
 - The unnamed-symbol count did not increase.
 - Only intended source, doc, or setup files are changed.
 - No generated build outputs are staged.
-
