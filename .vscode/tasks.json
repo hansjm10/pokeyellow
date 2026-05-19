@@ -21,7 +21,10 @@
         "clear": true,
         "reveal": "always"
       },
-      "problemMatcher": []
+      "problemMatcher": [
+        "$rgbdserror",
+        "$rgbdslinkerror"
+      ]
     },
     {
       "label": "pokeyellow: build",
@@ -39,7 +42,10 @@
         "clear": true,
         "reveal": "always"
       },
-      "problemMatcher": []
+      "problemMatcher": [
+        "$rgbdserror",
+        "$rgbdslinkerror"
+      ]
     },
     {
       "label": "pokeyellow: clean",
@@ -75,7 +81,10 @@
         "clear": true,
         "reveal": "always"
       },
-      "problemMatcher": []
+      "problemMatcher": [
+        "$rgbdserror",
+        "$rgbdslinkerror"
+      ]
     },
     {
       "label": "pokeyellow: build debug",
@@ -93,7 +102,10 @@
         "clear": true,
         "reveal": "always"
       },
-      "problemMatcher": []
+      "problemMatcher": [
+        "$rgbdserror",
+        "$rgbdslinkerror"
+      ]
     },
     {
       "label": "pokeyellow: build vc patch",
@@ -111,7 +123,10 @@
         "clear": true,
         "reveal": "always"
       },
-      "problemMatcher": []
+      "problemMatcher": [
+        "$rgbdserror",
+        "$rgbdslinkerror"
+      ]
     },
     {
       "label": "pokeyellow: unnamed symbols",
@@ -129,7 +144,10 @@
         "clear": true,
         "reveal": "always"
       },
-      "problemMatcher": []
+      "problemMatcher": [
+        "$rgbdserror",
+        "$rgbdslinkerror"
+      ]
     },
     {
       "label": "pokeyellow: generate docs",

@@ -59,8 +59,17 @@ pokeyellow: compare
 ```
 
 Recommended extensions are listed in
-[.vscode/extensions.json](.vscode/extensions.json). They cover EditorConfig,
-Docker, Makefile support, and Markdown editing.
+[.vscode/extensions.json](.vscode/extensions.json). They cover RGBDS language
+support, EditorConfig, Docker, Makefile support, and Markdown editing.
+
+The recommended RGBDS extension is `donaldhays.rgbds-z80`. It is available on
+the Visual Studio Marketplace and Open VSX, supports `.asm`, `.inc`, `.z80`,
+`.s`, and `.sm83` files, and provides syntax highlighting, instruction snippets,
+symbol IntelliSense, hovers, jump-to-declaration, include-path suggestions, and
+RGBDS problem matchers. Its problem matchers support RGBDS v1.0.0-style output,
+which fits this repo's pinned rgbds 1.0.1 build environment.
+The VS Code build tasks use those problem matchers so RGBDS diagnostics become
+clickable in the editor.
 
 Editor defaults are in [.editorconfig](.editorconfig). They keep line endings,
 indentation, final newlines, and whitespace consistent with the rest of the

@@ -1,0 +1,13 @@
+{
+  "files.associations": {
+    "*.asm": "gbz80",
+    "*.inc": "gbz80",
+    "*.z80": "gbz80",
+    "*.s": "gbz80",
+    "*.sm83": "gbz80"
+  },
+  "rgbdsz80.includeSuggestionExtensions": [
+    ".asm",
+    ".inc"
+  ]
+}
